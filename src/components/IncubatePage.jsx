@@ -71,20 +71,18 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
                      {/* Cloud Button */}
                      <div 
                         onClick={onStartIncubation}
-                        className="relative mb-20 cursor-pointer group transition-transform active:scale-95"
+                        className="relative mb-20 cursor-pointer group transition-transform active:scale-95 flex flex-col items-center justify-center"
                      >
-                        {/* Cloud Shape */}
-                        <div className="relative w-48 h-32 text-white/90">
-                             {/* Manually drawn cloud with divs for that fluffy look */}
-                             <div className="absolute bottom-0 left-4 right-4 h-16 bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)]" />
-                             <div className="absolute bottom-6 left-0 w-20 h-20 bg-white rounded-full shadow-lg" />
-                             <div className="absolute bottom-8 right-2 w-24 h-24 bg-white rounded-full shadow-lg" />
-                             <div className="absolute bottom-6 left-16 w-20 h-20 bg-white rounded-full shadow-lg" />
-                        </div>
-                        
-                        {/* Plus Icon */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%] z-10">
-                            <Plus size={48} className="text-[#8B5E3C] opacity-60" strokeWidth={3} />
+                        {/* Cloud Platform Base - Added as requested */}
+                        <img 
+                            src="/images/cloud-platform.png" 
+                            className="absolute bottom-[-40px] translate-y-4 z-0 w-48 object-contain opacity-90 transition-transform group-hover:scale-105"
+                            alt="Cloud Platform"
+                        />
+
+                        {/* Simplified Plus Floating Icon */}
+                        <div className="relative z-10 mb-6">
+                           <Plus size={80} strokeWidth={3} className="text-white/90 drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]" />
                         </div>
                      </div>
                  </div>

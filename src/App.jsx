@@ -112,6 +112,7 @@ function App() {
   // Handle Hero Egg Click
   const handleEggClick = () => {
      if (totalScore >= 20) {
+         setIsIncubating(true); // Trigger incubation immediately
          setCurrentView('incubate');
      }
   };

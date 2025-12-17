@@ -1,4 +1,4 @@
-const Hero = ({ completed = 0, total = 0, progress = 0, score = 0 }) => {
+const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, onEggClick }) => {
   return (
     <div className="relative w-full h-[360px] overflow-hidden rounded-b-[3rem] shadow-sm z-0">
       {/* Desert Background */}
@@ -55,9 +55,8 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0 }) => {
                   </span>
                 </div>
 
-                {/* Egg + Glow */}
                 <div 
-                    className={`absolute right-[-2px] top-1/2 -translate-y-[58%] z-30 transition-all duration-300 ${score >= 20 ? 'cursor-pointer hover:scale-110' : 'opacity-60 grayscale'}`}
+                    className={`absolute right-[-2px] top-1/2 -translate-y-[58%] z-30 transition-all duration-300 ${score >= 20 ? 'cursor-pointer hover:scale-110 animate-bounce' : 'opacity-60 grayscale'}`}
                     onClick={() => score >= 20 && onEggClick && onEggClick()}
                 >
                   {/* Glow - Only when unlocked */}
