@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-pastel-yellow: #FDEEAB;
-  --color-soft-beige: #DEA058;
-  --color-soft-orange: #F59E0B;
+  --color-pastel-yellow: #fdeeab;
+  --color-soft-beige: #dea058;
+  --color-soft-orange: #f59e0b;
 }
 
 body {
@@ -37,4 +37,28 @@ body {
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+@keyframes egg-shake-pause {
+  0% { transform: rotate(0deg); }
+  5% { transform: rotate(-5deg); }  /* Shake Left */
+  10% { transform: rotate(5deg); }  /* Shake Right */
+  15% { transform: rotate(-5deg); } /* Shake Left */
+  20% { transform: rotate(5deg); }  /* Shake Right */
+  25% { transform: rotate(0deg); }  /* Stop */
+  100% { transform: rotate(0deg); } /* Stay stopped (Pause) */
+}
+
+.animate-egg-shake {
+  animation: egg-shake-pause 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes star-fall {
+  from { background-position: 0 0, 40px 60px; }
+  to { background-position: 0 600px, 40px 660px; }
+}
+
+.animate-star-fall {
+  animation: star-fall 60s linear infinite;
 }

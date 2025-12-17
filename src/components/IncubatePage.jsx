@@ -39,17 +39,32 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
     };
 
     return (
-        <div className="flex-1 flex flex-col items-center justify-center p-8 pb-32 h-full relative w-full overflow-hidden">
-             
-             {/* Starry/Gradient Background */}
-             <div className="absolute inset-0 bg-gradient-to-b from-[#1a1b4b] to-[#4a3b89] -z-10">
-                {/* CSS Stars */}
-                <div className="absolute top-10 left-10 w-1 h-1 bg-white rounded-full opacity-80 animate-pulse" style={{ animationDelay: '0s' }} />
-                <div className="absolute top-20 right-20 w-1.5 h-1.5 bg-white rounded-full opacity-60 animate-pulse" style={{ animationDelay: '1s' }} />
-                <div className="absolute top-40 left-1/3 w-1 h-1 bg-white rounded-full opacity-90 animate-pulse" style={{ animationDelay: '0.5s' }} />
-                <div className="absolute bottom-1/3 left-1/2 w-1 h-1 bg-white rounded-full opacity-70" />
-                <div className="absolute top-1/4 right-10 w-2 h-2 bg-yellow-100 rounded-full opacity-40 blur-[1px]" />
-             </div>
+        // 1. Root Container: The Deep Blue Gradient Base
+        <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-[#1B1E38] to-[#3B3857]">
+          
+        {/* 2. Stardust Layer (Optimized for Visibility) */}
+          <div 
+            className="absolute inset-0 z-0 pointer-events-none animate-star-fall"
+            style={{
+              // --- 改動 A: 增加層次與亮度 ---
+              backgroundImage: `
+                radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(white, rgba(255,255,255,.8) 2px, transparent 4px),
+                radial-gradient(white, rgba(255,255,255,.6) 1px, transparent 3px)
+              `,
+              // --- 改動 B: 縮小尺寸以增加密度 (數值越小，星星越密) ---
+              backgroundSize: '250px 250px, 150px 150px',
+              
+              // --- 改動 C: 調整遮罩，讓星星在畫面下方才慢慢消失 ---
+              maskImage: 'linear-gradient(to bottom, black 20%, transparent 95%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, black 20%, transparent 95%)'
+            }}
+          ></div>
+
+          {/* 3. Main Content (Egg, Platforms, etc.) */}
+          {/* Ensure z-10 is used so content sits ABOVE the stars */}
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen pb-20">
 
              {isIncubating ? (
                  // --- State B: Incubating ---
@@ -62,20 +77,20 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
                          {/* Cloud Platform Base - Positioned under the egg */}
                          <img 
                             src="/images/cloud-platform.png" 
-                            className="absolute bottom-[-32px] translate-y-6 z-0 w-48 object-contain opacity-90"
+                            className="absolute bottom-[-45px] translate-y-6 z-0 w-48 object-contain opacity-90"
                             alt="Cloud Platform"
                          />
                          
                          {/* Egg */}
                          <img 
                             src="/images/icon-mystery-egg.png" 
-                            className="w-40 h-40 object-contain relative z-10 animate-[bounce_3s_infinite]" 
+                            className="w-40 h-40 object-contain relative z-10 animate-egg-shake" 
                             alt="Incubating Egg" 
                          />
                      </div>
 
                      {/* 3. Cloud Progress Bar */}
-                     <div className="w-[140%] max-w-[400px] flex justify-center mb-4 px-4 mt-4">
+                     <div className="w-[140%] max-w-[400px] flex justify-center mb-4 px-4 mt-6">
                         <CloudProgressBar percentage={progressPercentage} />
                      </div>
 
@@ -100,7 +115,7 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
                         {/* Cloud Platform Base - Added as requested */}
                         <img 
                             src="/images/cloud-platform.png" 
-                            className="absolute bottom-[-40px] translate-y-4 z-0 w-48 object-contain opacity-90 transition-transform group-hover:scale-105"
+                            className="absolute bottom-[-45px] translate-y-6 z-0 w-48 object-contain opacity-90"
                             alt="Cloud Platform"
                         />
 
@@ -111,6 +126,7 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
                      </div>
                  </div>
              )}
+          </div>
         </div>
     );
 };

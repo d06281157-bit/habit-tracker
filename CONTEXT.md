@@ -191,3 +191,42 @@ rwd: 手機版已優化，可檢查桌面版適配性。
    圖鑑整合 (Alien Collection):
    孵化出的生物需要寫入 AlienCollection 的資料結構中，實現真正的「收集」功能。
    Updated by Antigravity on 2025-12-17 23:10
+
+專案進度交接文件 (Project Handover)
+📌 專案概要
+專案名稱: Star Wish Habit Tracker (星願習慣追蹤) 目前焦點: 孵化系統 (Incubation System) 視覺與動畫精修
+
+✅ 已完成功能 (Completed Features)
+
+1. 孵化頁面 (IncubatePage.jsx)
+   視覺升級 (Visuals):
+   背景: 實作 Stardust Gradient (深空藍漸層 #1B1E38 -> #3B3857)。
+   特效: "Sprinkled" 星塵效果 (Radial Gradients) + 底部漸層遮罩 (Mask Image) + 緩慢下墜動畫 (Star Fall)。
+   佈局: 使用 min-h-screen 與 justify-center 確保內容垂直置中，修復了背景層導致的跑版問題。
+   孵化動畫 (Egg Animation):
+   模式: Shake & Wait (搖晃與等待)。
+   邏輯: 3 秒循環中，前 25% 快速左右搖晃 (掙扎感)，後 75% 靜止 (休息)，模擬真實生命跡象。
+   技術: CSS Keyframes (egg-shake-pause) + Transform Origin Bottom。
+   功能邏輯:
+   倒數: 2 小時 (02:00:00) 真實倒數。
+   進度: 進度條隨時間減少而增加。
+2. 組件優化
+   CloudProgressBar: 採用 "Inner Track" 架構，分離背景圖與進度條，並套用高保真樣式 (Hi-Fi Styles)。
+   App & Hero: 修復導航與事件傳遞 Bug，確保從主頁能順利進入孵化流程。
+   📂 關鍵檔案結構
+   src/components/IncubatePage.jsx
+   : 孵化頁面 (包含背景層、動畫邏輯、計時器)。
+   src/index.css
+   : 全域動畫定義 (egg-shake-pause, star-fall)。
+   src/components/CloudProgressBar.jsx
+   : 高度客製化進度條。
+   🚀 下一步建議 (Next Steps)
+   孵化完成 (Hatching Logic):
+   處理 timeLeft <= 0 的狀態。
+   製作「破殼瞬間」的互動與過場動畫。
+   隨機抽選並展示獲得的外星生物 (需建立生物資料庫 aliens.js 等)。
+   資料持久化:
+   將 incubationStartTime 存入 LocalStorage，防止重新整理頁面導致計時重置。
+   圖鑑整合:
+   解鎖的生物應存入用戶存檔，並在 AlienCollection 頁面顯示。
+   Updated by Antigravity on 2025-12-18 00:18
