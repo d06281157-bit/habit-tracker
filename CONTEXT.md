@@ -230,3 +230,35 @@ rwd: 手機版已優化，可檢查桌面版適配性。
    圖鑑整合:
    解鎖的生物應存入用戶存檔，並在 AlienCollection 頁面顯示。
    Updated by Antigravity on 2025-12-18 00:18
+
+Project Handover: Habit Tracker Incubation Feature
+Current Context
+We are refining the Incubation System, specifically the Starry Background Animation in
+IncubatePage.jsx
+. After a series of visibility issues, we have stabilized the animation in "Safe Motion Mode".
+
+Current State (Stability Checkpoint)
+File:
+src/components/IncubatePage.jsx
+Background: Soft Dark Gradient (#231E3D -> #584A6E).
+Star Configuration:
+Count: 35 stars (Low density).
+Color: Cream (#FFFDD0) with white glow.
+Z-Index: 50 (High visibility debug layer).
+Animation: fall (linear infinite) ONLY.
+Randomization:
+duration: 15s - 25s (Slow float).
+delay: -25s to 0s (Instant vertical scatter).
+CSS:
+src/index.css
+contains @keyframes fall (-10% -> 110vh). twinkle exists but is currently unused.
+Immediate Next Steps (To-Do)
+Restore Twinkle: Re-enable the twinkle animation using the composite syntax:
+animation: fall [duration] linear infinite, twinkle [duration] ease-in-out infinite alternate;
+Layer Refinement: Lower z-index from 50 to 1 (or 5) to ensure it sits correctly behind the Egg/UI but above the gradient.
+Hatching Logic: The timer counts down, but nothing happens at 0. Need to implement the "Hatch" event (reveal alien).
+Known Issues / History
+Visibility Conflict: Stars previously disappeared due to opacity conflicts between fall and twinkle keyframes. Ensure fall never touches opacity.
+Layout: The container uses position: absolute, top:0, left:0, w-full, h-full. Keep this structure.
+Summary for AI Agent
+Use this file to resume the "Safe Twinkle Integration" task. The stars are currently falling and visible. The next goal is to make them breathe/twinkle without breaking this state.

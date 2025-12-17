@@ -62,3 +62,23 @@ body {
 .animate-star-fall {
   animation: star-fall 60s linear infinite;
 }
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10%);
+  }
+  100% {
+    transform: translateY(110vh); // Using vh for end to be safe, or 110%
+  }
+}

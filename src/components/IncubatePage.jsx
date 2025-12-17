@@ -37,34 +37,64 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
         const s = (seconds % 60).toString().padStart(2, '0');
         return `${h} : ${m} : ${s}`;
     };
+    // Generate stars for "Safe Motion Mode"
+    const [stars] = useState(() => {
+        return Array.from({ length: 35 }).map((_, i) => ({
+            id: i,
+            left: `${Math.random() * 100}%`, // Random Horizontal
+            size: `${Math.random() * 3 + 2}px`,
+            duration: `${(15 + Math.random() * 10).toFixed(2)}s`, // Random Duration 15-25s
+            delay: `${(Math.random() * -25).toFixed(2)}s` // Random Negative Delay for instant spread
+        }));
+    });
 
     return (
-        // 1. Root Container: The Deep Blue Gradient Base
-        <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-[#1B1E38] to-[#3B3857]">
-          
-        {/* 2. Stardust Layer (Optimized for Visibility) */}
-          <div 
-            className="absolute inset-0 z-0 pointer-events-none animate-star-fall"
+        // 1. Root Container: Soft Dark Gradient Base
+        <div 
+            className="relative min-h-screen w-full overflow-hidden"
             style={{
-              // --- 改動 A: 增加層次與亮度 ---
-              backgroundImage: `
-                radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)),
-                radial-gradient(white, rgba(255,255,255,.8) 2px, transparent 4px),
-                radial-gradient(white, rgba(255,255,255,.6) 1px, transparent 3px)
-              `,
-              // --- 改動 B: 縮小尺寸以增加密度 (數值越小，星星越密) ---
-              backgroundSize: '250px 250px, 150px 150px',
-              
-              // --- 改動 C: 調整遮罩，讓星星在畫面下方才慢慢消失 ---
-              maskImage: 'linear-gradient(to bottom, black 20%, transparent 95%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, black 20%, transparent 95%)'
+                background: 'linear-gradient(to bottom, #231E3D 0%, #584A6E 100%)'
             }}
-          ></div>
+        >
+          
+          {/* 2. Dynamic Star Layer (Safe Motion) */}
+          <div 
+            className="absolute inset-0 z-0 pointer-events-none"
+            style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden',
+                zIndex: 50 // Keep Safe High Z-Index
+            }}
+          >
+              {stars.map(star => (
+                  <div 
+                    key={star.id}
+                    className="absolute rounded-full"
+                    style={{
+                        left: star.left,
+                        top: '-20px', // Start above screen for animation
+                        width: star.size,
+                        height: star.size,
+                        backgroundColor: '#FFFDD0', // Cream Color
+                        boxShadow: '0 0 10px white',
+                        opacity: 1.0, 
+                        zIndex: 50,
+                        // Motion Restoration
+                        animation: 'fall linear infinite',
+                        animationDuration: star.duration,
+                        animationDelay: star.delay
+                    }}
+                  />
+              ))}
+          </div>
 
           {/* 3. Main Content (Egg, Platforms, etc.) */}
           {/* Ensure z-10 is used so content sits ABOVE the stars */}
-          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen pb-20">
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen pb-20" style={{ zIndex: 60 }}>
 
              {isIncubating ? (
                  // --- State B: Incubating ---
@@ -96,8 +126,12 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
 
                      {/* 4. Timer Text (Formatted & Styled) */}
                      <div 
-                        className="text-[#8B7D6B] text-[40px] font-bold tracking-widest tabular-nums opacity-90 drop-shadow-sm"
-                        style={{ fontFamily: 'monospace' }}
+                        className="text-[#FFFFFF] text-[40px] font-bold tracking-widest tabular-nums opacity-90"
+                        style={{ 
+                            fontFamily: 'monospace',
+                            textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                            zIndex: 10
+                        }}
                      >
                          {formatTime(timeLeft)}
                      </div>
