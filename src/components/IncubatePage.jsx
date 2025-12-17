@@ -3,19 +3,40 @@ import { Plus } from 'lucide-react';
 import CloudProgressBar from './CloudProgressBar';
 
 const IncubatePage = ({ isIncubating, onStartIncubation }) => {
-    // Timer Logic (Simple countdown for demo)
-    const [timeLeft, setTimeLeft] = useState("03:21:00");
-    const [progress, setProgress] = useState(0);
+    // Timer Logic
+    const TOTAL_TIME = 7200; // 2 Hours in seconds
+    const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
 
-    // Simulate progress when incubating
+    // Countdown Effect
     useEffect(() => {
-        if (isIncubating) {
-            const interval = setInterval(() => {
-                setProgress(prev => (prev >= 100 ? 0 : prev + 1));
-            }, 1000); // 1% per second for demo
-            return () => clearInterval(interval);
-        }
-    }, [isIncubating]);
+        if (!isIncubating) return;
+        
+        // If already done, don't restart (or handle as 'Hatch Ready' in future)
+        if (timeLeft <= 0) return;
+
+        const interval = setInterval(() => {
+            setTimeLeft(prev => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [isIncubating, timeLeft]);
+
+    // Calculate Progress (Inverted: Time goes down, Progress goes up)
+    const progressPercentage = ((TOTAL_TIME - timeLeft) / TOTAL_TIME) * 100;
+
+    // Helper: Format Time HH:MM:SS
+    const formatTime = (seconds) => {
+        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${h} : ${m} : ${s}`;
+    };
 
     return (
         <div className="flex-1 flex flex-col items-center justify-center p-8 pb-32 h-full relative w-full overflow-hidden">
@@ -54,13 +75,16 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
                      </div>
 
                      {/* 3. Cloud Progress Bar */}
-                     <div className="w-full flex justify-center mb-4 px-4">
-                        <CloudProgressBar percentage={progress} />
+                     <div className="w-[140%] max-w-[400px] flex justify-center mb-4 px-4 mt-4">
+                        <CloudProgressBar percentage={progressPercentage} />
                      </div>
 
-                     {/* 4. Timer Text (Plain) */}
-                     <div className="text-white/80 font-mono text-lg tracking-widest opacity-90">
-                         {timeLeft}
+                     {/* 4. Timer Text (Formatted & Styled) */}
+                     <div 
+                        className="text-[#8B7D6B] text-[40px] font-bold tracking-widest tabular-nums opacity-90 drop-shadow-sm"
+                        style={{ fontFamily: 'monospace' }}
+                     >
+                         {formatTime(timeLeft)}
                      </div>
                  </div>
              ) : (
