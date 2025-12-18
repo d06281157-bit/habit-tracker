@@ -40,13 +40,40 @@ body {
 }
 
 @keyframes egg-shake-pause {
-  0% { transform: rotate(0deg); }
-  5% { transform: rotate(-5deg); }  /* Shake Left */
-  10% { transform: rotate(5deg); }  /* Shake Right */
-  15% { transform: rotate(-5deg); } /* Shake Left */
-  20% { transform: rotate(5deg); }  /* Shake Right */
-  25% { transform: rotate(0deg); }  /* Stop */
-  100% { transform: rotate(0deg); } /* Stay stopped (Pause) */
+  0% {
+    transform: rotate(0deg);
+  }
+
+  5% {
+    transform: rotate(-5deg);
+  }
+
+  /* Shake Left */
+  10% {
+    transform: rotate(5deg);
+  }
+
+  /* Shake Right */
+  15% {
+    transform: rotate(-5deg);
+  }
+
+  /* Shake Left */
+  20% {
+    transform: rotate(5deg);
+  }
+
+  /* Shake Right */
+  25% {
+    transform: rotate(0deg);
+  }
+
+  /* Stop */
+  100% {
+    transform: rotate(0deg);
+  }
+
+  /* Stay stopped (Pause) */
 }
 
 .animate-egg-shake {
@@ -55,8 +82,13 @@ body {
 }
 
 @keyframes star-fall {
-  from { background-position: 0 0, 40px 60px; }
-  to { background-position: 0 600px, 40px 660px; }
+  from {
+    background-position: 0 0, 40px 60px;
+  }
+
+  to {
+    background-position: 0 600px, 40px 660px;
+  }
 }
 
 .animate-star-fall {
@@ -64,10 +96,13 @@ body {
 }
 
 @keyframes twinkle {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(0.8);
   }
+
   50% {
     opacity: 1;
     transform: scale(1.1);
@@ -78,7 +113,21 @@ body {
   0% {
     transform: translateY(-10%);
   }
+
   100% {
-    transform: translateY(110vh); // Using vh for end to be safe, or 110%
+    transform: translateY(110vh);
+    /* Using vh for end to be safe, or 110% */
+  }
+}
+
+@keyframes shine {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
   }
 }

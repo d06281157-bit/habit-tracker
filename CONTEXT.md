@@ -262,3 +262,32 @@ Visibility Conflict: Stars previously disappeared due to opacity conflicts betwe
 Layout: The container uses position: absolute, top:0, left:0, w-full, h-full. Keep this structure.
 Summary for AI Agent
 Use this file to resume the "Safe Twinkle Integration" task. The stars are currently falling and visible. The next goal is to make them breathe/twinkle without breaking this state.
+
+
+# Project Context: Habit Tracker (Pro Vivian)
+## Overview
+This is a React-based habit tracking application (Vite project) with a gamified "Galaxy/Alien" theme. The user collects aliens and planets by completing habits.
+## Tech Stack
+- **Framework:** React (Vite)
+- **Styling:** Tailwind CSS (Vanilla CSS variables used for theme colors)
+- **Icons:** Lucide React
+## Key Components
+### `src/components/`
+- **IncubatePage.jsx**: Handles the egg incubation mechanic.
+  - *Recent Changes*: Added "Safe Motion Mode" with falling stars (`fall` animation) that also twinkle (`shine` animation).
+  - *Key Logic*: 2-hour countdown timer, `stars` state with random properties (duration, delay, shineDuration, shineDelay).
+- **AlienCollection.jsx**: Displays collected aliens.
+- **PlanetMap.jsx**: Main map/progress view.
+- **HabitCard.jsx**: Display for individual habits.
+- **AddHabitModal.jsx** / **HabitDetailModal.jsx**: Habit management.
+- **CloudProgressBar.jsx**: Visual progress indicator.
+## Recent Updates (Animation Fixes)
+- **File:** `src/components/IncubatePage.jsx` & `src/index.css`
+- **Feature:** Star background with falling and shining effects.
+- **Fix:** Resolved CSS animation syntax conflict where variable interpolation caused double units (e.g., `20ss`).
+  - *Correct Syntax*: `animation: fall ${star.duration} linear infinite ${star.delay}, shine ${star.shineDuration} ease-in-out infinite ${star.shineDelay}`
+- **CSS:** Added `@keyframes shine` for opacity fluctuation (1 -> 0.3 -> 1).
+## Current State
+- The application is running in dev mode (`npm run dev`).
+- The `IncubatePage` animations are functioning correctly with the latest fix.
+- User has commented out the old broken animation code in `IncubatePage.jsx`.
