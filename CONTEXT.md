@@ -263,31 +263,85 @@ Layout: The container uses position: absolute, top:0, left:0, w-full, h-full. Ke
 Summary for AI Agent
 Use this file to resume the "Safe Twinkle Integration" task. The stars are currently falling and visible. The next goal is to make them breathe/twinkle without breaking this state.
 
-
 # Project Context: Habit Tracker (Pro Vivian)
+
 ## Overview
+
 This is a React-based habit tracking application (Vite project) with a gamified "Galaxy/Alien" theme. The user collects aliens and planets by completing habits.
+
 ## Tech Stack
+
 - **Framework:** React (Vite)
 - **Styling:** Tailwind CSS (Vanilla CSS variables used for theme colors)
 - **Icons:** Lucide React
+
 ## Key Components
+
 ### `src/components/`
+
 - **IncubatePage.jsx**: Handles the egg incubation mechanic.
-  - *Recent Changes*: Added "Safe Motion Mode" with falling stars (`fall` animation) that also twinkle (`shine` animation).
-  - *Key Logic*: 2-hour countdown timer, `stars` state with random properties (duration, delay, shineDuration, shineDelay).
+  - _Recent Changes_: Added "Safe Motion Mode" with falling stars (`fall` animation) that also twinkle (`shine` animation).
+  - _Key Logic_: 2-hour countdown timer, `stars` state with random properties (duration, delay, shineDuration, shineDelay).
 - **AlienCollection.jsx**: Displays collected aliens.
 - **PlanetMap.jsx**: Main map/progress view.
 - **HabitCard.jsx**: Display for individual habits.
 - **AddHabitModal.jsx** / **HabitDetailModal.jsx**: Habit management.
 - **CloudProgressBar.jsx**: Visual progress indicator.
+
 ## Recent Updates (Animation Fixes)
+
 - **File:** `src/components/IncubatePage.jsx` & `src/index.css`
 - **Feature:** Star background with falling and shining effects.
 - **Fix:** Resolved CSS animation syntax conflict where variable interpolation caused double units (e.g., `20ss`).
-  - *Correct Syntax*: `animation: fall ${star.duration} linear infinite ${star.delay}, shine ${star.shineDuration} ease-in-out infinite ${star.shineDelay}`
+  - _Correct Syntax_: `animation: fall ${star.duration} linear infinite ${star.delay}, shine ${star.shineDuration} ease-in-out infinite ${star.shineDelay}`
 - **CSS:** Added `@keyframes shine` for opacity fluctuation (1 -> 0.3 -> 1).
+
 ## Current State
+
 - The application is running in dev mode (`npm run dev`).
 - The `IncubatePage` animations are functioning correctly with the latest fix.
 - User has commented out the old broken animation code in `IncubatePage.jsx`.
+
+# Project Status Update: Incubate System
+
+**Current Focus**: Refines & Logic for `IncubatePage.jsx`
+
+## ✅ Completed Features
+
+### 1. UI Synchronization
+
+- **Cloud Platform**: Perfectly aligned visually between "Unincubated" (Idle) and "Incubated" states.
+- **Button Styling**: Implemented a minimalist, transparent "+" button with a "Magical Interaction" (scale up + cream-colored glow) on hover.
+
+### 2. Navigation & Logic
+
+- **Architecture**: Implemented `onNavigateHome` callback to switch views from Incubate Page back to Home, respecting the state-based routing system.
+- **Demo Mode**: Added `Shift + D` keyboard shortcut to force the timer to 5 seconds for rapid testing.
+
+### 3. Incubation Lifecycle States
+
+- **Idle State**: Shows the "+" button.
+- **Incubating State**: Shows the Egg with "Shake" animation and countdown.
+- **Complete State (0s)**:
+  - **Visuals**: Title updates to "已完成孵化".
+  - **Animation**: Egg switches to a "Heartbeat" (pulsing) animation.
+  - **Interaction**: Egg cursor becomes a pointer; hovering reveals a magical yellow glow behind the egg.
+  - **Logic**: Clicking the egg currently logs "Hatching Triggered" to the console.
+
+## 🔜 Next Steps (To-Do)
+
+1.  **Hatching Sequence**:
+    - Implement the visual sequence when the egg is clicked (Cracking animation -> White light -> Reveal).
+2.  **Reward Logic**:
+    - Determine which "Alien/Creature" is hatched.
+    - Add it to the user's collection (`AlienCollection`).
+3.  **Data Persistence**:
+    - Ensure incubation state and collected aliens are saved to `localStorage`.
+
+## 📂 Key Files
+
+- `src/components/IncubatePage.jsx`: Core logic and UI states.
+- `src/App.jsx`: Manages global state and view switching.
+- `src/index.css`: Contains custom animations (`heartbeat`, `egg-shake`, `shiney`).
+
+Updated by Antigravity on 2025-12-18 22:25

@@ -200,6 +200,7 @@ function App() {
           <IncubatePage 
             isIncubating={isIncubating}
             onStartIncubation={handleStartIncubation}
+            onNavigateHome={() => setCurrentView('home')}
           />
         ) : currentView === 'planet' ? (
             <PlanetMap onBack={() => setCurrentView('home')} />

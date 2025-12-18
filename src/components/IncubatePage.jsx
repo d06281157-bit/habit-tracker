@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import CloudProgressBar from './CloudProgressBar';
 
-const IncubatePage = ({ isIncubating, onStartIncubation }) => {
+const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome }) => {
     // Timer Logic
     const TOTAL_TIME = 7200; // 2 Hours in seconds
     const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
@@ -26,6 +26,19 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
 
         return () => clearInterval(interval);
     }, [isIncubating, timeLeft]);
+
+    // Demo Mode Shortcut (Shift + D)
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.shiftKey && (e.key === 'D' || e.key === 'd')) {
+                console.log("🎹 Antigravity: Keyboard Shortcut Triggered!");
+                setTimeLeft(5);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     // Calculate Progress (Inverted: Time goes down, Progress goes up)
     const progressPercentage = ((TOTAL_TIME - timeLeft) / TOTAL_TIME) * 100;
@@ -103,7 +116,10 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
                     // --- State B: Incubating ---
                     <div className="flex flex-col items-center w-full animate-[fadeIn_0.5s_ease-out]">
                         {/* 1. Text Top */}
-                        <h2 className="text-white/90 text-xl font-bold mb-12 tracking-widest drop-shadow-md">正在孵化中...</h2>
+                        {/* 1. Text Top */}
+                        <h2 className="text-white/90 text-xl font-bold mb-12 tracking-widest drop-shadow-md">
+                            {timeLeft <= 0 ? "已完成孵化" : "正在孵化中..."}
+                        </h2>
 
                         {/* 2. Egg & Platform Group */}
                         <div className="relative mb-12 w-full flex justify-center">
@@ -115,11 +131,25 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
                             />
 
                             {/* Egg */}
-                            <img
-                                src="/images/icon-mystery-egg.png"
-                                className="w-40 h-40 object-contain relative z-10 animate-egg-shake"
-                                alt="Incubating Egg"
-                            />
+                            <div className="relative z-10 group" onClick={() => {
+                                if (timeLeft <= 0) {
+                                    console.log("Hatching Triggered");
+                                }
+                            }}>
+                                {/* Glow Effect (Only when complete) */}
+                                {timeLeft <= 0 && (
+                                    <div className="absolute inset-0 bg-yellow-200/50 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full scale-125 pointer-events-none" />
+                                )}
+                                <img
+                                    src="/images/icon-mystery-egg.png"
+                                    className={`w-40 h-40 object-contain relative z-20 transition-all duration-300 ${
+                                        timeLeft <= 0 
+                                            ? 'cursor-pointer animate-heartbeat' 
+                                            : 'animate-egg-shake'
+                                    }`}
+                                    alt="Incubating Egg"
+                                />
+                            </div>
                         </div>
 
                         {/* 3. Cloud Progress Bar */}
@@ -142,12 +172,12 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
                 ) : (
                     // --- State A: Idle / Unlock ---
                     <div className="flex flex-col items-center animate-[fadeIn_0.5s_ease-out]">
-                        <h2 className="text-white/80 text-sm font-medium mb-12 tracking-wide">[去完成更多星願，解鎖下一顆星蛋]</h2>
+                        <h2 className="text-white/90 text-xl font-bold mb-12 tracking-widest drop-shadow-md">[去完成更多星願，解鎖下一顆星蛋]</h2>
 
                         {/* Cloud Button */}
                         <div
-                            onClick={onStartIncubation}
-                            className="relative mb-20 cursor-pointer group transition-transform active:scale-95 flex flex-col items-center justify-center"
+                            onClick={onNavigateHome}
+                            className="relative mb-12 w-full h-40 flex justify-center cursor-pointer group transition-transform active:scale-95 items-center"
                         >
                             {/* Cloud Platform Base - Added as requested */}
                             <img
@@ -156,10 +186,20 @@ const IncubatePage = ({ isIncubating, onStartIncubation }) => {
                                 alt="Cloud Platform"
                             />
 
-                            {/* Simplified Plus Floating Icon */}
-                            <div className="relative z-10 mb-6">
-                                <Plus size={80} strokeWidth={3} className="text-white/90 drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]" />
-                            </div>
+                            {/* Simplified Plus Floating Icon - Minimalist */}
+                            <button 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onNavigateHome();
+                                }}
+                                className="relative z-10 mb-6 w-20 h-20 flex items-center justify-center group focus:outline-none"
+                            >
+                                <Plus 
+                                    size={80} 
+                                    strokeWidth={3} 
+                                    className="text-white/70 transition-all duration-300 group-hover:scale-110 group-hover:text-[#FFFDD0] group-hover:drop-shadow-[0_0_8px_rgba(255,253,208,0.6)]" 
+                                />
+                            </button>
                         </div>
                     </div>
                 )}
