@@ -19,7 +19,7 @@ const BottomNav = ({ activeTab = 'home', onNavigate, onOpenAdd }) => { // 1. Acc
     };
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 pb-8 pt-4 px-6 flex justify-between items-center rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.05)] text-gray-400 z-50">
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 pb-8 pt-4 px-6 flex justify-between items-center rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.05)] text-gray-400 z-50">
 
             {/* Navigation Items */}
             <NavItem name="home" icon="/images/nav-task.png" label="Task List" />

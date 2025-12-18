@@ -2,10 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import CloudProgressBar from './CloudProgressBar';
 
+// Placeholder Pet Data
+const HATCHED_PET = {
+    name: 'Bloomthorn',
+    image: '/images/char-Bloomthorn.png',
+    desc: '草系 / 喜歡陽光'
+};
+
 const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome }) => {
     // Timer Logic
     const TOTAL_TIME = 7200; // 2 Hours in seconds
     const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
+    
+    // Hatching State
+    const [isHatching, setIsHatching] = useState(false);
+    const [showPet, setShowPet] = useState(false);
+    const [showFlash, setShowFlash] = useState(false);
 
     // Countdown Effect
     useEffect(() => {
@@ -132,42 +144,105 @@ const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome }) => {
 
                             {/* Egg */}
                             <div className="relative z-10 group" onClick={() => {
-                                if (timeLeft <= 0) {
-                                    console.log("Hatching Triggered");
+                                if (timeLeft <= 0 && !isHatching && !showPet) {
+                                    setIsHatching(true);
+                                    
+                                    // 1. Flash at 7s
+                                    setTimeout(() => {
+                                        setShowFlash(true);
+                                    }, 7000);
+
+                                    // 2. Reveal at 8s
+                                    setTimeout(() => {
+                                        setIsHatching(false);
+                                        setShowFlash(false); // Fade out handled by unmount or CSS if needed, but simple toggle is fine for now
+                                        setShowPet(true);
+                                    }, 8000); 
                                 }
                             }}>
-                                {/* Glow Effect (Only when complete) */}
-                                {timeLeft <= 0 && (
+                                {/* Glow Effect (Only when complete & not hatching) */}
+                                {timeLeft <= 0 && !isHatching && !showPet && (
                                     <div className="absolute inset-0 bg-yellow-200/50 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full scale-125 pointer-events-none" />
                                 )}
-                                <img
-                                    src="/images/icon-mystery-egg.png"
-                                    className={`w-40 h-40 object-contain relative z-20 transition-all duration-300 ${
-                                        timeLeft <= 0 
-                                            ? 'cursor-pointer animate-heartbeat' 
-                                            : 'animate-egg-shake'
-                                    }`}
-                                    alt="Incubating Egg"
-                                />
+
+                                {/* White Flash Overlay */}
+                                {showFlash && (
+                                    <div className="fixed inset-0 bg-white z-[60] animate-[fadeIn_1s_ease-in] pointer-events-none" />
+                                )}
+
+                                {/* Pet Reveal Modal / Overlay */}
+                                {showPet && (
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center z-50 animate-[fadeIn_0.5s_ease-out]">
+                                        <div className="relative">
+                                            {/* Light Burst Behind */}
+                                            <div className="absolute inset-0 bg-white/40 blur-3xl scale-150 animate-pulse" />
+                                            
+                                            <img 
+                                                src={HATCHED_PET.image} 
+                                                alt={HATCHED_PET.name}
+                                                className="w-48 h-48 object-contain relative z-10 animate-[bounce_1s_infinite]"
+                                            />
+                                        </div>
+                                        <div className="mt-4 text-center">
+                                            <h3 className="text-2xl font-bold text-white drop-shadow-lg mb-2">哇！孵化了！</h3>
+                                            <p className="text-white/80 text-lg">{HATCHED_PET.name}</p>
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onNavigateHome(); // Claim and go home
+                                                }}
+                                                className="mt-6 px-6 py-2 bg-white text-purple-900 rounded-full font-bold hover:scale-105 transition-transform shadow-lg"
+                                            >
+                                                帶回家
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Main Egg Image (Static) */}
+                                {!showPet && !isHatching && (
+                                    <img
+                                        src="/images/icon-mystery-egg.png"
+                                        className={`w-40 h-40 object-contain relative z-20 transition-all duration-300 ${
+                                            timeLeft <= 0 
+                                                ? 'cursor-pointer animate-heartbeat' 
+                                                : 'animate-egg-shake'
+                                        }`}
+                                        alt="Incubating Egg"
+                                    />
+                                )}
+                                
+                                {/* Full Screen Hatching GIF */}
+                                {isHatching && (
+                                    <img
+                                        src={`/images/egg-cracking-2.gif?t=${Date.now()}`}
+                                        alt="Hatching..."
+                                        className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md h-full object-cover z-[99999]"
+                                    />
+                                )}
                             </div>
                         </div>
 
-                        {/* 3. Cloud Progress Bar */}
-                        <div className="w-[140%] max-w-[400px] flex justify-center mb-4 px-4 mt-6">
-                            <CloudProgressBar percentage={progressPercentage} />
-                        </div>
+                        {/* 3. Cloud Progress Bar & Timer (Hide during hatching/reveal) */}
+                        {!isHatching && !showPet && (
+                            <>
+                                <div className="w-[140%] max-w-[400px] flex justify-center mb-4 px-4 mt-6">
+                                    <CloudProgressBar percentage={progressPercentage} />
+                                </div>
 
-                        {/* 4. Timer Text (Formatted & Styled) */}
-                        <div
-                            className="text-[#FFFFFF] text-[40px] font-bold tracking-widest tabular-nums opacity-90"
-                            style={{
-                                fontFamily: 'monospace',
-                                textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                                zIndex: 10
-                            }}
-                        >
-                            {formatTime(timeLeft)}
-                        </div>
+                                {/* 4. Timer Text (Formatted & Styled) */}
+                                <div
+                                    className="text-[#FFFFFF] text-[40px] font-bold tracking-widest tabular-nums opacity-90"
+                                    style={{
+                                        fontFamily: 'monospace',
+                                        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                        zIndex: 10
+                                    }}
+                                >
+                                    {formatTime(timeLeft)}
+                                </div>
+                            </>
+                        )}
                     </div>
                 ) : (
                     // --- State A: Idle / Unlock ---
