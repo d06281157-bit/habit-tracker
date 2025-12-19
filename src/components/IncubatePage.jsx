@@ -217,7 +217,7 @@ const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome }) => {
                                     <img
                                         src={`/images/egg-cracking-2.gif?t=${Date.now()}`}
                                         alt="Hatching..."
-                                        className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md h-full object-cover z-[99999]"
+                                        className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-full object-cover z-[99999]"
                                     />
                                 )}
                             </div>

@@ -125,9 +125,9 @@ function App() {
   const totalScore = completedHabits * 5;
 
   return (
-    <div className="min-h-screen bg-[#FFFFF0] pb-32 max-w-md mx-auto relative overflow-hidden shadow-2xl">
+    <div className="min-h-screen bg-[#FFFFF0] pb-32 w-full max-w-md mx-auto relative overflow-x-hidden shadow-2xl">
       {/* Backgrounds */}
-      <div className="absolute inset-0 bg-pastel-yellow z-0 h-[50vh]" />
+      <div className="absolute inset-x-0 bg-pastel-yellow z-0 h-[50vh] transition-all" />
       <div className="absolute inset-0 top-[50vh] bg-[#FFFFF0] z-0" />
 
       <div className="relative z-10 font-sans min-h-screen flex flex-col">
@@ -150,7 +150,7 @@ function App() {
                onEggClick={handleEggClick} // Pass Handler
             />
             
-            {/* Habit List */}
+            {/* Habit List - Mobile List Layout */}
             <div className="mt-6 px-6 space-y-4 pb-24">
               {habits.map(habit => (
                 <div 
@@ -174,7 +174,7 @@ function App() {
                         // Only runs if movement was minimal (A pure tap)
                         handleOpenDetail(habit);
                     }}
-                    className="touch-manipulation" // Optimize for touch
+                    className="touch-manipulation h-24" // Optimize for touch
                 >
                     <HabitCard 
                       habit={habit}

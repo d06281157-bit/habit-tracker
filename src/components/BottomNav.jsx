@@ -28,13 +28,15 @@ const BottomNav = ({ activeTab = 'home', onNavigate, onOpenAdd }) => { // 1. Acc
             <NavItem name="ufo" icon="/images/nav-ufo.png" label="UFO" />
             <NavItem name="astronaut" icon="/images/nav-astronaut.png" label="Astronaut" />
 
-            {/* Floating Action Button */}
-            <button 
-                onClick={onOpenAdd} // 2. Trigger Prop
-                className="absolute bottom-24 right-6 w-14 h-14 bg-[#061756] rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform hover:shadow-xl z-50"
-            >
-                <Plus className="w-8 h-8 text-white" strokeWidth={2.5} />
-            </button>
+            {/* Floating Action Button - Only show on Home Screen */}
+            {activeTab === 'home' && (
+                <button 
+                    onClick={onOpenAdd}
+                    className="absolute bottom-24 right-6 w-14 h-14 bg-[#061756] rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform hover:shadow-xl z-50"
+                >
+                    <Plus className="w-8 h-8 text-white" strokeWidth={2.5} />
+                </button>
+            )}
         </div>
     );
 };
