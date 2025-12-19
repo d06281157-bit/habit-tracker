@@ -85,11 +85,8 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
     const handleClaimMilestone = (milestoneScore) => {
         if (!claimedMilestones.includes(milestoneScore)) {
             setClaimedMilestones(prev => [...prev, milestoneScore]);
-            const reward = 200;
-            setTargetScore(prev => prev + reward);
-            triggerRewardEffect(reward);
-            
-            console.log(`Earned milestone reward for ${milestoneScore} points!`);
+            // Milestone rewards no longer add to the main score bar per user request
+            console.log(`Earned milestone reward for ${milestoneScore}!`);
         }
     };
 
@@ -380,18 +377,19 @@ const TaskCard = ({ title, current, target, reward, image, onClaim }) => {
                     <p className="text-xs text-gray-400">{current}/{target}</p>
                 </div>
             </div>
-            <div className="ml-4 mr-4 flex flex-col items-center gap-3 min-w-[90px]">
-                <div className="w-full flex items-center justify-center text-base font-bold text-gray-500 bg-yellow-100 px-3 py-1.5 rounded-lg whitespace-nowrap">
-                    <img src={image} className="w-7 h-7 mr-1.5" alt="R" />
+            <div className="ml-4 mr-2 flex flex-col items-center gap-3 w-24 shrink-0">
+                <div className="w-full flex items-center justify-center text-sm font-bold text-gray-600 bg-yellow-100/80 py-2 rounded-xl whitespace-nowrap">
+                    <img src={image} className="w-5 h-5 mr-1" alt="R" />
                     <span>+{reward}</span>
                 </div>
+                
                 <button 
                     onClick={() => { if (canClaim) { setClaimed(true); onClaim(); } }}
                     disabled={!canClaim}
-                    className={`text-sm px-4 py-2 rounded-full font-bold transition-all w-full whitespace-nowrap ${
+                    className={`text-sm py-2 rounded-full font-bold transition-all w-full whitespace-nowrap text-center ${
                         canClaim 
                         ? 'bg-[#4600A1] text-white shadow-[0_0_15px_rgba(70,0,161,0.5)] animate-heartbeat cursor-pointer' 
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     }`}
                 >
                     {claimed ? '已領取' : isCompleted ? '領取' : '未完成'}

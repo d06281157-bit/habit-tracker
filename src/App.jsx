@@ -9,6 +9,7 @@ import AlienCollection from './components/AlienCollection';
 import AchievementModal from './components/AchievementModal';
 import IncubatePage from './components/IncubatePage';
 import PlanetMap from './components/PlanetMap'; // Import
+import ShopPage from './components/ShopPage';
 
 // Default Data (Fallback if storage is empty)
 const DEFAULT_HABITS = [
@@ -204,6 +205,8 @@ function App() {
           />
         ) : currentView === 'planet' ? (
             <PlanetMap onBack={() => setCurrentView('home')} />
+        ) : currentView === 'ufo' ? (
+            <ShopPage score={totalScore} />
         ) : null}
       </div>
 
