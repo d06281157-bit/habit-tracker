@@ -68,7 +68,17 @@ const planetsInfo = [
 const PlanetMap = ({ onBack }) => {
     const [viewMode, setViewMode] = useState('map'); 
     const [selectedPlanet, setSelectedPlanet] = useState(null);
+    const [isScrolled, setIsScrolled] = useState(false);
     const mapContainerRef = useRef(null);
+
+    // Track scroll for header effect
+    const handleScroll = (e) => {
+        if (e.target.scrollTop > 20) {
+            setIsScrolled(true);
+        } else {
+            setIsScrolled(false);
+        }
+    };
 
     const handlePlanetClick = (planet) => {
         if (viewMode === 'map') {
@@ -124,19 +134,25 @@ const PlanetMap = ({ onBack }) => {
                 <div className={`absolute inset-0 z-10 flex flex-col transition-all duration-700 ease-in-out ${viewMode === 'map' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                     
                     {/* Soft Header */}
-                    <div className="absolute top-0 left-0 right-0 z-30 px-6 pt-12 pb-6 flex items-center justify-between">
+                    <div className={`absolute top-0 left-0 right-0 z-40 px-6 pt-12 pb-6 flex items-center justify-between transition-all duration-300 ${
+                        isScrolled ? 'bg-white/5 backdrop-blur-lg border-b border-white/5' : ''
+                    }`}>
                         <button onClick={onBack} className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-lg flex items-center justify-center border border-white/20 shadow-lg active:scale-95 transition-all">
                             <ChevronLeft className="w-6 h-6 text-white" strokeWidth={3} />
                         </button>
                         <div className="flex flex-col items-center">
-                            <span className="text-[11px] tracking-[0.4em] text-pink-300 font-bold uppercase mb-0.5">My Adventure</span>
+                            <span className="text-[11px] tracking-[0.4em] text-amber-200/80 font-bold uppercase mb-0.5">My Adventure</span>
                             <h2 className="text-2xl font-black tracking-tight text-white drop-shadow-md">Planet Map</h2>
                         </div>
                         <div className="w-10" />
                     </div>
 
                     {/* Content Scroll Area */}
-                    <div className="relative flex-1 overflow-y-auto no-scrollbar scroll-smooth" ref={mapContainerRef}>
+                    <div 
+                        className="relative flex-1 overflow-y-auto no-scrollbar scroll-smooth" 
+                        ref={mapContainerRef}
+                        onScroll={handleScroll}
+                    >
                         <div className="relative w-full pt-28 pb-60 px-4" style={{ height: '1800px' }}>
                             {/* Inner Trajectory and Planets */}
 
@@ -148,9 +164,9 @@ const PlanetMap = ({ onBack }) => {
                             >
                                 <defs>
                                     <linearGradient id="activeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#FFB8E0" stopOpacity="0.4" />
+                                        <stop offset="0%" stopColor="#FFE08A" stopOpacity="0.4" />
                                         <stop offset="50%" stopColor="#FFFFFF" />
-                                        <stop offset="100%" stopColor="#B8D8FF" stopOpacity="0.4" />
+                                        <stop offset="100%" stopColor="#FFE08A" stopOpacity="0.4" />
                                     </linearGradient>
                                 </defs>
                                 
@@ -205,20 +221,24 @@ const PlanetMap = ({ onBack }) => {
                                                 <div className="absolute inset-4 bg-white/20 blur-[30px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                             )}
                                             
+
+                                            
                                             <img 
                                                 src={planet.image} 
                                                 alt={planet.name}
                                                 className={`w-full h-full object-contain transition-all duration-700 ${
                                                     planet.isLocked 
-                                                    ? 'grayscale brightness-40 opacity-70 drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]' 
+                                                    ? 'grayscale brightness-[0.35]' 
                                                     : 'animate-float drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] group-hover:drop-shadow-[0_0_40px_rgba(255,184,224,0.6)]'
                                                 }`}
                                             />
                                             {planet.isLocked && (
-                                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                    <div className="bg-black/60 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-2xl">
-                                                        <Lock className="w-6 h-6 text-white/50" />
-                                                    </div>
+                                                <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                                                    <img 
+                                                        src="/images/icon-gold-lock.png" 
+                                                        alt="Locked" 
+                                                        className="w-14 h-14 object-contain filter drop-shadow-[0_0_12px_rgba(255,215,0,0.6)]" 
+                                                    />
                                                 </div>
                                             )}
                                         </div>
@@ -279,8 +299,8 @@ const PlanetMap = ({ onBack }) => {
                             <ChevronLeft className="w-8 h-8 text-white" />
                         </button>
                         <div className="flex flex-col items-center">
-                            <span className="text-[10px] tracking-[0.3em] text-pink-300 font-bold uppercase mb-1">Planet Info</span>
-                            <h2 className="text-2xl font-black text-white">Exploring</h2>
+                            <span className="text-[10px] tracking-[0.3em] text-amber-200/80 font-bold uppercase mb-1">Planet Info</span>
+                            <h2 className="text-2xl font-black text-white">{selectedPlanet?.name}</h2>
                         </div>
                         <div className="w-12" />
                     </div>
@@ -289,14 +309,14 @@ const PlanetMap = ({ onBack }) => {
                         <div className="relative w-72 h-72 mb-10 flex items-center justify-center">
                             {/* Layered Orbitals (A Hat in Time Style) */}
                             {/* Inner Dashed Ring */}
-                            <div className="absolute inset-[-10%] border-2 border-dashed border-cyan-400/30 rounded-full animate-spin-slow opacity-60" />
+                            <div className="absolute inset-[-10%] border-2 border-dashed border-amber-200/20 rounded-full animate-spin-slow opacity-60" />
                             
                             {/* Outer Dotted Ring with Satellites */}
                             <div className="absolute inset-[-25%] border border-dotted border-white/20 rounded-full animate-spin-reverse">
-                                {/* Energy Satellite A */}
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
-                                {/* Energy Satellite B */}
-                                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-[#4E56A6] rounded-full shadow-[0_0_10px_rgba(78,86,166,0.6)]" />
+                                {/* Energy Satellite A - Golden Warmth */}
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-[#FFD700] rounded-full shadow-[0_0_15px_rgba(255,215,0,0.8)]" />
+                                {/* Energy Satellite B - Soft Coral */}
+                                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-[#FF8E8E] rounded-full shadow-[0_0_10px_rgba(255,142,142,0.6)]" />
                             </div>
 
                             {/* Faint Outer Ring */}
@@ -312,16 +332,17 @@ const PlanetMap = ({ onBack }) => {
                         </div>
 
                         <div className="relative w-full mt-4 animate-slide-up">
-                            <div className="bg-[#FFFFFF]/10 backdrop-blur-2xl rounded-[3rem] border border-white/20 p-8 shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-center">
-                                <h2 className="text-4xl font-black text-white tracking-tighter mb-1">{selectedPlanet?.name}</h2>
-                                <span className="text-pink-300 font-bold text-sm tracking-[0.2em] uppercase mb-6 block">{selectedPlanet?.enName}</span>
-                                <p className="text-white/80 text-base leading-relaxed mb-10 px-2">{selectedPlanet?.desc}</p>
-                                <button className={`w-full py-5 rounded-[2rem] font-black tracking-[0.1em] text-xl shadow-2xl transition-all active:scale-95 ${
+                            <div className="bg-[#FFFBEB] rounded-[3rem] border-4 border-white p-8 shadow-xl text-center">
+                                <h2 className="text-4xl font-black text-[#5D4037] tracking-tighter mb-1">{selectedPlanet?.name}</h2>
+                                <span className="text-[#8D6E63] font-bold text-sm tracking-[0.2em] uppercase mb-6 block">{selectedPlanet?.enName}</span>
+                                <div className="w-full h-px bg-[#5D4037]/10 mb-8" />
+                                <p className="text-[#5D4037]/80 text-base font-medium leading-relaxed mb-10 px-2">{selectedPlanet?.desc}</p>
+                                <button className={`w-full py-5 rounded-[2rem] font-black tracking-[0.1em] text-xl transition-all active:scale-95 ${
                                     selectedPlanet?.isLocked 
-                                    ? 'bg-white/10 text-white/30 cursor-not-allowed'
-                                    : 'bg-gradient-to-r from-[#FF7EB3] to-[#FF758C] text-white'
+                                    ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                                    : 'bg-[#FFF4D6] text-[#5D4037] shadow-[0_2px_4px_rgba(0,0,0,0.25),inset_0_-2px_4px_rgba(255,163,18,0.25),inset_0_4px_4px_rgba(255,255,255,0.25)] hover:brightness-105'
                                 }`}>
-                                    {selectedPlanet?.isLocked ? 'LOCKED' : 'START ADVENTURE'}
+                                    {selectedPlanet?.isLocked ? '尚未解鎖' : '開始探索'}
                                 </button>
                             </div>
                         </div>
