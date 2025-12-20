@@ -51,6 +51,11 @@ function App() {
     const saved = localStorage.getItem('claimed_task_ids');
     return saved ? JSON.parse(saved) : [];
   });
+  const [unlockedAlienIds, setUnlockedAlienIds] = useState(() => {
+    const saved = localStorage.getItem('unlocked_alien_ids');
+    return saved ? JSON.parse(saved) : [1]; // Start with ID 1 unlocked
+  });
+  const [highlightAlienId, setHighlightAlienId] = useState(null);
 
   // Data Persistence
   const [habits, setHabits] = useState(() => {
@@ -81,6 +86,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('claimed_task_ids', JSON.stringify(claimedTaskIds));
   }, [claimedTaskIds]);
+
+  useEffect(() => {
+    localStorage.setItem('unlocked_alien_ids', JSON.stringify(unlockedAlienIds));
+  }, [unlockedAlienIds]);
 
   // Logic Functions
   const handleSaveHabit = (habitData) => {
@@ -241,12 +250,26 @@ function App() {
             </div>
           </>
         ) : currentView === 'alien' ? (
-          <AlienCollection />
+          <AlienCollection 
+            unlockedIds={unlockedAlienIds} 
+            highlightId={highlightAlienId}
+            onClearHighlight={() => setHighlightAlienId(null)}
+          />
         ) : currentView === 'incubate' ? (
           <IncubatePage 
             isIncubating={isIncubating}
             onStartIncubation={handleStartIncubation}
-            onNavigateHome={(target = 'home') => setCurrentView(target)}
+            onNavigateHome={(target = 'home') => {
+                if (target === 'alien') {
+                    // Logic: Unlock ID 3 (Bloomthorn) for now
+                    const petId = 3; 
+                    if (!unlockedAlienIds.includes(petId)) {
+                        setUnlockedAlienIds(prev => [...prev, petId]);
+                    }
+                    setHighlightAlienId(petId);
+                }
+                setCurrentView(target);
+            }}
             onNavVisibilityChange={setShowNav}
           />
         ) : currentView === 'planet' ? (

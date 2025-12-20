@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { initialAliensData } from '../data/aliensData';
 
 
@@ -13,7 +13,16 @@ const attributesList = [
 ];
 
 // --- 2. AlienCard Component ---
-const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded = false }) => {
+const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded = false, isHighlighted = false }) => {
+    const [showFlip, setShowFlip] = useState(isHighlighted);
+
+    useEffect(() => {
+        if (isHighlighted) {
+            setShowFlip(true);
+            const timer = setTimeout(() => setShowFlip(false), 2000); // Animation duration
+            return () => clearTimeout(timer);
+        }
+    }, [isHighlighted]);
     // 自動取得屬性圖示
     const attrInfo = attributesList.find(a => a.id === data.attribute) || attributesList[0];
     const attributeIcon = attrInfo.icon;
@@ -32,7 +41,7 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
 
     const containerClass = isExpanded
         ? "w-full max-w-sm aspect-[3/4.5] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden relative"
-        : `h-full flex flex-col bg-white rounded-xl shadow-sm overflow-hidden relative ${isInteractive ? 'cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_20px_rgba(255,255,255,0.4)]' : ''}`;
+        : `h-full flex flex-col bg-white rounded-xl shadow-sm overflow-hidden relative ${isInteractive ? 'cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_20px_rgba(255,255,255,0.4)]' : ''} ${isHighlighted ? 'animate-card-flip animate-highlight-glow ring-4 ring-[#FFF8D6] z-20' : ''}`;
 
     const topSectionHeight = isExpanded ? "h-[60%]" : "h-[62%]";
     const topSectionHeightUnlocked = "h-[66%]";
@@ -125,6 +134,13 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
                     </div>
                 </div>
             </div>
+            {isHighlighted && (
+                <div className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center">
+                    <div className="text-4xl animate-sparkle-pop">✨</div>
+                    <div className="text-2xl absolute top-4 right-4 animate-sparkle-pop [animation-delay:0.2s]">⭐</div>
+                    <div className="text-2xl absolute bottom-4 left-4 animate-sparkle-pop [animation-delay:0.4s]">✨</div>
+                </div>
+            )}
         </div>
     );
 };
@@ -132,12 +148,36 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
 // import AchievementModal from './AchievementModal'; // Removed unused import
 
 // --- 3. 主頁面組件 ---
-const AlienCollection = () => {
+const AlienCollection = ({ unlockedIds = [], highlightId = null, onClearHighlight }) => {
     // === 狀態管理 ===
-    const [aliens, setAliens] = useState(initialAliensData); // 角色資料狀態
-    const [coins, setCoins] = useState(6000); // 錢包狀態
-    const [filter, setFilter] = useState('all'); // 篩選器
-    const [selectedAlien, setSelectedAlien] = useState(null); // Modal
+    const [aliens, setAliens] = useState(() => {
+        // Initialize with locked state from data, then apply unlockedIds
+        return initialAliensData.map(alien => ({
+            ...alien,
+            isLocked: !unlockedIds.includes(alien.id)
+        }));
+    });
+    const [coins, setCoins] = useState(6000); 
+    const [filter, setFilter] = useState('all'); 
+    const [selectedAlien, setSelectedAlien] = useState(null); 
+
+    // Sync unlocked status from parent
+    useEffect(() => {
+        setAliens(prev => prev.map(alien => ({
+            ...alien,
+            isLocked: !unlockedIds.includes(alien.id)
+        })));
+    }, [unlockedIds]);
+
+    // Auto-clear highlight after focus
+    useEffect(() => {
+        if (highlightId && onClearHighlight) {
+            const timer = setTimeout(() => {
+                onClearHighlight();
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [highlightId, onClearHighlight]);
 // const [showAchievementModal, setShowAchievementModal] = useState(false); // Removed unused state
 
     // === 計算進度 ===
@@ -157,11 +197,20 @@ const AlienCollection = () => {
         }
     };
 
-    // === 篩選邏輯 ===
-    const filteredAliens = aliens.filter(alien => {
-        if (filter === 'all') return true;
-        return alien.attribute === filter;
-    });
+    // === 篩選與排序邏輯 ===
+    const filteredAliens = aliens
+        .filter(alien => {
+            if (filter === 'all') return true;
+            return alien.attribute === filter;
+        })
+        .sort((a, b) => {
+            // 已解鎖 (isLocked: false) 的排在前面
+            if (a.isLocked !== b.isLocked) {
+                return a.isLocked ? 1 : -1;
+            }
+            // 若狀態相同，則按原本 ID 排序
+            return a.id - b.id;
+        });
 
     return (
         <div className="flex flex-col min-h-screen pb-32 bg-[#9B9FDE] relative">
@@ -218,6 +267,7 @@ const AlienCollection = () => {
                                 data={alien}
                                 onClick={() => setSelectedAlien(alien)}
                                 onUnlock={handleUnlock}
+                                isHighlighted={alien.id === highlightId}
                             />
                         </div>
                     ))}

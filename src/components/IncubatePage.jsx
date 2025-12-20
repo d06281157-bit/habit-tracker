@@ -4,9 +4,9 @@ import CloudProgressBar from './CloudProgressBar';
 
 // Placeholder Pet Data
 const HATCHED_PET = {
-    name: 'Bloomthorn',
+    name: '仙人花 - Bloomthorn',
     image: '/images/char-Bloomthorn.png',
-    desc: '草系 / 喜歡陽光'
+    desc: '地系 / 漂沙之星'
 };
 
 const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome, onNavVisibilityChange }) => {
