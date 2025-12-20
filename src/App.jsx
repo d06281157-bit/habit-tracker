@@ -10,6 +10,7 @@ import AchievementModal from './components/AchievementModal';
 import IncubatePage from './components/IncubatePage';
 import PlanetMap from './components/PlanetMap';
 import ShopPage from './components/ShopPage';
+import MorePage from './components/MorePage';
 
 // Default Data (Fallback if storage is empty)
 const DEFAULT_HABITS = [
@@ -334,6 +335,7 @@ function App() {
             unlockedIds={unlockedAlienIds} 
             highlightId={highlightAlienId}
             onClearHighlight={() => setHighlightAlienId(null)}
+            onNavVisibilityChange={setShowNav}
           />
         ) : currentView === 'incubate' ? (
           <IncubatePage 
@@ -353,6 +355,8 @@ function App() {
             <PlanetMap onBack={() => setCurrentView('home')} />
         ) : currentView === 'ufo' ? (
             <ShopPage score={totalScore} />
+        ) : currentView === 'astronaut' ? (
+            <MorePage />
         ) : null}
       </div>
 
@@ -397,7 +401,7 @@ function App() {
        />
 
 
-      {currentView !== 'planet' && (currentView !== 'incubate' || showNav) && (
+      {currentView !== 'planet' && ((currentView !== 'incubate' && currentView !== 'alien') || showNav) && (
         <BottomNav 
           activeTab={currentView} 
           onNavigate={setCurrentView} 

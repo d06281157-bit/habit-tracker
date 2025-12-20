@@ -148,7 +148,7 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
 // import AchievementModal from './AchievementModal'; // Removed unused import
 
 // --- 3. 主頁面組件 ---
-const AlienCollection = ({ unlockedIds = [], highlightId = null, onClearHighlight }) => {
+const AlienCollection = ({ unlockedIds = [], highlightId = null, onClearHighlight, onNavVisibilityChange }) => {
     // === 狀態管理 ===
     const [aliens, setAliens] = useState(() => {
         // Initialize with locked state from data, then apply unlockedIds
@@ -160,6 +160,13 @@ const AlienCollection = ({ unlockedIds = [], highlightId = null, onClearHighligh
     const [coins, setCoins] = useState(6000); 
     const [filter, setFilter] = useState('all'); 
     const [selectedAlien, setSelectedAlien] = useState(null); 
+
+    // Hide nav when modal is open
+    useEffect(() => {
+        if (onNavVisibilityChange) {
+            onNavVisibilityChange(selectedAlien === null);
+        }
+    }, [selectedAlien, onNavVisibilityChange]);
 
     // Sync unlocked status from parent
     useEffect(() => {
