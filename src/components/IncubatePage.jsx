@@ -22,8 +22,6 @@ const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome }) => {
     // Countdown Effect
     useEffect(() => {
         if (!isIncubating) return;
-
-        // If already done, don't restart (or handle as 'Hatch Ready' in future)
         if (timeLeft <= 0) return;
 
         const interval = setInterval(() => {
@@ -43,242 +41,170 @@ const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome }) => {
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.shiftKey && (e.key === 'D' || e.key === 'd')) {
-                console.log("🎹 Antigravity: Keyboard Shortcut Triggered!");
                 setTimeLeft(5);
             }
         };
-
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    // Calculate Progress (Inverted: Time goes down, Progress goes up)
     const progressPercentage = ((TOTAL_TIME - timeLeft) / TOTAL_TIME) * 100;
 
-    // Helper: Format Time HH:MM:SS
     const formatTime = (seconds) => {
         const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
         const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
         const s = (seconds % 60).toString().padStart(2, '0');
         return `${h} : ${m} : ${s}`;
     };
-    // Generate stars for "Safe Motion Mode"
+
     const [stars] = useState(() => {
         return Array.from({ length: 35 }).map((_, i) => ({
             id: i,
-            left: `${Math.random() * 100}%`, // Random Horizontal
+            left: `${Math.random() * 100}%`,
             size: `${Math.random() * 3 + 2}px`,
-            duration: `${(15 + Math.random() * 10).toFixed(2)}s`, // Random Duration 15-25s
-            delay: `${(Math.random() * -25).toFixed(2)}s`, // Random Negative Delay for instant spread
-            shineDuration: `${(Math.random() * 2 + 2).toFixed(2)}s`, // Frequency 2-4s
-            shineDelay: `${(Math.random() * 2).toFixed(2)}s` // Trigger 0-2s
+            duration: `${(15 + Math.random() * 10).toFixed(2)}s`,
+            delay: `${(Math.random() * -25).toFixed(2)}s`,
+            shineDuration: `${(Math.random() * 2 + 2).toFixed(2)}s`,
+            shineDelay: `${(Math.random() * 2).toFixed(2)}s`
         }));
     });
 
     return (
-        // 1. Root Container: Soft Dark Gradient Base
-        <div
-            className="relative min-h-screen w-full overflow-hidden"
-            style={{
-                background: 'linear-gradient(to bottom, #231E3D 0%, #584A6E 100%)'
-            }}
-        >
-
-            {/* 2. Dynamic Star Layer (Safe Motion) */}
-            <div
-                className="absolute inset-0 z-0 pointer-events-none"
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    overflow: 'hidden',
-                    zIndex: 50 // Keep Safe High Z-Index
-                }}
-            >
-                {stars.map(star => (
-                    <div
-                        key={star.id}
-                        className="absolute rounded-full shiney"
-                        style={{
-                            left: star.left,
-                            top: '-20px', // Start above screen for animation
-                            width: star.size,
-                            height: star.size,
-                            backgroundColor: '#FFFDD0', // Cream Color
-                            boxShadow: '0 0 10px white',
-                            opacity: 1.0,
-                            zIndex: 50,
-                            // Motion Restoration
-                            animation: `fall ${star.duration} linear infinite ${star.delay}, shine ${star.shineDuration} ease-in-out infinite ${star.shineDelay}`
-                            // animation: 'fall linear infinite',
-                            // animationDuration: star.duration,
-                            // animationDelay: star.delay
-                        }}
-                    />
-                ))}
-            </div>
-
-            {/* 3. Main Content (Egg, Platforms, etc.) */}
-            {/* Ensure z-10 is used so content sits ABOVE the stars */}
-            <div className="relative z-10 flex flex-col items-center justify-center min-h-screen pb-20" style={{ zIndex: 60 }}>
-
-                {isIncubating ? (
-                    // --- State B: Incubating ---
-                    <div className="flex flex-col items-center w-full animate-[fadeIn_0.5s_ease-out]">
-                        {/* 1. Text Top */}
-                        {/* 1. Text Top */}
-                        <h2 className="text-white/90 text-xl font-bold mb-12 tracking-widest drop-shadow-md">
-                            {timeLeft <= 0 ? "已完成孵化" : "正在孵化中..."}
-                        </h2>
-
-                        {/* 2. Egg & Platform Group */}
-                        <div className="relative mb-12 w-full flex justify-center">
-                            {/* Cloud Platform Base - Positioned under the egg */}
-                            <img
-                                src="/images/cloud-platform.png"
-                                className="absolute bottom-[-45px] translate-y-6 z-0 w-48 object-contain opacity-90"
-                                alt="Cloud Platform"
+        <div className="relative min-h-screen w-full overflow-hidden bg-[#231E3D]">
+            
+            {/* 1. Normal State UI (Hidden when showing card) */}
+            {!showPet && (
+                <>
+                    {/* Stars Background */}
+                    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                        {stars.map(star => (
+                            <div
+                                key={star.id}
+                                className="absolute rounded-full shiney"
+                                style={{
+                                    left: star.left,
+                                    top: '-20px',
+                                    width: star.size,
+                                    height: star.size,
+                                    backgroundColor: '#FFFDD0',
+                                    boxShadow: '0 0 10px white',
+                                    animation: `fall ${star.duration} linear infinite ${star.delay}, shine ${star.shineDuration} ease-in-out infinite ${star.shineDelay}`
+                                }}
                             />
+                        ))}
+                    </div>
 
-                            {/* Egg */}
-                            <div className="relative z-10 group" onClick={() => {
-                                if (timeLeft <= 0 && !isHatching && !showPet) {
-                                    setIsHatching(true);
+                    {/* Main Content */}
+                    <div className="relative z-10 flex flex-col items-center justify-center min-h-screen pb-24">
+                        {isIncubating ? (
+                            <div className="flex flex-col items-center w-full animate-[fadeIn_0.5s_ease-out]">
+                                <h2 className="text-white/90 text-xl font-bold mb-12 tracking-widest drop-shadow-md">
+                                    {timeLeft <= 0 ? "已完成孵化" : "正在孵化中..."}
+                                </h2>
+
+                                <div className="relative mb-12 w-full flex justify-center">
+                                    <img src="/images/cloud-platform.png" className="absolute bottom-[-45px] translate-y-6 z-0 w-48 object-contain opacity-90" alt="Platform" />
                                     
-                                    // 1. Flash at 7s
-                                    setTimeout(() => {
-                                        setShowFlash(true);
-                                    }, 7000);
+                                    <div className="relative z-10 group" onClick={() => {
+                                        if (timeLeft <= 0 && !isHatching) {
+                                            setIsHatching(true);
+                                            setTimeout(() => setShowFlash(true), 4000);
+                                            setTimeout(() => {
+                                                setIsHatching(false);
+                                                setShowFlash(false);
+                                                setShowPet(true);
+                                            }, 5000);
+                                        }
+                                    }}>
+                                        {/* White Glow / Halo on Hover (Only when ready) */}
+                                        {timeLeft <= 0 && !isHatching && (
+                                            <div className="absolute inset-0 bg-white/40 blur-[40px] rounded-full scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10 animate-pulse" />
+                                        )}
 
-                                    // 2. Reveal at 8s
-                                    setTimeout(() => {
-                                        setIsHatching(false);
-                                        setShowFlash(false); // Fade out handled by unmount or CSS if needed, but simple toggle is fine for now
-                                        setShowPet(true);
-                                    }, 8000); 
-                                }
-                            }}>
-                                {/* Glow Effect (Only when complete & not hatching) */}
-                                {timeLeft <= 0 && !isHatching && !showPet && (
-                                    <div className="absolute inset-0 bg-yellow-200/50 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full scale-125 pointer-events-none" />
-                                )}
-
-                                {/* White Flash Overlay */}
-                                {showFlash && (
-                                    <div className="fixed inset-0 bg-white z-[60] animate-[fadeIn_1s_ease-in] pointer-events-none" />
-                                )}
-
-                                {/* Pet Reveal Modal / Overlay */}
-                                {showPet && (
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center z-50 animate-[fadeIn_0.5s_ease-out]">
-                                        <div className="relative">
-                                            {/* Light Burst Behind */}
-                                            <div className="absolute inset-0 bg-white/40 blur-3xl scale-150 animate-pulse" />
-                                            
-                                            <img 
-                                                src={HATCHED_PET.image} 
-                                                alt={HATCHED_PET.name}
-                                                className="w-48 h-48 object-contain relative z-10 animate-[bounce_1s_infinite]"
+                                        {!isHatching && (
+                                            <img
+                                                src="/images/icon-mystery-egg.png"
+                                                className={`w-40 h-40 object-contain relative z-20 ${timeLeft <= 0 ? 'cursor-pointer animate-heartbeat' : 'animate-egg-shake'}`}
+                                                alt="Egg"
                                             />
-                                        </div>
-                                        <div className="mt-4 text-center">
-                                            <h3 className="text-2xl font-bold text-white drop-shadow-lg mb-2">哇！孵化了！</h3>
-                                            <p className="text-white/80 text-lg">{HATCHED_PET.name}</p>
-                                            <button 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    onNavigateHome(); // Claim and go home
-                                                }}
-                                                className="mt-6 px-6 py-2 bg-white text-purple-900 rounded-full font-bold hover:scale-105 transition-transform shadow-lg"
-                                            >
-                                                帶回家
-                                            </button>
-                                        </div>
+                                        )}
+                                        {isHatching && (
+                                            <video autoPlay muted playsInline className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-full object-cover z-[99999]">
+                                                <source src="/images/mystery-egg-hatch-1.mp4" type="video/mp4" />
+                                            </video>
+                                        )}
+                                        {showFlash && <div className="fixed inset-0 bg-white z-[100] animate-[fadeIn_0.5s_ease-in]" />}
                                     </div>
-                                )}
+                                </div>
 
-                                {/* Main Egg Image (Static) */}
-                                {!showPet && !isHatching && (
-                                    <img
-                                        src="/images/icon-mystery-egg.png"
-                                        className={`w-40 h-40 object-contain relative z-20 transition-all duration-300 ${
-                                            timeLeft <= 0 
-                                                ? 'cursor-pointer animate-heartbeat' 
-                                                : 'animate-egg-shake'
-                                        }`}
-                                        alt="Incubating Egg"
-                                    />
-                                )}
-                                
-                                {/* Full Screen Hatching GIF */}
-                                {isHatching && (
-                                    <img
-                                        src={`/images/egg-cracking-2.gif?t=${Date.now()}`}
-                                        alt="Hatching..."
-                                        className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-full object-cover z-[99999]"
-                                    />
+                                {!isHatching && (
+                                    <>
+                                        <div className="w-[140%] max-w-[400px] flex justify-center mb-4 px-4 mt-6">
+                                            <CloudProgressBar percentage={progressPercentage} />
+                                        </div>
+                                        <div className="text-[#FFFFFF] text-[40px] font-bold tracking-widest tabular-nums opacity-90" style={{ fontFamily: 'monospace', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                                            {formatTime(timeLeft)}
+                                        </div>
+                                    </>
                                 )}
                             </div>
-                        </div>
-
-                        {/* 3. Cloud Progress Bar & Timer (Hide during hatching/reveal) */}
-                        {!isHatching && !showPet && (
-                            <>
-                                <div className="w-[140%] max-w-[400px] flex justify-center mb-4 px-4 mt-6">
-                                    <CloudProgressBar percentage={progressPercentage} />
+                        ) : (
+                            <div className="flex flex-col items-center animate-[fadeIn_0.5s_ease-out]">
+                                <h2 className="text-white/90 text-[14px] font-bold mb-12 tracking-widest opacity-70">[去完成更多星願，解鎖下一顆星蛋]</h2>
+                                <div onClick={onNavigateHome} className="relative mb-12 w-full h-40 flex justify-center cursor-pointer items-center">
+                                    <img src="/images/cloud-platform.png" className="absolute bottom-[-45px] translate-y-6 z-0 w-48 object-contain opacity-90" />
+                                    <button className="relative z-10 mb-6 w-20 h-20 flex items-center justify-center"><Plus size={80} strokeWidth={3} className="text-white/70" /></button>
                                 </div>
-
-                                {/* 4. Timer Text (Formatted & Styled) */}
-                                <div
-                                    className="text-[#FFFFFF] text-[40px] font-bold tracking-widest tabular-nums opacity-90"
-                                    style={{
-                                        fontFamily: 'monospace',
-                                        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                                        zIndex: 10
-                                    }}
-                                >
-                                    {formatTime(timeLeft)}
-                                </div>
-                            </>
+                            </div>
                         )}
                     </div>
-                ) : (
-                    // --- State A: Idle / Unlock ---
-                    <div className="flex flex-col items-center animate-[fadeIn_0.5s_ease-out]">
-                        <h2 className="text-white/90 text-xl font-bold mb-12 tracking-widest drop-shadow-md">[去完成更多星願，解鎖下一顆星蛋]</h2>
+                </>
+            )}
 
-                        {/* Cloud Button */}
-                        <div
-                            onClick={onNavigateHome}
-                            className="relative mb-12 w-full h-40 flex justify-center cursor-pointer group transition-transform active:scale-95 items-center"
-                        >
-                            {/* Cloud Platform Base - Added as requested */}
-                            <img
-                                src="/images/cloud-platform.png"
-                                className="absolute bottom-[-45px] translate-y-6 z-0 w-48 object-contain opacity-90"
-                                alt="Cloud Platform"
-                            />
+            {/* 2. DISCOVERY CARD STATE (Active Overlay) */}
+            {showPet && (
+                <div className="absolute inset-0 z-[100] flex items-center justify-center overflow-hidden p-6 rounded-b-[3rem]">
+                    {/* Warm Coffee Brown Background (80% Opacity) */}
+                    <div className="absolute inset-0 bg-[#3E2723]/80 z-0" />
+                    <div 
+                        className="absolute inset-[-20%] z-0 opacity-30 animate-mist"
+                        style={{
+                            background: 'radial-gradient(circle at 30% 30%, #5D4037 0%, transparent 45%), radial-gradient(circle at 70% 70%, #4E342E 0%, transparent 45%)',
+                            filter: 'blur(60px)'
+                        }}
+                    />
 
-                            {/* Simplified Plus Floating Icon - Minimalist */}
+                    {/* Discovery Card */}
+                    <div className="relative z-10 w-full max-w-[320px] aspect-[3/4.2] flex flex-col items-center animate-card-reveal">
+                        <div className="absolute inset-0 rounded-[3rem] bg-[#FFFDE7] border-[6px] border-[#F2B36A]/30 shadow-[0_12px_0_rgba(0,0,0,0.15)] overflow-hidden">
+                            <div className="absolute top-[-10%] left-[-10%] w-40 h-40 bg-white/40 blur-3xl rounded-full" />
+                        </div>
+
+                        <div className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#F2B36A]/20 blur-3xl rounded-full animate-pulse" />
+
+                        <div className="relative z-20 mt-8 mb-6 bg-[#F2B36A] text-white px-4 py-1 rounded-full text-[12px] font-black tracking-widest shadow-sm">
+                            NEW DISCOVERY
+                        </div>
+
+                        <div className="relative z-10 mb-6 animate-float">
+                            <img src={HATCHED_PET.image} alt={HATCHED_PET.name} className="w-44 h-44 object-contain drop-shadow-[0_8px_0_rgba(0,0,0,0.1)]" />
+                        </div>
+
+                        <div className="relative z-10 flex flex-col items-center text-center px-8">
+                            <h3 className="text-3xl font-black text-[#8B4513] mb-1 tracking-tight">{HATCHED_PET.name}</h3>
+                            <p className="text-[#8B4513]/60 text-sm font-bold mb-8">{HATCHED_PET.desc}</p>
                             <button 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onNavigateHome();
-                                }}
-                                className="relative z-10 mb-6 w-20 h-20 flex items-center justify-center group focus:outline-none"
+                                onClick={(e) => { e.stopPropagation(); onNavigateHome(); }}
+                                className="group relative px-12 py-3 bg-[#F2B36A] rounded-full shadow-[0_6px_0_#D4A017] transition-all hover:translate-y-[2px] hover:shadow-[0_4px_0_#D4A017] active:translate-y-[6px] active:shadow-none"
                             >
-                                <Plus 
-                                    size={80} 
-                                    strokeWidth={3} 
-                                    className="text-white/70 transition-all duration-300 group-hover:scale-110 group-hover:text-[#FFFDD0] group-hover:drop-shadow-[0_0_8px_rgba(255,253,208,0.6)]" 
-                                />
+                                <span className="relative z-10 text-[#8B4513] font-black tracking-[0.2em] text-lg">帶回家</span>
                             </button>
                         </div>
+                        <div className="absolute top-10 right-6 text-2xl animate-pulse delay-75">✨</div>
+                        <div className="absolute bottom-32 left-8 text-xl animate-pulse delay-300">⭐</div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

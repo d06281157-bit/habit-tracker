@@ -295,7 +295,7 @@ function App() {
        />
 
 
-      {currentView !== 'planet' && (
+      {currentView !== 'planet' && currentView !== 'incubate' && (
         <BottomNav 
           activeTab={currentView} 
           onNavigate={setCurrentView} 
