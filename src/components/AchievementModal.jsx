@@ -249,11 +249,11 @@ const AchievementModal = ({
                     {/* Milestone Progress Bar */}
                     <div className="w-full px-8 mb-12">
                         <div className="relative h-20 flex items-center mb-10">
-                            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-7 bg-[#3E4166] rounded-lg ring-1 ring-inset ring-white/35 shadow-[0_2px_6px_rgba(0,0,0,0.25),inset_0_4px_4px_rgba(0,0,0,0.4)] overflow-hidden">
+                            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-7 bg-[#E6E6E6] rounded-xl shadow-[inset_0_4px_6px_rgba(0,0,0,0.11),0_4px_4px_rgba(0,0,0,0.25)] overflow-hidden">
                                 {MILESTONES.slice(0, 2).map((m) => (
                                     <div 
                                         key={`divider-${m.score}`}
-                                        className="absolute h-full w-[1.5px] bg-white/30 z-20" 
+                                        className="absolute h-full w-[1.5px] bg-black/5 z-20" 
                                         style={{ left: `${m.pos}%`, transform: 'translateX(-50%)' }} 
                                     />
                                 ))}
@@ -261,15 +261,15 @@ const AchievementModal = ({
                                 {/* Fix: Progress bar should stay if score > 0 */}
                                 {displayScore > 0 && progressPercent > 0 && (
                                     <div 
-                                        className="h-full transition-all duration-1000 ease-out relative rounded-l-[4px] z-10"
+                                        className="h-full transition-all duration-1000 ease-out relative rounded-l-xl z-10"
                                         style={{ 
                                             width: `${progressPercent}%`,
                                             background: 'linear-gradient(90deg, #6B5CFF 0%, #8A6CFF 40%, #FFD76A 100%)'
                                         }}
                                     >
-                                        <div className="absolute top-0 left-0 right-0 h-[35%] bg-white/30 rounded-t-[4px]" />
-                                        <div className="absolute bottom-0 left-0 right-0 h-[10%] bg-black/20" />
-                                        <div className="absolute right-0 top-0 bottom-0 w-[4px] bg-black/20" />
+                                        <div className="absolute top-0 left-0 right-0 h-[35%] bg-white/25 rounded-t-xl" />
+                                        <div className="absolute bottom-0 left-0 right-0 h-[10%] bg-black/5" />
+                                        <div className="absolute right-0 top-0 bottom-0 w-[4px] bg-black/10" />
                                     </div>
                                 )}
                             </div>
@@ -461,14 +461,17 @@ const TaskCard = ({ title, current, target, reward, image, isClaimed, onClaim })
                 }`}>
                     {title}
                 </h3>
-                <div className="w-[90%] h-4 bg-gray-200 rounded-full overflow-hidden">
+                <div className="w-[90%] h-4 bg-[#E6E6E6] rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] overflow-hidden relative">
                     <div 
-                        className="h-full transition-all duration-500 rounded-full" 
+                        className="h-full transition-all duration-500 rounded-full relative z-10" 
                         style={{ 
                             width: `${Math.min((current / target) * 100, 100)}%`,
-                            backgroundColor: isClaimed ? '#6F7CFF4D' : '#6F7CFF'
+                            backgroundColor: isClaimed ? '#A5A6F680' : '#A5A6F6',
+                            boxShadow: isClaimed ? 'none' : 'inset 0 2px 4px rgba(255,255,255,0.3)'
                         }}
-                    />
+                    >
+                        {!isClaimed && <div className="absolute top-0 left-0 right-0 h-[30%] bg-white/20 rounded-t-full" />}
+                    </div>
                 </div>
                 <div className="flex justify-between items-center mt-1">
                     <p className="text-xs text-gray-400">{Math.min(current, target)}/{target}</p>
