@@ -196,9 +196,9 @@ const AchievementModal = ({
                 {/* 1. Header Section */}
                 <div 
                     className="relative z-10 pt-20 pb-8 px-6 flex flex-col items-center bg-cover bg-top overflow-visible"
-                    style={{ backgroundImage: "url('/images/Starlight-background-2.png')" }}
+                    style={{ backgroundImage: "url('/images/Starlight-background-4.png')" }}
                 >
-                    <div className="absolute inset-0 bg-[#001D6E]/40" />
+                    <div className="absolute inset-0 bg-[#001D6E]/10" /> 
                     
                     {/* Top Row: Score Badges (Left) and Close Button (Right) */}
                     <div className="absolute top-4 left-0 right-0 px-6 flex flex-row justify-between items-start z-[200]">
