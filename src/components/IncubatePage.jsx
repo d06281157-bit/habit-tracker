@@ -9,7 +9,7 @@ const HATCHED_PET = {
     desc: '草系 / 喜歡陽光'
 };
 
-const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome }) => {
+const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome, onNavVisibilityChange }) => {
     // Timer Logic
     const TOTAL_TIME = 7200; // 2 Hours in seconds
     const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
@@ -18,6 +18,25 @@ const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome }) => {
     const [isHatching, setIsHatching] = useState(false);
     const [showPet, setShowPet] = useState(false);
     const [showFlash, setShowFlash] = useState(false);
+    const [isExiting, setIsExiting] = useState(false);
+
+    // Sync Nav visibility with parent
+    useEffect(() => {
+        if (onNavVisibilityChange) {
+            // Show nav if NOT hatching AND (NOT showing pet OR if we ARE exiting)
+            onNavVisibilityChange(!isHatching && (!showPet || isExiting));
+        }
+        // Cleanup: Show nav when leaving
+        return () => onNavVisibilityChange && onNavVisibilityChange(true);
+    }, [isHatching, showPet, isExiting, onNavVisibilityChange]);
+
+    const handleTakeHome = () => {
+        setIsExiting(true);
+        // Wait for animation (600ms) then navigate
+        setTimeout(() => {
+            onNavigateHome('alien'); 
+        }, 600);
+    };
 
     // Countdown Effect
     useEffect(() => {
@@ -175,8 +194,8 @@ const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome }) => {
                     />
 
                     {/* Discovery Card */}
-                    <div className="relative z-10 w-full max-w-[320px] aspect-[3/4.2] flex flex-col items-center animate-card-reveal">
-                        <div className="absolute inset-0 rounded-[3rem] bg-[#FFFDE7] border-[6px] border-[#F2B36A]/30 shadow-[0_12px_0_rgba(0,0,0,0.15)] overflow-hidden">
+                    <div className={`relative z-10 w-full max-w-[320px] aspect-[3/4.2] flex flex-col items-center ${isExiting ? 'animate-card-exit' : 'animate-card-reveal'}`}>
+                        <div className={`absolute inset-0 rounded-[3rem] bg-[#FFFDE7] border-[6px] border-[#F2B36A]/30 shadow-[0_12px_0_rgba(0,0,0,0.15)] overflow-hidden ${!isExiting ? 'animate-card-pulse-slow' : ''}`}>
                             <div className="absolute top-[-10%] left-[-10%] w-40 h-40 bg-white/40 blur-3xl rounded-full" />
                         </div>
 
@@ -194,7 +213,7 @@ const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome }) => {
                             <h3 className="text-3xl font-black text-[#8B4513] mb-1 tracking-tight">{HATCHED_PET.name}</h3>
                             <p className="text-[#8B4513]/60 text-sm font-bold mb-8">{HATCHED_PET.desc}</p>
                             <button 
-                                onClick={(e) => { e.stopPropagation(); onNavigateHome(); }}
+                                onClick={(e) => { e.stopPropagation(); handleTakeHome(); }}
                                 className="group relative px-12 py-3 bg-[#F2B36A] rounded-full shadow-[0_6px_0_#D4A017] transition-all hover:translate-y-[2px] hover:shadow-[0_4px_0_#D4A017] active:translate-y-[6px] active:shadow-none"
                             >
                                 <span className="relative z-10 text-[#8B4513] font-black tracking-[0.2em] text-lg">帶回家</span>

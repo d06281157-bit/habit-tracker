@@ -31,6 +31,7 @@ function App() {
   const [editingHabit, setEditingHabit] = useState(null);
   const [activeSwipeId, setActiveSwipeId] = useState(null);
   const [isIncubating, setIsIncubating] = useState(false);
+  const [showNav, setShowNav] = useState(true);
 
   // Click Tracking Ref
   const clickStartPos = useRef({ x: 0, y: 0 });
@@ -245,7 +246,8 @@ function App() {
           <IncubatePage 
             isIncubating={isIncubating}
             onStartIncubation={handleStartIncubation}
-            onNavigateHome={() => setCurrentView('home')}
+            onNavigateHome={(target = 'home') => setCurrentView(target)}
+            onNavVisibilityChange={setShowNav}
           />
         ) : currentView === 'planet' ? (
             <PlanetMap onBack={() => setCurrentView('home')} />
@@ -295,7 +297,7 @@ function App() {
        />
 
 
-      {currentView !== 'planet' && currentView !== 'incubate' && (
+      {currentView !== 'planet' && (currentView !== 'incubate' || showNav) && (
         <BottomNav 
           activeTab={currentView} 
           onNavigate={setCurrentView} 
