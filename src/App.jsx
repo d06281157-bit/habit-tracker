@@ -225,16 +225,37 @@ function App() {
     window.resetApp = handleResetDebug;
   }, [habits, bonusScore, claimedMilestones, claimedTaskIds]);
 
+  // Store incubationStatus in a ref for keyboard handler
+  const incubationStatusRef = React.useRef(incubationStatus);
+  React.useEffect(() => {
+    incubationStatusRef.current = incubationStatus;
+  }, [incubationStatus]);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.shiftKey && e.key.toUpperCase() === 'F') {
         e.preventDefault();
         handleResetDebug();
       }
+      // Demo Mode Shortcut (Shift + D) - Fast forward incubation to last 5 seconds
+      if (e.shiftKey && e.key.toUpperCase() === 'D') {
+        e.preventDefault();
+        console.log('[DEBUG] Shift+D pressed! Current status:', incubationStatusRef.current);
+        
+        // Force start incubation if not already incubating
+        if (incubationStatusRef.current === 'idle') {
+          setIncubationStatus('incubating');
+        }
+        
+        // Fast forward to 5 seconds remaining
+        const fastForwardTime = Date.now() - (7195 * 1000);
+        setIncubationStartTime(fastForwardTime);
+        console.log('[DEBUG] Incubation fast-forwarded to last 5 seconds');
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, []); // Empty array is fine now because we use ref
 
   // Calculated Stats
   const totalHabits = habits.length;

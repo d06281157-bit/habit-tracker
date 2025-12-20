@@ -64,17 +64,6 @@ const IncubatePage = ({ incubationStatus, incubationStartTime, onStatusChange, o
         return () => clearInterval(timer);
     }, [incubationStatus, incubationStartTime, onStatusChange]);
 
-    // Demo Mode Shortcut (Shift + D)
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.shiftKey && (e.key === 'D' || e.key === 'd')) {
-                setTimeLeft(5);
-            }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
-
     const progressPercentage = ((TOTAL_TIME - timeLeft) / TOTAL_TIME) * 100;
 
     const formatTime = (seconds) => {
