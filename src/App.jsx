@@ -294,14 +294,17 @@ function App() {
           initialData={editingHabit}
        />
 
-      <BottomNav 
-        activeTab={currentView} 
-        onNavigate={setCurrentView} 
-        onOpenAdd={() => {
-            setEditingHabit(null);
-            setIsAddModalOpen(true);
-        }} 
-      />
+
+      {currentView !== 'planet' && (
+        <BottomNav 
+          activeTab={currentView} 
+          onNavigate={setCurrentView} 
+          onOpenAdd={() => {
+              setEditingHabit(null);
+              setIsAddModalOpen(true);
+          }} 
+        />
+      )}
     </div>
   );
 }
