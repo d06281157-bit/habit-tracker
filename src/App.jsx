@@ -30,8 +30,19 @@ function App() {
   const [selectedHabit, setSelectedHabit] = useState(null);
   const [editingHabit, setEditingHabit] = useState(null);
   const [activeSwipeId, setActiveSwipeId] = useState(null);
-  const [isIncubating, setIsIncubating] = useState(false);
   const [showNav, setShowNav] = useState(true);
+
+  // Incubation State Management (Persisted)
+  const [incubationStatus, setIncubationStatus] = useState(() => {
+    return localStorage.getItem('incubation_status') || 'idle'; // idle | incubating | ready
+  });
+  const [incubationStartTime, setIncubationStartTime] = useState(() => {
+    const saved = localStorage.getItem('incubation_start_time');
+    return saved ? parseInt(saved) : null;
+  });
+  const [eggProgress, setEggProgress] = useState(() => {
+    return parseInt(localStorage.getItem('egg_progress') || '0');
+  });
 
   // Click Tracking Ref
   const clickStartPos = useRef({ x: 0, y: 0 });
@@ -91,6 +102,23 @@ function App() {
     localStorage.setItem('unlocked_alien_ids', JSON.stringify(unlockedAlienIds));
   }, [unlockedAlienIds]);
 
+  // Incubation Persistence
+  useEffect(() => {
+    localStorage.setItem('incubation_status', incubationStatus);
+  }, [incubationStatus]);
+
+  useEffect(() => {
+    if (incubationStartTime) {
+      localStorage.setItem('incubation_start_time', incubationStartTime.toString());
+    } else {
+      localStorage.removeItem('incubation_start_time');
+    }
+  }, [incubationStartTime]);
+
+  useEffect(() => {
+    localStorage.setItem('egg_progress', eggProgress.toString());
+  }, [eggProgress]);
+
   // Logic Functions
   const handleSaveHabit = (habitData) => {
       if (editingHabit) {
@@ -121,9 +149,17 @@ function App() {
   };
 
   const handleToggleHabit = (habitId) => {
+    const habit = habits.find(h => h.id === habitId);
+    const wasCompleted = habit?.completed;
+    
     setHabits(prev => prev.map(h => 
         h.id === habitId ? { ...h, completed: !h.completed } : h
     ));
+    
+    // Add egg progress only if in idle mode and completing (not uncompleting)
+    if (incubationStatus === 'idle' && !wasCompleted) {
+        setEggProgress(prev => Math.min(prev + 5, 20)); // Cap at 20
+    }
   };
 
   const handleStartEdit = (habit) => {
@@ -138,14 +174,34 @@ function App() {
   };
 
   const handleStartIncubation = () => {
-      setIsIncubating(true);
+      if (incubationStatus === 'idle' && eggProgress >= 20) {
+          setIncubationStatus('incubating');
+          setIncubationStartTime(Date.now());
+      }
   };
   
   const handleEggClick = () => {
-     if (dailyHabitScore >= 20) {
-         setIsIncubating(true);
+     if (incubationStatus === 'idle' && eggProgress >= 20) {
+         handleStartIncubation();
+         setCurrentView('incubate');
+     } else if (incubationStatus === 'incubating' || incubationStatus === 'ready') {
+         // If already incubating, just navigate to incubate page
          setCurrentView('incubate');
      }
+  };
+
+  // Reset incubation after taking pet home
+  const handleTakePetHome = (targetView) => {
+    const petId = 3; // Bloomthorn
+    if (!unlockedAlienIds.includes(petId)) {
+        setUnlockedAlienIds(prev => [...prev, petId]);
+    }
+    setHighlightAlienId(petId);
+    // Reset the loop
+    setEggProgress(0);
+    setIncubationStatus('idle');
+    setIncubationStartTime(null);
+    setCurrentView(targetView);
   };
 
   const handleResetDebug = () => {
@@ -199,20 +255,23 @@ function App() {
       <div className="relative z-10 font-sans min-h-screen flex flex-col">
         {currentView === 'home' ? (
           <>
-            <div className="absolute top-0 left-0 w-full z-20">
+            <div className="sticky top-0 left-0 w-full z-30">
                 <Header 
                     onOpenTask={() => setIsTaskModalOpen(true)} 
                     onOpenPlanet={() => setCurrentView('planet')}
                 />
             </div>
-            
-            <Hero 
-               completed={completedHabits} 
-               total={totalHabits} 
-               progress={progressPercentage}
-               score={dailyHabitScore}
-               onEggClick={handleEggClick}
-            />
+            <div className="-mt-[204px]">
+                <Hero 
+                   completed={completedHabits} 
+                   total={totalHabits} 
+                   progress={progressPercentage}
+                   score={eggProgress}
+                   incubationStatus={incubationStatus}
+                   incubationStartTime={incubationStartTime}
+                   onEggClick={handleEggClick}
+                />
+            </div>
             
             <div className="mt-6 px-6 space-y-4 pb-24">
               {habits.map(habit => (
@@ -257,18 +316,15 @@ function App() {
           />
         ) : currentView === 'incubate' ? (
           <IncubatePage 
-            isIncubating={isIncubating}
-            onStartIncubation={handleStartIncubation}
+            incubationStatus={incubationStatus}
+            incubationStartTime={incubationStartTime}
+            onStatusChange={setIncubationStatus}
             onNavigateHome={(target = 'home') => {
                 if (target === 'alien') {
-                    // Logic: Unlock ID 3 (Bloomthorn) for now
-                    const petId = 3; 
-                    if (!unlockedAlienIds.includes(petId)) {
-                        setUnlockedAlienIds(prev => [...prev, petId]);
-                    }
-                    setHighlightAlienId(petId);
+                    handleTakePetHome(target);
+                } else {
+                    setCurrentView(target);
                 }
-                setCurrentView(target);
             }}
             onNavVisibilityChange={setShowNav}
           />

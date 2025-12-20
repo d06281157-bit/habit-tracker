@@ -9,7 +9,7 @@ const HATCHED_PET = {
     desc: '地系 / 漂沙之星'
 };
 
-const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome, onNavVisibilityChange }) => {
+const IncubatePage = ({ incubationStatus, incubationStartTime, onStatusChange, onNavigateHome, onNavVisibilityChange }) => {
     // Timer Logic
     const TOTAL_TIME = 7200; // 2 Hours in seconds
     const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
@@ -38,23 +38,31 @@ const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome, onNavVi
         }, 600);
     };
 
-    // Countdown Effect
+    // Countdown Effect - Calculate from incubationStartTime
     useEffect(() => {
-        if (!isIncubating) return;
-        if (timeLeft <= 0) return;
+        if (incubationStatus !== 'incubating' || !incubationStartTime) {
+            if (incubationStatus === 'ready') {
+                setTimeLeft(0);
+            }
+            return;
+        }
 
-        const interval = setInterval(() => {
-            setTimeLeft(prev => {
-                if (prev <= 1) {
-                    clearInterval(interval);
-                    return 0;
-                }
-                return prev - 1;
-            });
+        const calculateTimeLeft = () => {
+            const elapsed = Math.floor((Date.now() - incubationStartTime) / 1000);
+            return Math.max(TOTAL_TIME - elapsed, 0);
+        };
+
+        setTimeLeft(calculateTimeLeft());
+        const timer = setInterval(() => {
+            const remaining = calculateTimeLeft();
+            setTimeLeft(remaining);
+            if (remaining <= 0 && onStatusChange) {
+                onStatusChange('ready');
+            }
         }, 1000);
 
-        return () => clearInterval(interval);
-    }, [isIncubating, timeLeft]);
+        return () => clearInterval(timer);
+    }, [incubationStatus, incubationStartTime, onStatusChange]);
 
     // Demo Mode Shortcut (Shift + D)
     useEffect(() => {
@@ -115,7 +123,7 @@ const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome, onNavVi
 
                     {/* Main Content */}
                     <div className="relative z-10 flex flex-col items-center justify-center min-h-screen pb-24">
-                        {isIncubating ? (
+                        {(incubationStatus === 'incubating' || incubationStatus === 'ready') ? (
                             <div className="flex flex-col items-center w-full animate-[fadeIn_0.5s_ease-out]">
                                 <h2 className="text-white/90 text-xl font-bold mb-12 tracking-widest drop-shadow-md">
                                     {timeLeft <= 0 ? "已完成孵化" : "正在孵化中..."}
@@ -170,7 +178,7 @@ const IncubatePage = ({ isIncubating, onStartIncubation, onNavigateHome, onNavVi
                         ) : (
                             <div className="flex flex-col items-center animate-[fadeIn_0.5s_ease-out]">
                                 <h2 className="text-white/90 text-[14px] font-bold mb-12 tracking-widest opacity-70">[去完成更多星願，解鎖下一顆星蛋]</h2>
-                                <div onClick={onNavigateHome} className="relative mb-12 w-full h-40 flex justify-center cursor-pointer items-center">
+                                <div onClick={() => onNavigateHome('home')} className="relative mb-12 w-full h-40 flex justify-center cursor-pointer items-center">
                                     <img src="/images/cloud-platform.png" className="absolute bottom-[-45px] translate-y-6 z-0 w-48 object-contain opacity-90" />
                                     <button className="relative z-10 mb-6 w-20 h-20 flex items-center justify-center"><Plus size={80} strokeWidth={3} className="text-white/70" /></button>
                                 </div>
