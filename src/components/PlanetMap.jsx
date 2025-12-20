@@ -256,7 +256,7 @@ const PlanetMap = ({ onBack }) => {
                         <div className="w-12" />
                     </div>
 
-                    <div className="flex-1 relative z-10 flex flex-col items-center justify-start p-8 pt-6">
+                    <div className="flex-1 relative z-10 overflow-y-auto no-scrollbar flex flex-col items-center justify-start p-8 pt-6 pb-20">
                         <div className="relative w-72 h-72 mb-10 flex items-center justify-center">
                             {/* Layered Orbitals */}
                             <div className="absolute inset-[-10%] border-2 border-dashed border-amber-200/20 rounded-full animate-spin-slow opacity-60" />
@@ -273,6 +273,16 @@ const PlanetMap = ({ onBack }) => {
                                     !selectedPlanet?.isUnlocked ? 'grayscale brightness-50 contrast-125' : 'animate-float-high'
                                 }`}
                             />
+
+                            {/* Floating Unlock Condition Container */}
+                            {!selectedPlanet?.isUnlocked && (
+                                <div className="absolute inset-0 z-40 flex items-center justify-center p-4">
+                                    <div className="bg-black/40 backdrop-blur-xl border border-white/20 rounded-3xl p-5 text-center shadow-2xl max-w-[90%] scale-90 animate-pulse-subtle">
+                                        <span className="text-[10px] text-amber-200/80 font-black uppercase tracking-[0.2em] mb-2 block">解鎖條件</span>
+                                        <p className="text-white text-[15px] font-bold leading-relaxed">{selectedPlanet?.unlockCondition}</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="relative w-full mt-4 animate-slide-up">
@@ -290,12 +300,6 @@ const PlanetMap = ({ onBack }) => {
                                         <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-1">星球簡介</span>
                                         <p className="text-[#5D4037]/80 text-base font-medium leading-relaxed px-2">{selectedPlanet?.description}</p>
                                     </div>
-                                    {!selectedPlanet?.isUnlocked && (
-                                        <div className="flex flex-col items-center bg-stone-100/50 p-4 rounded-2xl">
-                                            <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-2 text-rose-400">解鎖條件</span>
-                                            <span className="text-stone-600 text-sm font-bold">{selectedPlanet?.unlockCondition}</span>
-                                        </div>
-                                    )}
                                 </div>
 
                                 <button className={`w-full py-5 rounded-[2rem] font-black tracking-[0.1em] text-xl transition-all active:scale-95 ${
