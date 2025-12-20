@@ -10,7 +10,8 @@ const AchievementModal = ({
     claimedMilestones = [], 
     onClaimMilestone,
     claimedTaskIds = [],
-    onClaimTask
+    onClaimTask,
+    onReset
 }) => {
     // Control animation state
     const [isVisible, setIsVisible] = useState(false);
@@ -71,7 +72,7 @@ const AchievementModal = ({
         } else {
             const timer = setTimeout(() => {
                 if (displayScore === targetScore) setShowScoreBadge(false);
-            }, 2000);
+            }, 1000);
             return () => clearTimeout(timer);
         }
     }, [displayScore, targetScore, isOpen, isScorePulsing]);
@@ -96,7 +97,7 @@ const AchievementModal = ({
         } else if (displayGoldScore > targetGoldScore) {
             setDisplayGoldScore(targetGoldScore);
         } else if (displayGoldScore === targetGoldScore && targetGoldScore > 0) {
-            const timer = setTimeout(() => setShowGoldBadge(false), 2000);
+            const timer = setTimeout(() => setShowGoldBadge(false), 1000);
             return () => clearTimeout(timer);
         }
     }, [displayGoldScore, targetGoldScore, isOpen, isGoldPulsing]);
@@ -106,15 +107,9 @@ const AchievementModal = ({
         const id = Date.now() + Math.random();
         setPopups(prev => [...prev, { id, x: '50%', y: '35%', value, type }]);
         
-        if (type === 'star') {
-            setShowScoreBadge(true);
-            setIsScorePulsing(true);
-            setTimeout(() => setIsScorePulsing(false), 600);
-        } else {
-            setShowGoldBadge(true);
-            setIsGoldPulsing(true);
-            setTimeout(() => setIsGoldPulsing(false), 600);
-        }
+        setShowScoreBadge(true);
+        setIsScorePulsing(true);
+        setTimeout(() => setIsScorePulsing(false), 600);
         
         setTimeout(() => {
             setPopups(prev => prev.filter(p => p.id !== id));
@@ -297,7 +292,7 @@ const AchievementModal = ({
                                             />
                                             {isClaimed && (
                                                 <div className="absolute inset-x-0 -top-2 flex justify-center">
-                                                    <div className="bg-green-500 rounded-full p-0.5 border-2 border-white shadow-md select-none">
+                                                    <div className="bg-yellow-400 rounded-full p-0.5 border-2 border-white shadow-md select-none">
                                                         <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
                                                         </svg>
@@ -380,24 +375,32 @@ const AchievementModal = ({
                     {popups.map(p => (
                         <div 
                             key={p.id}
-                            className={`absolute animate-reward-float text-4xl font-black drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] flex items-center gap-2 ${
-                                p.type === 'gold' ? 'text-orange-400' : 'text-yellow-400'
-                            }`}
+                            className="absolute animate-reward-float text-3xl font-black drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] flex items-center gap-2 text-[#FFD700]"
                             style={{ 
                                 left: p.x, 
                                 top: p.y, 
-                                filter: `drop-shadow(0 0 10px ${p.type === 'gold' ? 'rgba(255,165,0,0.8)' : 'rgba(255,215,0,0.8)'})` 
+                                filter: `drop-shadow(0 0 10px rgba(255, 215, 0, 0.6))` 
                             }}
                         >
                             <img 
                                 src={p.type === 'gold' ? "/images/icon-gold.png" : "/images/icon-star.png"} 
-                                className="w-10 h-10 object-contain" 
+                                className="w-8 h-8 object-contain" 
                                 alt="Reward Icon"
                             />
                             +{p.value}
                         </div>
                     ))}
                 </div>
+
+                {/* Reset Button (Bottom Left) */}
+                {onReset && (
+                    <button 
+                        onClick={onReset}
+                        className="absolute bottom-6 left-6 z-[100] bg-white/40 hover:bg-white/60 text-[#001D6E] text-xs font-black px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md transition-all active:scale-95"
+                    >
+                        重置進度
+                    </button>
+                )}
             </div>
             
              <style>{`
@@ -421,8 +424,8 @@ const AchievementModal = ({
 
                 @keyframes reward-float {
                     0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
-                    20% { transform: translate(-50%, -20px) scale(1.2); opacity: 1; }
-                    100% { transform: translate(-50%, -150px) scale(1.8); opacity: 0; }
+                    20% { transform: translate(-50%, -20px) scale(1.0); opacity: 1; }
+                    100% { transform: translate(-50%, -150px) scale(1.4); opacity: 0; }
                 }
                 .animate-reward-float { animation: reward-float 1s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards; }
 
@@ -447,14 +450,17 @@ const TaskCard = ({ title, current, target, reward, image, isClaimed, onClaim })
         <div className="bg-gray-50 rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between shrink-0 hover:shadow-md transition-shadow">
             <div className="flex-1">
                 <h3 className={`font-bold text-base mb-4 transition-all duration-300 ${
-                    isClaimed ? 'text-gray-400' : isCompleted ? 'text-[#001D6E]' : 'text-gray-700'
+                    isClaimed ? 'text-gray-400 line-through italic' : isCompleted ? 'text-[#001D6E]' : 'text-gray-700'
                 }`}>
                     {title}
                 </h3>
                 <div className="w-[90%] h-4 bg-gray-200 rounded-full overflow-hidden">
                     <div 
-                        className={`h-full transition-all duration-500 rounded-full ${isClaimed ? 'bg-[#001D6E]/30' : 'bg-[#001D6E]'}`} 
-                        style={{ width: `${Math.min((current / target) * 100, 100)}%` }}
+                        className="h-full transition-all duration-500 rounded-full" 
+                        style={{ 
+                            width: `${Math.min((current / target) * 100, 100)}%`,
+                            backgroundColor: isClaimed ? '#8B8CF64D' : '#8B8CF6'
+                        }}
                     />
                 </div>
                 <div className="flex justify-between items-center mt-1">
