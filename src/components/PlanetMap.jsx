@@ -8,10 +8,10 @@ const planetsInfo = [
         name: '翠微星', 
         enName: 'VERIDIA', 
         desc: '充滿綠意與水晶的初始之地，這裡孕育著最原始的自然能量。', 
-        image: '/images/planet-grass.png', 
+        image: '/images/planet-grass-2.png', 
         isLocked: false,
         x: 35, 
-        y: 120, 
+        y: 300, 
     },
     { 
         id: 2, 
@@ -21,7 +21,7 @@ const planetsInfo = [
         image: '/images/planet-swamp.png', 
         isLocked: false,
         x: 75,
-        y: 320,
+        y: 530, // Gap increased
     },
     { 
         id: 3, 
@@ -31,7 +31,7 @@ const planetsInfo = [
         image: '/images/planet-water.png', 
         isLocked: true,
         x: 22,
-        y: 540,
+        y: 760, 
     },
     { 
         id: 4, 
@@ -41,7 +41,7 @@ const planetsInfo = [
         image: '/images/planet-coral.png', 
         isLocked: true,
         x: 78,
-        y: 760,
+        y: 990,
     },
     { 
         id: 5, 
@@ -51,7 +51,7 @@ const planetsInfo = [
         image: '/images/planet-ice.png', 
         isLocked: true,
         x: 28,
-        y: 980,
+        y: 1220,
     },
     { 
         id: 6, 
@@ -61,7 +61,7 @@ const planetsInfo = [
         image: '/images/planet-lava.png', 
         isLocked: true,
         x: 70,
-        y: 1180,
+        y: 1450,
     },
 ];
 
@@ -82,80 +82,108 @@ const PlanetMap = ({ onBack }) => {
     };
 
     /**
-     * Hand-crafted Organic Path
-     * Creating extra curvature that "overshoots" for a more adventurous feel.
+     * Hand-crafted Organic Path segments
      */
-    const getOrganicPath = () => {
-        // Path logic: Starts at Planet 1, swings WIDE right, swings WIDE left, etc.
-        return "M 35,120 " + 
-               "C 80,180 120,260 75,320 " +  // P1 to P2 with a deep curve right
-               "C 10,400 -20,480 22,540 " +   // P2 to P3 with a deep curve left
-               "C 80,620 120,700 78,760 " +   // P3 to P4 wide right
-               "C 20,840 -10,920 28,980 " +   // P4 to P5 wide left
-               "C 80,1060 110,1120 70,1180";  // P5 to P6
+    const getSegmentPath = (i) => {
+        const p1 = planetsInfo[i];
+        const p2 = planetsInfo[i+1];
+        if (!p1 || !p2) return "";
+
+        // Determine control points based on segment index to keep the "S" shape
+        let cp1x, cp1y, cp2x, cp2y;
+        if (i % 2 === 0) { // Moving right
+            cp1x = 85; cp1y = p1.y + 60;
+            cp2x = 95; cp2y = p2.y - 60;
+        } else { // Moving left
+            cp1x = 15; cp1y = p1.y + 60;
+            cp2x = 5; cp2y = p2.y - 60;
+        }
+
+        return `M ${p1.x} ${p1.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
     };
 
     return (
-        <div className="fixed inset-0 z-[1000] bg-[#0A0C14] text-white font-sans overflow-hidden select-none flex justify-center">
-            <div className="relative w-full max-w-md h-full bg-[#0A0C14] shadow-2xl overflow-hidden flex flex-col">
+        <div className="fixed inset-0 z-[1000] bg-[#1A1135] text-white font-sans overflow-hidden select-none flex justify-center">
+            <div className="relative w-full max-w-md h-full bg-[#1A1135] shadow-2xl overflow-hidden flex flex-col">
                 
-                {/* Space Backdrop */}
+                {/* Fixed Universe Backdrop */}
                 <div className="absolute inset-0 z-0 pointer-events-none">
-                    <div className="absolute inset-0 bg-[#0A0C14]" />
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 animate-pulse-slow" />
-                    <div className="absolute top-1/4 -left-20 w-96 h-96 bg-purple-900/10 blur-[100px] rounded-full" />
-                    <div className="absolute bottom-1/4 -right-20 w-[30rem] h-[30rem] bg-indigo-900/10 blur-[120px] rounded-full" />
+                    <img 
+                        src="/images/universe-background-2.jpeg" 
+                        alt="Universe"
+                        className="w-full h-full object-cover opacity-90"
+                    />
+                    <div className="absolute inset-0 bg-[#1A1135]/40" />
+                    
+                    {/* Fixed depth overlays */}
+                    <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-[#1A1135] via-[#1A1135]/60 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#1A1135] via-[#1A1135]/60 to-transparent" />
                 </div>
 
                 {/* 1. Map View */}
-                <div className={`absolute inset-0 z-10 transition-all duration-700 ease-in-out ${viewMode === 'map' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`absolute inset-0 z-10 flex flex-col transition-all duration-700 ease-in-out ${viewMode === 'map' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                     
-                    {/* Header */}
-                    <div className="absolute top-0 left-0 right-0 z-30 px-6 pt-10 pb-4 flex items-center justify-between bg-gradient-to-b from-[#0A0C14] to-transparent">
-                        <button onClick={onBack} className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/5 shadow-xl">
-                            <ChevronLeft className="w-6 h-6 text-white/80" strokeWidth={2.5} />
+                    {/* Soft Header */}
+                    <div className="absolute top-0 left-0 right-0 z-30 px-6 pt-12 pb-6 flex items-center justify-between">
+                        <button onClick={onBack} className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-lg flex items-center justify-center border border-white/20 shadow-lg active:scale-95 transition-all">
+                            <ChevronLeft className="w-6 h-6 text-white" strokeWidth={3} />
                         </button>
                         <div className="flex flex-col items-center">
-                            <span className="text-[10px] tracking-[0.6em] text-indigo-400 font-black uppercase mb-1 opacity-80">Exploration</span>
-                            <h2 className="text-xl font-black tracking-[0.2em] text-white uppercase italic">Planet Map</h2>
+                            <span className="text-[11px] tracking-[0.4em] text-pink-300 font-bold uppercase mb-0.5">My Adventure</span>
+                            <h2 className="text-2xl font-black tracking-tight text-white drop-shadow-md">Planet Map</h2>
                         </div>
                         <div className="w-10" />
                     </div>
 
                     {/* Content Scroll Area */}
-                    <div ref={mapContainerRef} className="h-full overflow-y-auto no-scrollbar pt-28 pb-60 relative px-4">
-                        <div className="relative w-full" style={{ height: '1350px' }}>
-                            {/* Organic Trajectory SVG */}
+                    <div className="relative flex-1 overflow-y-auto no-scrollbar scroll-smooth" ref={mapContainerRef}>
+                        <div className="relative w-full pt-28 pb-60 px-4" style={{ height: '1800px' }}>
+                            {/* Inner Trajectory and Planets */}
+
+                            {/* Organic Trajectory SVG - Segmented for locking states */}
                             <svg 
                                 className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible"
-                                viewBox="0 0 100 1350"
+                                viewBox="0 0 100 1800"
                                 preserveAspectRatio="none"
                             >
                                 <defs>
-                                    <linearGradient id="pathGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="rgba(255,255,255,0.1)" />
-                                        <stop offset="50%" stopColor="rgba(255,255,255,0.6)" />
-                                        <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+                                    <linearGradient id="activeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#FFB8E0" stopOpacity="0.4" />
+                                        <stop offset="50%" stopColor="#FFFFFF" />
+                                        <stop offset="100%" stopColor="#B8D8FF" stopOpacity="0.4" />
                                     </linearGradient>
                                 </defs>
-                                <path 
-                                    d={getOrganicPath()} 
-                                    fill="none" 
-                                    stroke="url(#pathGradient)" 
-                                    strokeWidth="2.5" 
-                                    strokeLinecap="round"
-                                    strokeDasharray="1 8" // Stylized "Star Trail" dash
-                                    className="opacity-80 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] transition-all duration-1000"
-                                />
-                                {/* Optional: Glow layer */}
-                                <path 
-                                    d={getOrganicPath()} 
-                                    fill="none" 
-                                    stroke="rgba(255,255,255,0.15)" 
-                                    strokeWidth="6" 
-                                    strokeLinecap="round"
-                                    className="blur-sm"
-                                />
+                                
+                                {planetsInfo.slice(0, -1).map((_, i) => {
+                                    const nextPlanet = planetsInfo[i+1];
+                                    const isUnlocked = !nextPlanet.isLocked;
+                                    
+                                    return (
+                                        <g key={`path-segment-${i}`}>
+                                            {/* Glowing Soft Shadow */}
+                                            {isUnlocked && (
+                                                <path 
+                                                    d={getSegmentPath(i)} 
+                                                    fill="none" 
+                                                    stroke="rgba(255,255,255,0.3)" 
+                                                    strokeWidth="6" 
+                                                    strokeLinecap="round"
+                                                    className="blur-[6px]"
+                                                />
+                                            )}
+                                            {/* Main Path - Soft Pinkish/White */}
+                                            <path 
+                                                d={getSegmentPath(i)} 
+                                                fill="none" 
+                                                stroke={isUnlocked ? "url(#activeGradient)" : "rgba(255,255,255,0.15)"} 
+                                                strokeWidth={isUnlocked ? "3" : "1.5"} 
+                                                strokeLinecap="round"
+                                                strokeDasharray={isUnlocked ? "4 8" : "2 6"} // Both dashed for "star steps" look
+                                                className={`transition-all duration-1000 ${isUnlocked ? 'drop-shadow-[0_0_8px_rgba(255,184,224,0.6)]' : ''}`}
+                                            />
+                                        </g>
+                                    );
+                                })}
                             </svg>
 
                             {/* Planets */}
@@ -171,12 +199,19 @@ const PlanetMap = ({ onBack }) => {
                                     onClick={() => handlePlanetClick(planet)}
                                 >
                                     <div className="relative flex flex-col items-center">
-                                        <div className="relative w-36 h-36 md:w-40 md:h-40 transform transition-transform group-hover:scale-110 active:scale-95 z-20">
+                                        <div className="relative w-44 h-44 md:w-52 md:h-52 transform transition-transform group-hover:scale-110 active:scale-95 z-20">
+                                            {/* Hover Glow Effect */}
+                                            {!planet.isLocked && (
+                                                <div className="absolute inset-4 bg-white/20 blur-[30px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                            )}
+                                            
                                             <img 
                                                 src={planet.image} 
                                                 alt={planet.name}
-                                                className={`w-full h-full object-contain drop-shadow-[0_0_25px_rgba(255,255,255,0.15)] transition-all duration-700 ${
-                                                    planet.isLocked ? 'grayscale brightness-40 opacity-70' : 'animate-float'
+                                                className={`w-full h-full object-contain transition-all duration-700 ${
+                                                    planet.isLocked 
+                                                    ? 'grayscale brightness-40 opacity-70 drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]' 
+                                                    : 'animate-float drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] group-hover:drop-shadow-[0_0_40px_rgba(255,184,224,0.6)]'
                                                 }`}
                                             />
                                             {planet.isLocked && (
@@ -187,12 +222,35 @@ const PlanetMap = ({ onBack }) => {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="absolute top-[105%] flex flex-col items-center pointer-events-none">
-                                            <span className={`text-[12px] font-black tracking-[0.3em] uppercase whitespace-nowrap transition-colors duration-300 ${
-                                                planet.isLocked ? 'text-white/20' : 'text-white drop-shadow-md'
-                                            }`}>
-                                                {planet.enName}
-                                            </span>
+                                        {/* Name Label - Positioned to the side */}
+                                        <div className={`
+                                            absolute top-1/2 -translate-y-1/2 z-30 pointer-events-none flex flex-col
+                                            ${planet.x > 50 ? 'right-[115%]' : 'left-[115%]'}
+                                            ${planet.x > 50 ? 'items-end' : 'items-start'}
+                                        `}>
+                                            {/* Warm Capsule Container */}
+                                            <div className={`
+                                                px-5 py-1.5 rounded-full border-2 transition-all duration-300 shadow-xl whitespace-nowrap
+                                                ${planet.isLocked 
+                                                    ? 'bg-wheat/10 border-white/5 opacity-40' 
+                                                    : 'bg-[#FFF9E5] border-[#E6D5B8]'
+                                                }
+                                            `}>
+                                                <span className={`text-[15px] font-bold transition-colors duration-300 ${
+                                                    planet.isLocked ? 'text-white/40' : 'text-[#5D4037]'
+                                                }`}>
+                                                    {planet.name}
+                                                </span>
+                                            </div>
+                                            
+                                            {/* Small English Subtitle */}
+                                            {!planet.isLocked && (
+                                                <span className={`text-[10px] font-bold text-white/60 tracking-widest uppercase mt-1 drop-shadow-md px-2 ${
+                                                    planet.x > 50 ? 'text-right' : 'text-left'
+                                                }`}>
+                                                    {planet.enName}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -203,47 +261,67 @@ const PlanetMap = ({ onBack }) => {
 
                 {/* 2. Detail View */}
                 <div 
-                    className={`absolute inset-0 z-50 transition-all duration-700 flex flex-col overflow-hidden bg-[#0A0C14] ${
+                    className={`absolute inset-0 z-50 transition-all duration-700 flex flex-col overflow-hidden bg-[#1A1135] ${
                         viewMode === 'detail' ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'
                     }`}
                 >
                     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                        <div className="absolute inset-0 bg-gradient-to-b from-[#11122D] via-[#0A0C14] to-[#0A0C14]" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-cyan-900/10 blur-[150px] rounded-full animate-pulse-slow" />
-                        <div className="absolute top-32 left-1/2 -translate-x-1/2 whitespace-nowrap leading-none font-black text-6xl text-white/5 opacity-5 select-none italic tracking-widest uppercase">COSMOS</div>
+                        <img 
+                            src="/images/universe-background.jpeg" 
+                            alt="Universe"
+                            className="w-full h-full object-cover opacity-80"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#1A1135] via-transparent to-[#1A1135]" />
                     </div>
 
                     <div className="relative z-10 px-6 py-12 flex items-center justify-between">
-                        <button onClick={handleBackToMap} className="w-12 h-12 rounded-full bg-white/5 backdrop-blur-md flex items-center justify-center border border-white/10 active:scale-90">
-                            <ChevronLeft className="w-8 h-8 text-white/80" />
+                        <button onClick={handleBackToMap} className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 active:scale-90">
+                            <ChevronLeft className="w-8 h-8 text-white" />
                         </button>
                         <div className="flex flex-col items-center">
-                            <span className="text-[10px] tracking-[0.5em] text-white/40 font-black uppercase mb-1">Analysis</span>
-                            <h2 className="text-xl font-black tracking-[0.2em] text-white uppercase italic">Planet Details</h2>
+                            <span className="text-[10px] tracking-[0.3em] text-pink-300 font-bold uppercase mb-1">Planet Info</span>
+                            <h2 className="text-2xl font-black text-white">Exploring</h2>
                         </div>
                         <div className="w-12" />
                     </div>
 
-                    <div className="flex-1 relative z-10 flex flex-col items-center justify-start p-8 pt-10">
-                        <div className="relative w-64 h-64 mb-10 flex items-center justify-center">
-                            <div className="absolute inset-[-15%] border-2 border-dashed border-white/5 rounded-full animate-spin-slow opacity-60" />
+                    <div className="flex-1 relative z-10 flex flex-col items-center justify-start p-8 pt-6">
+                        <div className="relative w-72 h-72 mb-10 flex items-center justify-center">
+                            {/* Layered Orbitals (A Hat in Time Style) */}
+                            {/* Inner Dashed Ring */}
+                            <div className="absolute inset-[-10%] border-2 border-dashed border-cyan-400/30 rounded-full animate-spin-slow opacity-60" />
+                            
+                            {/* Outer Dotted Ring with Satellites */}
+                            <div className="absolute inset-[-25%] border border-dotted border-white/20 rounded-full animate-spin-reverse">
+                                {/* Energy Satellite A */}
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
+                                {/* Energy Satellite B */}
+                                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-[#4E56A6] rounded-full shadow-[0_0_10px_rgba(78,86,166,0.6)]" />
+                            </div>
+
+                            {/* Faint Outer Ring */}
+                            <div className="absolute inset-[-42%] border border-white/5 rounded-full" />
+                            
                             <img 
                                 src={selectedPlanet?.image} 
                                 alt={selectedPlanet?.name}
-                                className={`w-full h-full object-contain drop-shadow-[0_0_50px_rgba(78,86,166,0.3)] transition-all duration-1000 ${
+                                className={`relative z-30 w-full h-full object-contain drop-shadow-[0_0_50px_rgba(78,86,166,0.3)] transition-all duration-1000 ${
                                     selectedPlanet?.isLocked ? 'grayscale brightness-50 contrast-125' : 'animate-float-high'
                                 }`}
                             />
                         </div>
 
                         <div className="relative w-full mt-4 animate-slide-up">
-                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-0.5 h-12 bg-white/30" />
-                            <div className="bg-[#1A1C30]/50 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 p-8 shadow-[0_30px_60px_rgba(0,0,0,0.6)] text-center">
-                                <h2 className="text-4xl font-black text-white italic tracking-tighter leading-none mb-2">{selectedPlanet?.name}</h2>
-                                <span className="text-[#4E56A6] font-black text-sm tracking-[0.3em] uppercase mb-6 block">{selectedPlanet?.enName}</span>
-                                <p className="text-white/70 text-sm leading-relaxed mb-10">{selectedPlanet?.desc}</p>
-                                <button className="w-full py-4 rounded-2xl font-black tracking-[0.2em] text-lg bg-white text-[#0A0C14] hover:bg-cyan-50 shadow-xl transition-transform active:scale-95">
-                                    {selectedPlanet?.isLocked ? 'LOCKED' : 'ENTER'}
+                            <div className="bg-[#FFFFFF]/10 backdrop-blur-2xl rounded-[3rem] border border-white/20 p-8 shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-center">
+                                <h2 className="text-4xl font-black text-white tracking-tighter mb-1">{selectedPlanet?.name}</h2>
+                                <span className="text-pink-300 font-bold text-sm tracking-[0.2em] uppercase mb-6 block">{selectedPlanet?.enName}</span>
+                                <p className="text-white/80 text-base leading-relaxed mb-10 px-2">{selectedPlanet?.desc}</p>
+                                <button className={`w-full py-5 rounded-[2rem] font-black tracking-[0.1em] text-xl shadow-2xl transition-all active:scale-95 ${
+                                    selectedPlanet?.isLocked 
+                                    ? 'bg-white/10 text-white/30 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-[#FF7EB3] to-[#FF758C] text-white'
+                                }`}>
+                                    {selectedPlanet?.isLocked ? 'LOCKED' : 'START ADVENTURE'}
                                 </button>
                             </div>
                         </div>
@@ -273,6 +351,12 @@ const PlanetMap = ({ onBack }) => {
                 }
                 .animate-spin-slow { animation: spin-slow 40s linear infinite; }
 
+                @keyframes spin-reverse {
+                    from { transform: rotate(360deg); }
+                    to { transform: rotate(0deg); }
+                }
+                .animate-spin-reverse { animation: spin-reverse 25s linear infinite; }
+
                 @keyframes slide-up {
                     from { transform: translateY(40px); opacity: 0; }
                     to { transform: translateY(0); opacity: 1; }
@@ -284,3 +368,4 @@ const PlanetMap = ({ onBack }) => {
 };
 
 export default PlanetMap;
+
