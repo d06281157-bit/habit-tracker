@@ -102,14 +102,20 @@ const AchievementModal = ({
         }
     }, [displayGoldScore, targetGoldScore, isOpen, isGoldPulsing]);
 
-    // Effect Trigger Helper for stars
+    // Effect Trigger Helper for stars/gold
     const triggerRewardEffect = (value, type = 'star') => {
         const id = Date.now() + Math.random();
         setPopups(prev => [...prev, { id, x: '50%', y: '35%', value, type }]);
         
-        setShowScoreBadge(true);
-        setIsScorePulsing(true);
-        setTimeout(() => setIsScorePulsing(false), 600);
+        if (type === 'star') {
+            setShowScoreBadge(true);
+            setIsScorePulsing(true);
+            setTimeout(() => setIsScorePulsing(false), 600);
+        } else if (type === 'gold') {
+            setShowGoldBadge(true);
+            setIsGoldPulsing(true);
+            setTimeout(() => setIsGoldPulsing(false), 600);
+        }
         
         setTimeout(() => {
             setPopups(prev => prev.filter(p => p.id !== id));
@@ -169,6 +175,7 @@ const AchievementModal = ({
         { id: 7, title: "首次分享養成心得", current: 1, target: 1, reward: 200 },
         { id: 8, title: "探索 3 個神祕星球", current: 2, target: 3, reward: 200 },
         { id: 9, title: "在商店兌換 1 個物品", current: 1, target: 1, reward: 200 },
+        { id: 10, title: "達成 10 次完美專注", current: 1, target: 1, reward: 200 },
     ];
 
     const currentTasks = activeTab === 'daily' ? dailyTasks : specialTasks;
@@ -450,7 +457,7 @@ const TaskCard = ({ title, current, target, reward, image, isClaimed, onClaim })
         <div className="bg-gray-50 rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between shrink-0 hover:shadow-md transition-shadow">
             <div className="flex-1">
                 <h3 className={`font-bold text-base mb-4 transition-all duration-300 ${
-                    isClaimed ? 'text-gray-400 line-through italic' : isCompleted ? 'text-[#001D6E]' : 'text-gray-700'
+                    isClaimed ? 'text-gray-400 line-through italic' : 'text-gray-700'
                 }`}>
                     {title}
                 </h3>
@@ -459,7 +466,7 @@ const TaskCard = ({ title, current, target, reward, image, isClaimed, onClaim })
                         className="h-full transition-all duration-500 rounded-full" 
                         style={{ 
                             width: `${Math.min((current / target) * 100, 100)}%`,
-                            backgroundColor: isClaimed ? '#8B8CF64D' : '#8B8CF6'
+                            backgroundColor: isClaimed ? '#6F7CFF4D' : '#6F7CFF'
                         }}
                     />
                 </div>
@@ -478,7 +485,7 @@ const TaskCard = ({ title, current, target, reward, image, isClaimed, onClaim })
                     disabled={!canClaim}
                     className={`text-sm py-2 rounded-full font-bold transition-all w-full whitespace-nowrap text-center ${
                         canClaim 
-                        ? 'bg-[#001D6E] text-white shadow-[0_0_15px_rgba(0,29,110,0.5)] animate-heartbeat cursor-pointer' 
+                        ? 'bg-[#4E56A6] text-white shadow-[0_0_15px_rgba(78,86,166,0.5)] animate-heartbeat cursor-pointer' 
                         : isClaimed
                         ? 'bg-gray-200 text-gray-400 cursor-default'
                         : 'bg-gray-200 text-gray-400 cursor-not-allowed'
