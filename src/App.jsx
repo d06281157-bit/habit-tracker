@@ -8,7 +8,7 @@ import HabitDetailModal from './components/HabitDetailModal';
 import AlienCollection from './components/AlienCollection';
 import AchievementModal from './components/AchievementModal';
 import IncubatePage from './components/IncubatePage';
-import PlanetMap from './components/PlanetMap'; // Import
+import PlanetMap from './components/PlanetMap';
 import ShopPage from './components/ShopPage';
 
 // Default Data (Fallback if storage is empty)
@@ -24,18 +24,34 @@ function App() {
   // Modal States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false); // For Rocket button in Header
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   // Selection States
-  const [selectedHabit, setSelectedHabit] = useState(null); // For Detail View
-  const [editingHabit, setEditingHabit] = useState(null);   // For Edit Mode
-  const [activeSwipeId, setActiveSwipeId] = useState(null); // For Exclusive Swipe
-  const [isIncubating, setIsIncubating] = useState(false);  // Incubation State
+  const [selectedHabit, setSelectedHabit] = useState(null);
+  const [editingHabit, setEditingHabit] = useState(null);
+  const [activeSwipeId, setActiveSwipeId] = useState(null);
+  const [isIncubating, setIsIncubating] = useState(false);
 
-  // Click Tracking Ref (Coordinate Trap)
+  // Click Tracking Ref
   const clickStartPos = useRef({ x: 0, y: 0 });
 
-  // 1. Data Persistence (LocalStorage)
+  // Achievement and Persistence States
+  const [bonusScore, setBonusScore] = useState(() => {
+    return parseInt(localStorage.getItem('achievement_bonus_score') || '0');
+  });
+  const [goldScore, setGoldScore] = useState(() => {
+    return parseInt(localStorage.getItem('achievement_gold_score') || '0');
+  });
+  const [claimedMilestones, setClaimedMilestones] = useState(() => {
+    const saved = localStorage.getItem('claimed_milestones');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [claimedTaskIds, setClaimedTaskIds] = useState(() => {
+    const saved = localStorage.getItem('claimed_task_ids');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Data Persistence
   const [habits, setHabits] = useState(() => {
     const saved = localStorage.getItem('my_habits_data');
     if (saved) {
@@ -44,21 +60,33 @@ function App() {
     return DEFAULT_HABITS;
   });
 
-  // Auto-save whenever habits change
+  // Auto-save effects
   useEffect(() => {
     localStorage.setItem('my_habits_data', JSON.stringify(habits));
   }, [habits]);
 
-  // 2. Logic Functions
+  useEffect(() => {
+    localStorage.setItem('achievement_bonus_score', bonusScore.toString());
+  }, [bonusScore]);
 
-  // Handle Add OR Edit Habit
+  useEffect(() => {
+    localStorage.setItem('achievement_gold_score', goldScore.toString());
+  }, [goldScore]);
+
+  useEffect(() => {
+    localStorage.setItem('claimed_milestones', JSON.stringify(claimedMilestones));
+  }, [claimedMilestones]);
+
+  useEffect(() => {
+    localStorage.setItem('claimed_task_ids', JSON.stringify(claimedTaskIds));
+  }, [claimedTaskIds]);
+
+  // Logic Functions
   const handleSaveHabit = (habitData) => {
       if (editingHabit) {
-        // Update Existing
         setHabits(prev => prev.map(h => h.id === editingHabit.id ? { ...h, ...habitData } : h));
         setEditingHabit(null);
       } else {
-        // Create New
         const newHabit = {
           id: Date.now(),
           title: habitData.title,
@@ -71,70 +99,96 @@ function App() {
         setHabits(prev => [...prev, newHabit]);
       }
       setIsAddModalOpen(false);
-      
-      // CRITICAL: Close all modals and clear selection to return to Home
       setEditingHabit(null);
       setSelectedHabit(null); 
       setIsDetailModalOpen(false);
   };
 
-  // Handle Delete
   const handleDeleteHabit = (habitId) => {
     if (window.confirm('確定要刪除這個星願嗎？')) {
         setHabits(prev => prev.filter(h => h.id !== habitId));
     }
   };
 
-  // Handle Checkbox Toggle
   const handleToggleHabit = (habitId) => {
     setHabits(prev => prev.map(h => 
         h.id === habitId ? { ...h, completed: !h.completed } : h
     ));
   };
 
-  // Start Editing (From Card Slide or Detail Modal)
   const handleStartEdit = (habit) => {
       setEditingHabit(habit);
       setIsDetailModalOpen(false);
       setIsAddModalOpen(true);
   };
 
-  // Open Detail Modal (If clicking the card body)
   const handleOpenDetail = (habit) => {
       setSelectedHabit(habit);
       setIsDetailModalOpen(true);
   };
 
-  // Handle Start Incubation
   const handleStartIncubation = () => {
       setIsIncubating(true);
   };
   
-  // Handle Hero Egg Click
   const handleEggClick = () => {
-     if (totalScore >= 20) {
-         setIsIncubating(true); // Trigger incubation immediately
+     if (dailyHabitScore >= 20) {
+         setIsIncubating(true);
          setCurrentView('incubate');
      }
   };
 
-  // 3. Calculated Stats for Hero Section
+  const handleResetDebug = () => {
+    console.log('[DEBUG] handleResetDebug initiated');
+    setTimeout(() => {
+      const confirmed = window.confirm('確定要重置所有積分與任務嗎？\n(注意：此操作將清除所有進度並刷新頁面)');
+      if (confirmed) {
+          setBonusScore(0);
+          setGoldScore(0);
+          setClaimedMilestones([]);
+          setClaimedTaskIds([]);
+          setHabits(prev => prev.map(h => ({ ...h, completed: false })));
+          localStorage.clear(); 
+          alert('已完成重置，頁面即將刷新。');
+          window.location.reload(); 
+      }
+    }, 10);
+  };
+
+  useEffect(() => {
+    window.resetApp = handleResetDebug;
+  }, [habits, bonusScore, claimedMilestones, claimedTaskIds]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.shiftKey && e.key.toUpperCase() === 'F') {
+        e.preventDefault();
+        handleResetDebug();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Calculated Stats
   const totalHabits = habits.length;
   const completedHabits = habits.filter(h => h.completed).length;
-  // Use count/total logic or just count if previously requested, but standard is percentage
   const progressPercentage = totalHabits === 0 ? 0 : (completedHabits / totalHabits) * 100;
-  const totalScore = completedHabits * 5;
+  
+  // Daily Habit Score: Only for frog progress bar (X/20)
+  const dailyHabitScore = completedHabits * 5;
+  
+  // Total Achievement Score (used for some displays but NOT for star badge in modal)
+  const totalScore = dailyHabitScore + bonusScore;
 
   return (
     <div className="min-h-screen bg-[#FFFFF0] pb-32 w-full max-w-md mx-auto relative overflow-x-hidden shadow-2xl">
-      {/* Backgrounds */}
       <div className="absolute inset-x-0 bg-pastel-yellow z-0 h-[50vh] transition-all" />
       <div className="absolute inset-0 top-[50vh] bg-[#FFFFF0] z-0" />
 
       <div className="relative z-10 font-sans min-h-screen flex flex-col">
         {currentView === 'home' ? (
           <>
-            {/* Header with Rocket Trigger - Absolute Positioned to overlay Hero */}
             <div className="absolute top-0 left-0 w-full z-20">
                 <Header 
                     onOpenTask={() => setIsTaskModalOpen(true)} 
@@ -142,40 +196,31 @@ function App() {
                 />
             </div>
             
-            {/* Hero with Dynamic Stats */}
             <Hero 
                completed={completedHabits} 
                total={totalHabits} 
                progress={progressPercentage}
-               score={totalScore}
-               onEggClick={handleEggClick} // Pass Handler
+               score={dailyHabitScore}
+               onEggClick={handleEggClick}
             />
             
-            {/* Habit List - Mobile List Layout */}
             <div className="mt-6 px-6 space-y-4 pb-24">
               {habits.map(habit => (
                 <div 
                     key={habit.id}
                     onPointerDown={(e) => {
-                        // Record exact screen coordinates when finger touches screen
                         clickStartPos.current = { x: e.clientX, y: e.clientY };
                     }}
                     onClick={(e) => {
-                        // Calculate how far the cursor/finger moved
                         const moveX = Math.abs(e.clientX - clickStartPos.current.x);
                         const moveY = Math.abs(e.clientY - clickStartPos.current.y);
-
-                        // THRESHOLD: 5px. If moved more than 5px, IT IS A SWIPE/DRAG.
                         if (moveX > 5 || moveY > 5) {
-                            console.log("Swipe detected, click blocked.");
-                            e.stopPropagation(); // Stop event bubbling
-                            return; // EXIT IMMEDIATELY - DO NOT OPEN MODAL
+                            e.stopPropagation();
+                            return;
                         }
-
-                        // Only runs if movement was minimal (A pure tap)
                         handleOpenDetail(habit);
                     }}
-                    className="touch-manipulation h-24" // Optimize for touch
+                    className="touch-manipulation h-24"
                 >
                     <HabitCard 
                       habit={habit}
@@ -184,7 +229,6 @@ function App() {
                       onToggle={handleToggleHabit} 
                       onEdit={handleStartEdit}
                       onDelete={handleDeleteHabit}
-                      // onClick removed, handled by wrapper
                     />
                 </div>
               ))}
@@ -210,11 +254,24 @@ function App() {
         ) : null}
       </div>
 
-       {/* Modals placed outside the main flow */}
+       {/* Modals */}
        <AchievementModal 
           isOpen={isTaskModalOpen} 
           onClose={() => setIsTaskModalOpen(false)} 
-          score={totalScore}
+          score={bonusScore}
+          goldScore={goldScore}
+          completedHabitsCount={completedHabits}
+          claimedMilestones={claimedMilestones}
+          onClaimMilestone={(mScore, reward) => {
+             setClaimedMilestones(prev => [...prev, mScore]);
+             setGoldScore(prev => prev + reward);
+          }}
+          claimedTaskIds={claimedTaskIds}
+          onClaimTask={(id, points) => {
+             setClaimedTaskIds(prev => [...prev, id]);
+             setBonusScore(prev => prev + points);
+          }}
+          onReset={handleResetDebug}
        />
 
        <HabitDetailModal 

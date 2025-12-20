@@ -1,44 +1,61 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 
-const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
+const AchievementModal = ({ 
+    isOpen, 
+    onClose, 
+    score = 0, 
+    goldScore = 0, 
+    completedHabitsCount = 0,
+    claimedMilestones = [], 
+    onClaimMilestone,
+    claimedTaskIds = [],
+    onClaimTask
+}) => {
     // Control animation state
     const [isVisible, setIsVisible] = useState(false);
     
     // Local score states for animation
     const [displayScore, setDisplayScore] = useState(score);
     const [targetScore, setTargetScore] = useState(score);
+    const [displayGoldScore, setDisplayGoldScore] = useState(goldScore);
+    const [targetGoldScore, setTargetGoldScore] = useState(goldScore);
     const [activeTab, setActiveTab] = useState('daily'); // 'daily' or 'special'
-    const [claimedMilestones, setClaimedMilestones] = useState([]); // Array of score targets like [200, 600]
     
     // Reward animation states
-    const [popups, setPopups] = useState([]); // { id, x, y, value }
+    const [popups, setPopups] = useState([]); // { id, x, y, value, type }
     const [isScorePulsing, setIsScorePulsing] = useState(false);
     const [showScoreBadge, setShowScoreBadge] = useState(false);
+    const [isGoldPulsing, setIsGoldPulsing] = useState(false);
+    const [showGoldBadge, setShowGoldBadge] = useState(false);
 
     // Sync prop score to target score when modal opens or prop changes
     useEffect(() => {
         if (isOpen) {
             setIsVisible(true);
             setTargetScore(score);
-            if (!isVisible) setDisplayScore(score);
+            setTargetGoldScore(goldScore);
+            if (!isVisible) {
+                setDisplayScore(score);
+                setDisplayGoldScore(goldScore);
+            }
         } else {
             const timer = setTimeout(() => {
                 setIsVisible(false);
                 setShowScoreBadge(false);
+                setShowGoldBadge(false);
             }, 500); 
             return () => clearTimeout(timer);
         }
-    }, [isOpen, score]);
+    }, [isOpen, score, goldScore, isVisible]);
 
     // Smooth animation logic: displayScore follows targetScore
     useEffect(() => {
         if (!isOpen) return;
         
         if (displayScore < targetScore) {
-            setShowScoreBadge(true); // Always show when score is counting up
+            setShowScoreBadge(true);
             const diff = targetScore - displayScore;
-            // When score counts up, we also trigger a small pulse on the score box
             if (!isScorePulsing) {
                 setIsScorePulsing(true);
                 setTimeout(() => setIsScorePulsing(false), 200);
@@ -52,41 +69,73 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
         } else if (displayScore > targetScore) {
             setDisplayScore(targetScore);
         } else {
-            // Reset visibility after a short delay when counting finishes
             const timer = setTimeout(() => {
                 if (displayScore === targetScore) setShowScoreBadge(false);
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [displayScore, targetScore, isOpen]);
+    }, [displayScore, targetScore, isOpen, isScorePulsing]);
 
-    // Effect Trigger Helper - Now fixed to 35% height in the header area
-    const triggerRewardEffect = (value) => {
+    // Animate gold score changes
+    useEffect(() => {
+        if (!isOpen) return;
+        
+        if (displayGoldScore < targetGoldScore) {
+            setShowGoldBadge(true);
+            const diff = targetGoldScore - displayGoldScore;
+            if (!isGoldPulsing) {
+                setIsGoldPulsing(true);
+                setTimeout(() => setIsGoldPulsing(false), 200);
+            }
+            
+            const step = Math.max(1, Math.ceil(diff / 15)); 
+            const timer = setTimeout(() => {
+                setDisplayGoldScore(prev => Math.min(prev + step, targetGoldScore));
+            }, 20); 
+            return () => clearTimeout(timer);
+        } else if (displayGoldScore > targetGoldScore) {
+            setDisplayGoldScore(targetGoldScore);
+        } else if (displayGoldScore === targetGoldScore && targetGoldScore > 0) {
+            const timer = setTimeout(() => setShowGoldBadge(false), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [displayGoldScore, targetGoldScore, isOpen, isGoldPulsing]);
+
+    // Effect Trigger Helper for stars
+    const triggerRewardEffect = (value, type = 'star') => {
         const id = Date.now() + Math.random();
-        setPopups(prev => [...prev, { id, x: '50%', y: '35%', value }]);
+        setPopups(prev => [...prev, { id, x: '50%', y: '35%', value, type }]);
         
-        setShowScoreBadge(true);
-        setIsScorePulsing(true);
-        setTimeout(() => setIsScorePulsing(false), 600);
+        if (type === 'star') {
+            setShowScoreBadge(true);
+            setIsScorePulsing(true);
+            setTimeout(() => setIsScorePulsing(false), 600);
+        } else {
+            setShowGoldBadge(true);
+            setIsGoldPulsing(true);
+            setTimeout(() => setIsGoldPulsing(false), 600);
+        }
         
-        // Cleanup popup after animation
         setTimeout(() => {
             setPopups(prev => prev.filter(p => p.id !== id));
         }, 1000);
     };
 
     // Handle Claim (Task Cards)
-    const handleClaim = (rewardPoints) => {
-        setTargetScore(prev => prev + rewardPoints);
-        triggerRewardEffect(rewardPoints); 
+    const handleClaim = (taskId, rewardPoints) => {
+        if (onClaimTask) onClaimTask(taskId, rewardPoints);
+        triggerRewardEffect(rewardPoints, 'star'); 
     };
 
     // Handle Claim (Milestones)
     const handleClaimMilestone = (milestoneScore) => {
-        if (!claimedMilestones.includes(milestoneScore)) {
-            setClaimedMilestones(prev => [...prev, milestoneScore]);
-            // Milestone rewards no longer add to the main score bar per user request
-            console.log(`Earned milestone reward for ${milestoneScore}!`);
+        const isReached = displayScore >= milestoneScore;
+        const isAlreadyClaimed = claimedMilestones.includes(milestoneScore);
+
+        if (isReached && !isAlreadyClaimed) {
+            const milestoneReward = milestoneScore > 600 ? 500 : milestoneScore > 200 ? 300 : 200;
+            if (onClaimMilestone) onClaimMilestone(milestoneScore, milestoneReward);
+            triggerRewardEffect(milestoneReward, 'gold');
         }
     };
 
@@ -111,17 +160,20 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
     };
     const progressPercent = calculateProgressPercent(displayScore);
 
-    // Mock Data
+    // Standardized Tasks
     const dailyTasks = [
-        { id: 1, title: "專注時間達到 30 分鐘", current: 0, target: 1, reward: 50 },
-        { id: 2, title: "完成 3 個星願", current: Math.min(Math.floor(displayScore/100), 3), target: 3, reward: 100 },
-        { id: 3, title: "連續登入 3 天", current: 1, target: 3, reward: 150 },
+        { id: 1, title: "專注時間達到 30 分鐘", current: 0, target: 1, reward: 100 },
+        { id: 2, title: "完成 3 個星願", current: Math.min(completedHabitsCount, 3), target: 3, reward: 100 },
+        { id: 3, title: "連續登入 3 天", current: 1, target: 3, reward: 100 },
     ];
 
     const specialTasks = [
-        { id: 4, title: "解鎖第一顆寵物蛋", current: 1, target: 1, reward: 500, claimed: false },
-        { id: 5, title: "收集 5 個外星人", current: 2, target: 5, reward: 1000, claimed: false },
-        { id: 6, title: "可以領取的測試任務", current: 1, target: 1, reward: 200, claimed: false },
+        { id: 4, title: "解鎖第一顆寵物蛋", current: 1, target: 1, reward: 200 },
+        { id: 5, title: "收集 5 個外星人", current: 2, target: 5, reward: 200 },
+        { id: 6, title: "完成進階資料設定", current: 1, target: 1, reward: 200 },
+        { id: 7, title: "首次分享養成心得", current: 1, target: 1, reward: 200 },
+        { id: 8, title: "探索 3 個神祕星球", current: 2, target: 3, reward: 200 },
+        { id: 9, title: "在商店兌換 1 個物品", current: 1, target: 1, reward: 200 },
     ];
 
     const currentTasks = activeTab === 'daily' ? dailyTasks : specialTasks;
@@ -146,23 +198,39 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
                 >
                     <div className="absolute inset-0 bg-[#001D6E]/40" />
                     
-                    {/* Top Row: Score Badge (Left) and Close Button (Right) */}
-                    <div className="absolute top-6 left-0 right-0 px-6 flex flex-row justify-between items-center z-50">
-                        {/* Score Badge (Pill style): Now on the left with Glassmorphism */}
-                        <div 
-                            className={`flex items-center bg-white/20 backdrop-blur-md rounded-full px-4 py-1.5 shadow-lg border border-white/40 transition-all duration-500 ease-out -translate-x-2 ${
-                                showScoreBadge 
-                                ? 'opacity-100 translate-y-0 scale-100' 
-                                : 'opacity-0 -translate-y-4 scale-75 pointer-events-none'
-                            } ${isScorePulsing ? 'scale-110 border-yellow-400/60 bg-white/30' : ''}`}
-                        >
-                            <img src="/images/icon-star.png" alt="Star" className="w-6 h-6 mr-2 drop-shadow-sm" />
-                            <span className="text-white font-black text-lg tracking-tight tabular-nums drop-shadow-sm">
-                                {displayScore}
-                            </span>
+                    {/* Top Row: Score Badges (Left) and Close Button (Right) */}
+                    <div className="absolute top-4 left-0 right-0 px-6 flex flex-row justify-between items-start z-[200]">
+                        <div className="flex flex-col gap-2 -translate-x-2">
+                            {/* Star Score Badge */}
+                            <div 
+                                className={`flex items-center bg-white/20 backdrop-blur-md rounded-full px-4 py-1.5 shadow-lg border border-white/40 transition-all duration-500 ease-out ${
+                                    showScoreBadge 
+                                    ? 'opacity-100 translate-y-0 scale-100' 
+                                    : 'opacity-0 -translate-y-4 scale-75 pointer-events-none'
+                                } ${isScorePulsing ? 'scale-110 border-yellow-400/60 bg-white/30' : ''}`}
+                            >
+                                <img src="/images/icon-star.png" alt="Star" className="w-6 h-6 mr-2 drop-shadow-sm" />
+                                <span className="text-white font-black text-lg tracking-tight tabular-nums drop-shadow-sm">
+                                    {displayScore}
+                                </span>
+                            </div>
+
+                            {/* Gold Coin Badge */}
+                            <div 
+                                className={`flex items-center bg-white/20 backdrop-blur-md rounded-full px-4 py-1.5 shadow-lg border border-white/40 transition-all duration-500 ease-out ${
+                                    showGoldBadge 
+                                    ? 'opacity-100 translate-y-0 scale-100' 
+                                    : 'opacity-0 -translate-y-4 scale-75 pointer-events-none'
+                                } ${isGoldPulsing ? 'scale-110 border-orange-400/60 bg-white/30' : ''}`}
+                            >
+                                <img src="/images/icon-gold.png" alt="Gold" className="w-6 h-6 mr-2 drop-shadow-sm" />
+                                <span className="text-white font-black text-lg tracking-tight tabular-nums drop-shadow-sm">
+                                    {displayGoldScore}
+                                </span>
+                            </div>
                         </div>
 
-                        {/* Close Button: Now back on the right, made smaller */}
+                        {/* Close Button */}
                         <button
                             onClick={onClose}
                             className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90"
@@ -171,7 +239,7 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
                         </button>
                     </div>
 
-                    {/* Header Title: Larger and moved further up */}
+                    {/* Header Title */}
                     <div className="w-full flex justify-center items-center mb-16 relative -mt-8">
                         <h2 className="text-3xl font-black text-white tracking-[0.2em] drop-shadow-lg">成就任務</h2>
                     </div>
@@ -188,7 +256,8 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
                                     />
                                 ))}
 
-                                {progressPercent > 0 && (
+                                {/* Fix: Progress bar should stay if score > 0 */}
+                                {displayScore > 0 && progressPercent > 0 && (
                                     <div 
                                         className="h-full transition-all duration-1000 ease-out relative rounded-l-[4px] z-10"
                                         style={{ 
@@ -259,7 +328,7 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
                             onClick={() => setActiveTab('daily')}
                             className={`flex-1 py-3 text-center rounded-t-2xl font-bold transition-all ${
                                 activeTab === 'daily' 
-                                ? 'bg-[#C5C3E3] text-[#001D6E] text-lg' 
+                                ? 'bg-[#C5C3E3] text-[#001D6E] text-lg outline-none' 
                                 : 'bg-white/20 text-white/60 text-sm hover:bg-white/30'
                             }`}
                         >
@@ -269,7 +338,7 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
                             onClick={() => setActiveTab('special')}
                             className={`flex-1 py-3 text-center rounded-t-2xl font-bold transition-all ${
                                 activeTab === 'special' 
-                                ? 'bg-[#C5C3E3] text-[#001D6E] text-lg' 
+                                ? 'bg-[#C5C3E3] text-[#001D6E] text-lg outline-none' 
                                 : 'bg-white/20 text-white/60 text-sm hover:bg-white/30'
                             }`}
                         >
@@ -280,13 +349,17 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
 
                 {/* Task List */}
                 <div className="flex-1 bg-[#C5C3E3] px-6 py-8 space-y-4 overflow-y-auto no-scrollbar relative z-10 pb-20">
-                    {currentTasks
+                    {currentTasks && currentTasks
                         .slice()
                         .sort((a, b) => {
-                            const aDone = a.current >= a.target;
-                            const bDone = b.current >= b.target;
-                            if (aDone === bDone) return 0;
-                            return aDone ? 1 : -1;
+                            // Sort logic: Incomplete -> Can Claim -> Already Claimed (Bottom)
+                            const getPriority = (task) => {
+                                if (claimedTaskIds.includes(task.id)) return 3; // Bottom
+                                const isCompleted = task.current >= task.target;
+                                if (isCompleted) return 1; // Top
+                                return 2; // Middle
+                            };
+                            return getPriority(a) - getPriority(b);
                         })
                         .map(task => (
                             <TaskCard 
@@ -296,7 +369,8 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
                                 target={task.target}
                                 reward={task.reward} 
                                 image="/images/icon-star.png"
-                                onClaim={() => handleClaim(task.reward)}
+                                isClaimed={claimedTaskIds.includes(task.id)}
+                                onClaim={() => handleClaim(task.id, task.reward)}
                             />
                         ))}
                 </div>
@@ -306,9 +380,20 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
                     {popups.map(p => (
                         <div 
                             key={p.id}
-                            className="absolute animate-reward-float text-4xl font-black text-yellow-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]"
-                            style={{ left: p.x, top: p.y, filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.8))' }}
+                            className={`absolute animate-reward-float text-4xl font-black drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] flex items-center gap-2 ${
+                                p.type === 'gold' ? 'text-orange-400' : 'text-yellow-400'
+                            }`}
+                            style={{ 
+                                left: p.x, 
+                                top: p.y, 
+                                filter: `drop-shadow(0 0 10px ${p.type === 'gold' ? 'rgba(255,165,0,0.8)' : 'rgba(255,215,0,0.8)'})` 
+                            }}
                         >
+                            <img 
+                                src={p.type === 'gold' ? "/images/icon-gold.png" : "/images/icon-star.png"} 
+                                className="w-10 h-10 object-contain" 
+                                alt="Reward Icon"
+                            />
                             +{p.value}
                         </div>
                     ))}
@@ -354,27 +439,26 @@ const AchievementModal = ({ isOpen, onClose, score = 0 }) => {
     );
 };
 
-const TaskCard = ({ title, current, target, reward, image, onClaim }) => {
-    const [claimed, setClaimed] = useState(false);
+const TaskCard = ({ title, current, target, reward, image, isClaimed, onClaim }) => {
     const isCompleted = current >= target;
-    const canClaim = isCompleted && !claimed;
+    const canClaim = isCompleted && !isClaimed;
 
     return (
         <div className="bg-gray-50 rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between shrink-0 hover:shadow-md transition-shadow">
             <div className="flex-1">
                 <h3 className={`font-bold text-base mb-4 transition-all duration-300 ${
-                    isCompleted ? 'text-gray-400 line-through' : 'text-gray-700'
+                    isClaimed ? 'text-gray-400' : isCompleted ? 'text-[#001D6E]' : 'text-gray-700'
                 }`}>
                     {title}
                 </h3>
                 <div className="w-[90%] h-4 bg-gray-200 rounded-full overflow-hidden">
                     <div 
-                        className="h-full bg-[#4600A1] rounded-full transition-all duration-500" 
+                        className={`h-full transition-all duration-500 rounded-full ${isClaimed ? 'bg-[#001D6E]/30' : 'bg-[#001D6E]'}`} 
                         style={{ width: `${Math.min((current / target) * 100, 100)}%` }}
                     />
                 </div>
                 <div className="flex justify-between items-center mt-1">
-                    <p className="text-xs text-gray-400">{current}/{target}</p>
+                    <p className="text-xs text-gray-400">{Math.min(current, target)}/{target}</p>
                 </div>
             </div>
             <div className="ml-4 mr-2 flex flex-col items-center gap-3 w-24 shrink-0">
@@ -384,15 +468,17 @@ const TaskCard = ({ title, current, target, reward, image, onClaim }) => {
                 </div>
                 
                 <button 
-                    onClick={() => { if (canClaim) { setClaimed(true); onClaim(); } }}
+                    onClick={() => { if (canClaim) onClaim(); }}
                     disabled={!canClaim}
                     className={`text-sm py-2 rounded-full font-bold transition-all w-full whitespace-nowrap text-center ${
                         canClaim 
-                        ? 'bg-[#4600A1] text-white shadow-[0_0_15px_rgba(70,0,161,0.5)] animate-heartbeat cursor-pointer' 
+                        ? 'bg-[#001D6E] text-white shadow-[0_0_15px_rgba(0,29,110,0.5)] animate-heartbeat cursor-pointer' 
+                        : isClaimed
+                        ? 'bg-gray-200 text-gray-400 cursor-default'
                         : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     }`}
                 >
-                    {claimed ? '已領取' : isCompleted ? '領取' : '未完成'}
+                    {isClaimed ? '已領取' : isCompleted ? '領取' : '未完成'}
                 </button>
             </div>
         </div>
