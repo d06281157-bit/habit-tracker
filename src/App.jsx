@@ -259,6 +259,7 @@ function App() {
   }, []); // Empty array is fine now because we use ref
 
   // Calculated Stats
+  const [selectedDate, setSelectedDate] = useState('今天');
   const totalHabits = habits.length;
   const completedHabits = habits.filter(h => h.completed).length;
   const progressPercentage = totalHabits === 0 ? 0 : (completedHabits / totalHabits) * 100;
@@ -268,6 +269,23 @@ function App() {
   
   // Total Achievement Score (used for some displays but NOT for star badge in modal)
   const totalScore = dailyHabitScore + bonusScore;
+
+  // Demo: Filter habits based on date
+  // Switch to Mock Data when '2' is selected to show functionality
+  const filteredHabits = selectedDate === '今天' 
+    ? habits 
+    : [
+        { id: 991, title: '晨間冥想', icon: 'icon-plant', frequency: '1次, 每天', completed: false, reward: 5 },
+        { id: 992, title: '閱讀 10 頁', icon: 'icon-book', frequency: '1次, 每天', completed: false, reward: 5 }
+      ];
+
+  // Logic: Which dates have been 'Fully Completed' (to show orange circle)
+  // Demo Mock logic:
+  const isDateCompleted = (date) => {
+      if (date === '今天') return habits.length > 0 && habits.every(h => h.completed);
+      if (date === '1' || date === '3') return true; // Mock that day 1 and 3 are done
+      return false;
+  };
 
   return (
     <div className="min-h-screen bg-[#FFFFF0] pb-32 w-full max-w-md mx-auto relative overflow-x-hidden shadow-2xl">
@@ -281,14 +299,17 @@ function App() {
                 <Header 
                     onOpenTask={() => setIsTaskModalOpen(true)} 
                     onOpenPlanet={() => setCurrentView('planet')}
+                    selectedDate={selectedDate}
+                    onSelectDate={setSelectedDate}
+                    checkCompleted={isDateCompleted}
                 />
             </div>
             <div className="-mt-[204px]">
                 <Hero 
-                   completed={completedHabits} 
-                   total={totalHabits} 
-                   progress={progressPercentage}
-                   score={eggProgress}
+                   completed={selectedDate === '今天' ? completedHabits : 0} 
+                   total={filteredHabits.length} 
+                   progress={selectedDate === '今天' ? progressPercentage : 0}
+                   score={selectedDate === '今天' ? eggProgress : 0}
                    incubationStatus={incubationStatus}
                    incubationStartTime={incubationStartTime}
                    onEggClick={handleEggClick}
@@ -296,7 +317,7 @@ function App() {
             </div>
             
             <div className="mt-6 px-6 space-y-4 pb-24">
-              {habits.map(habit => (
+              {filteredHabits.map(habit => (
                 <div 
                     key={habit.id}
                     onPointerDown={(e) => {
