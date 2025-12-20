@@ -1,69 +1,23 @@
 import React, { useState, useRef } from 'react';
-import { ChevronLeft, Lock } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
+import { planetsData } from '../data/planetsData';
 
-// Hand-tuned planet positions to sit perfectly on the "organic" trajectory
-const planetsInfo = [
-    { 
-        id: 1, 
-        name: '翠微星', 
-        enName: 'VERIDIA', 
-        desc: '充滿綠意與水晶的初始之地，這裡孕育著最原始的自然能量。', 
-        image: '/images/planet-grass-2.png', 
-        isLocked: false,
-        x: 35, 
-        y: 300, 
-    },
-    { 
-        id: 2, 
-        name: '砂岩星', 
-        enName: 'SANDORA', 
-        desc: '廣袤的沙漠與風蝕岩層，是岩系生命體的理想家園。', 
-        image: '/images/planet-swamp.png', 
-        isLocked: false,
-        x: 75,
-        y: 530, // Gap increased
-    },
-    { 
-        id: 3, 
-        name: '水靈界', 
-        enName: 'AQUARIS', 
-        desc: '被無盡海洋覆蓋的高密度水流體星球，重力極不穩定。', 
-        image: '/images/planet-water.png', 
-        isLocked: true,
-        x: 22,
-        y: 760, 
-    },
-    { 
-        id: 4, 
-        name: '珊瑚海', 
-        enName: 'CORALLIA', 
-        desc: '漂浮在粉色雲霧中的珊瑚礁島嶼，景色美如夢境一般。', 
-        image: '/images/planet-coral.png', 
-        isLocked: true,
-        x: 78,
-        y: 990,
-    },
-    { 
-        id: 5, 
-        name: '寒霜境', 
-        enName: 'FROSTORA', 
-        desc: '氣溫低至零下兩百度的冰封星球，隱藏著古老的冰晶文明。', 
-        image: '/images/planet-ice.png', 
-        isLocked: true,
-        x: 28,
-        y: 1220,
-    },
-    { 
-        id: 6, 
-        name: '熾焰星', 
-        enName: 'VOLCANIS', 
-        desc: '位於星系邊陲的火球，內核不斷噴湧出高能等離子體。', 
-        image: '/images/planet-lava.png', 
-        isLocked: true,
-        x: 70,
-        y: 1450,
-    },
-];
+// Adding coordinates to the imported planets data for the map view
+const planetsWithCoords = planetsData.map((planet, index) => {
+    // Map existing coordinates to the data
+    const coords = [
+        { x: 35, y: 300 },
+        { x: 75, y: 530 },
+        { x: 22, y: 760 },
+        { x: 78, y: 990 },
+        { x: 28, y: 1220 },
+        { x: 70, y: 1450 }
+    ];
+    return { 
+        ...planet, 
+        ...(coords[index] || { x: 50, y: 300 + index * 200 }) 
+    };
+});
 
 const PlanetMap = ({ onBack }) => {
     const [viewMode, setViewMode] = useState('map'); 
@@ -95,8 +49,8 @@ const PlanetMap = ({ onBack }) => {
      * Hand-crafted Organic Path segments
      */
     const getSegmentPath = (i) => {
-        const p1 = planetsInfo[i];
-        const p2 = planetsInfo[i+1];
+        const p1 = planetsWithCoords[i];
+        const p2 = planetsWithCoords[i+1];
         if (!p1 || !p2) return "";
 
         // Determine control points based on segment index to keep the "S" shape
@@ -170,14 +124,14 @@ const PlanetMap = ({ onBack }) => {
                                     </linearGradient>
                                 </defs>
                                 
-                                {planetsInfo.slice(0, -1).map((_, i) => {
-                                    const nextPlanet = planetsInfo[i+1];
-                                    const isUnlocked = !nextPlanet.isLocked;
+                                {planetsWithCoords.slice(0, -1).map((_, i) => {
+                                    const nextPlanet = planetsWithCoords[i+1];
+                                    const pathUnlocked = nextPlanet.isUnlocked;
                                     
                                     return (
                                         <g key={`path-segment-${i}`}>
                                             {/* Glowing Soft Shadow */}
-                                            {isUnlocked && (
+                                            {pathUnlocked && (
                                                 <path 
                                                     d={getSegmentPath(i)} 
                                                     fill="none" 
@@ -191,11 +145,11 @@ const PlanetMap = ({ onBack }) => {
                                             <path 
                                                 d={getSegmentPath(i)} 
                                                 fill="none" 
-                                                stroke={isUnlocked ? "url(#activeGradient)" : "rgba(255,255,255,0.15)"} 
-                                                strokeWidth={isUnlocked ? "3" : "1.5"} 
+                                                stroke={pathUnlocked ? "url(#activeGradient)" : "rgba(255,255,255,0.15)"} 
+                                                strokeWidth={pathUnlocked ? "3" : "1.5"} 
                                                 strokeLinecap="round"
-                                                strokeDasharray={isUnlocked ? "4 8" : "2 6"} // Both dashed for "star steps" look
-                                                className={`transition-all duration-1000 ${isUnlocked ? 'drop-shadow-[0_0_8px_rgba(255,184,224,0.6)]' : ''}`}
+                                                strokeDasharray={pathUnlocked ? "4 8" : "2 6"}
+                                                className={`transition-all duration-1000 ${pathUnlocked ? 'drop-shadow-[0_0_8px_rgba(255,184,224,0.6)]' : ''}`}
                                             />
                                         </g>
                                     );
@@ -203,7 +157,7 @@ const PlanetMap = ({ onBack }) => {
                             </svg>
 
                             {/* Planets */}
-                            {planetsInfo.map((planet) => (
+                            {planetsWithCoords.map((planet) => (
                                 <div 
                                     key={planet.id}
                                     className="absolute z-20 group cursor-pointer transition-all duration-500"
@@ -217,22 +171,20 @@ const PlanetMap = ({ onBack }) => {
                                     <div className="relative flex flex-col items-center">
                                         <div className="relative w-44 h-44 md:w-52 md:h-52 transform transition-transform group-hover:scale-110 active:scale-95 z-20">
                                             {/* Hover Glow Effect */}
-                                            {!planet.isLocked && (
+                                            {planet.isUnlocked && (
                                                 <div className="absolute inset-4 bg-white/20 blur-[30px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                             )}
-                                            
-
                                             
                                             <img 
                                                 src={planet.image} 
                                                 alt={planet.name}
                                                 className={`w-full h-full object-contain transition-all duration-700 ${
-                                                    planet.isLocked 
+                                                    !planet.isUnlocked 
                                                     ? 'grayscale brightness-[0.35]' 
                                                     : 'animate-float drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] group-hover:drop-shadow-[0_0_40px_rgba(255,184,224,0.6)]'
                                                 }`}
                                             />
-                                            {planet.isLocked && (
+                                            {!planet.isUnlocked && (
                                                 <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
                                                     <img 
                                                         src="/images/icon-gold-lock.png" 
@@ -242,33 +194,32 @@ const PlanetMap = ({ onBack }) => {
                                                 </div>
                                             )}
                                         </div>
-                                        {/* Name Label - Positioned to the side */}
+                                        {/* Name Label */}
                                         <div className={`
                                             absolute top-1/2 -translate-y-1/2 z-30 pointer-events-none flex flex-col
                                             ${planet.x > 50 ? 'right-[115%]' : 'left-[115%]'}
                                             ${planet.x > 50 ? 'items-end' : 'items-start'}
                                         `}>
-                                            {/* Warm Capsule Container */}
                                             <div className={`
                                                 px-5 py-1.5 rounded-full border-2 transition-all duration-300 shadow-xl whitespace-nowrap
-                                                ${planet.isLocked 
-                                                    ? 'bg-wheat/10 border-white/5 opacity-40' 
+                                                ${!planet.isUnlocked 
+                                                    ? 'bg-white/10 border-white/5 opacity-40' 
                                                     : 'bg-[#FFF9E5] border-[#E6D5B8]'
                                                 }
                                             `}>
                                                 <span className={`text-[15px] font-bold transition-colors duration-300 ${
-                                                    planet.isLocked ? 'text-white/40' : 'text-[#5D4037]'
+                                                    !planet.isUnlocked ? 'text-white/40' : 'text-[#5D4037]'
                                                 }`}>
                                                     {planet.name}
                                                 </span>
                                             </div>
                                             
                                             {/* Small English Subtitle */}
-                                            {!planet.isLocked && (
+                                            {planet.isUnlocked && (
                                                 <span className={`text-[10px] font-bold text-white/60 tracking-widest uppercase mt-1 drop-shadow-md px-2 ${
                                                     planet.x > 50 ? 'text-right' : 'text-left'
                                                 }`}>
-                                                    {planet.enName}
+                                                    {planet.englishName}
                                                 </span>
                                             )}
                                         </div>
@@ -307,26 +258,19 @@ const PlanetMap = ({ onBack }) => {
 
                     <div className="flex-1 relative z-10 flex flex-col items-center justify-start p-8 pt-6">
                         <div className="relative w-72 h-72 mb-10 flex items-center justify-center">
-                            {/* Layered Orbitals (A Hat in Time Style) */}
-                            {/* Inner Dashed Ring */}
+                            {/* Layered Orbitals */}
                             <div className="absolute inset-[-10%] border-2 border-dashed border-amber-200/20 rounded-full animate-spin-slow opacity-60" />
-                            
-                            {/* Outer Dotted Ring with Satellites */}
                             <div className="absolute inset-[-25%] border border-dotted border-white/20 rounded-full animate-spin-reverse">
-                                {/* Energy Satellite A - Golden Warmth */}
                                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-[#FFD700] rounded-full shadow-[0_0_15px_rgba(255,215,0,0.8)]" />
-                                {/* Energy Satellite B - Soft Coral */}
                                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-[#FF8E8E] rounded-full shadow-[0_0_10px_rgba(255,142,142,0.6)]" />
                             </div>
-
-                            {/* Faint Outer Ring */}
                             <div className="absolute inset-[-42%] border border-white/5 rounded-full" />
                             
                             <img 
                                 src={selectedPlanet?.image} 
                                 alt={selectedPlanet?.name}
                                 className={`relative z-30 w-full h-full object-contain drop-shadow-[0_0_50px_rgba(78,86,166,0.3)] transition-all duration-1000 ${
-                                    selectedPlanet?.isLocked ? 'grayscale brightness-50 contrast-125' : 'animate-float-high'
+                                    !selectedPlanet?.isUnlocked ? 'grayscale brightness-50 contrast-125' : 'animate-float-high'
                                 }`}
                             />
                         </div>
@@ -334,15 +278,32 @@ const PlanetMap = ({ onBack }) => {
                         <div className="relative w-full mt-4 animate-slide-up">
                             <div className="bg-[#FFFBEB] rounded-[3rem] border-4 border-white p-8 shadow-xl text-center">
                                 <h2 className="text-4xl font-black text-[#5D4037] tracking-tighter mb-1">{selectedPlanet?.name}</h2>
-                                <span className="text-[#8D6E63] font-bold text-sm tracking-[0.2em] uppercase mb-6 block">{selectedPlanet?.enName}</span>
-                                <div className="w-full h-px bg-[#5D4037]/10 mb-8" />
-                                <p className="text-[#5D4037]/80 text-base font-medium leading-relaxed mb-10 px-2">{selectedPlanet?.desc}</p>
+                                <span className="text-[#8D6E63] font-bold text-sm tracking-[0.2em] uppercase mb-6 block">{selectedPlanet?.englishName}</span>
+                                <div className="w-full h-px bg-[#5D4037]/10 mb-6" />
+                                
+                                <div className="flex flex-col gap-4 mb-8">
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-1">屬性</span>
+                                        <span className="text-stone-700 font-bold">{selectedPlanet?.attribute}</span>
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-1">星球簡介</span>
+                                        <p className="text-[#5D4037]/80 text-base font-medium leading-relaxed px-2">{selectedPlanet?.description}</p>
+                                    </div>
+                                    {!selectedPlanet?.isUnlocked && (
+                                        <div className="flex flex-col items-center bg-stone-100/50 p-4 rounded-2xl">
+                                            <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-2 text-rose-400">解鎖條件</span>
+                                            <span className="text-stone-600 text-sm font-bold">{selectedPlanet?.unlockCondition}</span>
+                                        </div>
+                                    )}
+                                </div>
+
                                 <button className={`w-full py-5 rounded-[2rem] font-black tracking-[0.1em] text-xl transition-all active:scale-95 ${
-                                    selectedPlanet?.isLocked 
-                                    ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                                    !selectedPlanet?.isUnlocked 
+                                    ? 'bg-amber-100 text-[#5D4037] shadow-[0_2px_4px_rgba(0,0,0,0.1)]'
                                     : 'bg-[#FFF4D6] text-[#5D4037] shadow-[0_2px_4px_rgba(0,0,0,0.25),inset_0_-2px_4px_rgba(255,163,18,0.25),inset_0_4px_4px_rgba(255,255,255,0.25)] hover:brightness-105'
                                 }`}>
-                                    {selectedPlanet?.isLocked ? '尚未解鎖' : '開始探索'}
+                                    {!selectedPlanet?.isUnlocked ? `支付 ${selectedPlanet?.price} 金幣解鎖` : '開始探索'}
                                 </button>
                             </div>
                         </div>
@@ -389,4 +350,3 @@ const PlanetMap = ({ onBack }) => {
 };
 
 export default PlanetMap;
-

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { initialAliensData } from '../data/aliensData';
+
 
 // --- 0. 屬性資料定義 ---
 const attributesList = [
-    { id: 'all', name: '全部', icon: '/images/icon-star.png' },
+    { id: 'all', name: '全部', icon: '/images/icon-attr-all.png' },
     { id: 'grass', name: '草', icon: '/images/icon-attr-grass.png' },
     { id: 'fire', name: '火', icon: '/images/icon-attr-fire.png' },
     { id: 'water', name: '水', icon: '/images/icon-attr-water.png' },
@@ -10,42 +12,23 @@ const attributesList = [
     { id: 'ground', name: '地', icon: '/images/icon-attr-ground.png' },
 ];
 
-// --- 1. 資料區 (根據使用者提供的檔名更新) ---
-const initialAliensData = [
-    // 1. Riri (Default Unlocked)
-    {
-        id: 1,
-        attribute: 'grass',
-        name: '薄荷栗栗 - Riri',
-        image: '/images/char-riri.png',
-        silhouetteImage: '/images/char-riri-silhouette.png',
-        attributeIcon: '/images/icon-attr-grass.png',
-        rarity: 3,
-        level: 1,
-        quote: '「刺毛帶著薄荷香味」',
-        location: '針葉森林',
-        likes: 1,
-        isLocked: false,
-        price: 0,
-    },
-    // --- New List provided by User ---
-    { id: 2, attribute: 'grass', isLocked: true, price: 1500, name: 'Bloomthorn', image: '/images/char-Bloomthorn.png', silhouetteImage: '/images/char-Bloomthorn-silhouette.png' },
-    { id: 3, attribute: 'grass', isLocked: true, price: 1500, name: 'Florinny', image: '/images/char-Florinny.png', silhouetteImage: '/images/char-Florinny-silhouette.png' },
-    { id: 4, attribute: 'water', isLocked: true, price: 1500, name: 'Frillfin', image: '/images/char-Frillfin.png', silhouetteImage: '/images/char-Frillfin-silhouette.png' },
-    { id: 5, attribute: 'ice', isLocked: true, price: 1500, name: 'Glacelly', image: '/images/char-Glacelly.png', silhouetteImage: '/images/char-Glacelly-silhouette.png' },
-    { id: 6, attribute: 'water', isLocked: true, price: 1500, name: 'Glapeng', image: '/images/char-Glapeng.png', silhouetteImage: '/images/char-Glapeng-silhouette.png' },
-    { id: 7, attribute: 'fire', isLocked: true, price: 1500, name: 'Gleamfoxy', image: '/images/char-Gleamfoxy.png', silhouetteImage: '/images/char-Gleamfoxy-silhouette.png' },
-    { id: 8, attribute: 'water', isLocked: true, price: 1500, name: 'Mellaray', image: '/images/char-Mellaray.png', silhouetteImage: '/images/char-Mellaray-silhouette.png' },
-    { id: 9, attribute: 'water', isLocked: true, price: 1500, name: 'Melofroggy', image: '/images/char-Melofroggy.png', silhouetteImage: '/images/char-Melofroggy-silhouette.png' },
-    { id: 10, attribute: 'ground', isLocked: true, price: 1500, name: 'Momoho', image: '/images/char-Momoho.png', silhouetteImage: '/images/char-Momoho-silhouette.png' },
-    { id: 11, attribute: 'grass', isLocked: true, price: 1500, name: 'Sprilume', image: '/images/char-Sprilume.png', silhouetteImage: '/images/char-Sprilume-silhouette.png' },
-    { id: 12, attribute: 'ground', isLocked: true, price: 1500, name: 'Twibat', image: '/images/char-Twibat.png', silhouetteImage: '/images/char-Twibat-silhouette.png' },
-    { id: 13, attribute: 'grass', isLocked: true, price: 1500, name: 'Twibloom', image: '/images/char-Twibloom.png', silhouetteImage: '/images/char-Twibloom-silhouette.png' },
-    { id: 14, attribute: 'ground', isLocked: true, price: 1500, name: 'Wibblin', image: '/images/char-Wibblin.png', silhouetteImage: '/images/char-Wibblin-silhouette.png' },
-];
-
-// --- 2. AlienCard Component (FINAL STYLED VERSION) ---
+// --- 2. AlienCard Component ---
 const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded = false }) => {
+    // 自動取得屬性圖示
+    const attrInfo = attributesList.find(a => a.id === data.attribute) || attributesList[0];
+    const attributeIcon = attrInfo.icon;
+
+    // 根據屬性動態產生背景色
+    const getAttrBg = (attr) => {
+        switch(attr) {
+            case 'fire': return 'from-[#FFD6D6] to-[#FFE9E9]';
+            case 'water': return 'from-[#D6E6FF] to-[#E9F2FF]';
+            case 'grass': return 'from-[#D6FFD6] to-[#E9FFE9]';
+            case 'ice': return 'from-[#D6F8FF] to-[#E9FBFF]';
+            case 'ground': return 'from-[#F5EAD6] to-[#FAF5E9]';
+            default: return 'from-[#C0E3E5] to-[#E9F4F5]';
+        }
+    };
 
     const containerClass = isExpanded
         ? "w-full max-w-sm aspect-[3/4.5] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden relative"
@@ -86,9 +69,14 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
                             e.stopPropagation(); // 防止觸發卡片點擊 (Modal)
                             if (onUnlock) onUnlock(data.id, data.price);
                         }}
-                        className={`bg-[#FFF4D6] text-[#DFA356] rounded-full flex items-center justify-center font-bold w-full shadow-[0_2px_4px_rgba(0,0,0,0.25),inset_0_-2px_4px_rgba(255,163,18,0.25),inset_0_4px_4px_rgba(255,255,255,0.25)] hover:brightness-105 active:scale-95 transition-all cursor-pointer ${isExpanded ? 'py-3 text-xl gap-2' : 'py-1 text-xs gap-1'}`}
+                        className="bg-[#C7D9B2] hover:bg-[#D5E5C2] active:bg-[#94B36F] text-white rounded-full flex items-center justify-center font-bold w-full shadow-[0_4px_12px_rgba(255,236,153,0.5)] active:shadow-inner active:scale-95 transition-all cursor-pointer select-none"
+                        style={{
+                            padding: isExpanded ? '12px 0' : '4px 0',
+                            fontSize: isExpanded ? '1.25rem' : '0.75rem',
+                            gap: isExpanded ? '0.5rem' : '0.25rem'
+                        }}
                     >
-                        <img src="/images/icon-star.png" alt="Coin" className={isExpanded ? "w-6 h-6" : "w-3.5 h-3.5"} />
+                        <img src="/images/icon-gold.png" alt="Coin" className={isExpanded ? "w-6 h-6" : "w-3.5 h-3.5"} />
                         <span>{data.price}</span>
                     </div>
                 </div>
@@ -99,9 +87,9 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
     // === 樣式 B: 已解鎖 (Unlocked) ===
     return (
         <div className={containerClass} onClick={onClick}>
-            <div className={`${topSectionHeightUnlocked} m-1 mb-0 rounded-t-[10px] rounded-b-none bg-gradient-to-b from-[#C0E3E5] to-[#E9F4F5] p-1 pb-4 flex flex-col justify-end items-center relative`}>
+            <div className={`${topSectionHeightUnlocked} m-1 mb-0 rounded-t-[10px] rounded-b-none bg-gradient-to-b ${getAttrBg(data.attribute)} p-1 pb-4 flex flex-col justify-end items-center relative`}>
                 <div className="absolute top-2 left-2">
-                    <img src={data.attributeIcon || "/images/icon-star.png"} alt="Attr" className={`${iconSize} object-contain`} />
+                    <img src={attributeIcon} alt="Attr" className={`${iconSize} object-contain`} />
                 </div>
                 <div className={`absolute top-2 right-2 font-bold text-gray-400 ${labelSize}`}>Lv.{data.level}</div>
                 <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/15 rounded-[100%] blur-[2px] z-0 pointer-events-none ${isExpanded ? 'w-40 h-4' : 'w-16 h-2'}`}></div>
@@ -177,8 +165,8 @@ const AlienCollection = () => {
 
     return (
         <div className="flex flex-col min-h-screen pb-32 bg-[#9B9FDE] relative">
-            <div className="absolute inset-0 z-0 opacity-50" style={{ backgroundImage: 'url(/images/collection-background.png)', backgroundSize: 'cover' }} />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#8C91D3]/90 via-[#8C91D3]/40 to-transparent pointer-events-none z-0" />
+            <div className="absolute inset-0 z-0 opacity-100" style={{ backgroundImage: 'url(/images/collection-background-3.png)', backgroundSize: 'cover', backgroundPosition: 'top' }} />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#8C91D3]/10 via-[#8C91D3]/50 to-[#9B9FDE] pointer-events-none z-[1]" />
 
             <div className="relative z-10 p-6 flex-1 flex flex-col items-center">
                 <h1 className="text-white text-2xl font-bold text-center mb-6 drop-shadow-md">角色圖鑑卡</h1>
@@ -191,7 +179,7 @@ const AlienCollection = () => {
                             <span className="text-white font-bold text-xl drop-shadow-md">已收集 {unlockedCount}/{totalAliens}</span>
                         </div>
                         <div className="flex items-center relative">
-                            <img src="/images/icon-star.png" alt="Star" className="w-12 h-12 object-contain relative z-20 -mr-8" />
+                            <img src="/images/icon-gold.png" alt="Gold" className="w-12 h-12 object-contain relative z-20 -mr-8" />
                             <div className="bg-white/20 rounded-full pl-9 pr-4 py-1.5 backdrop-blur-sm border border-white min-w-[110px] flex justify-center relative z-10">
                                 <span className="text-white font-bold text-xl drop-shadow-md">{coins}</span>
                             </div>
