@@ -198,9 +198,8 @@ function App() {
         setUnlockedAlienIds(prev => [...prev, petId]);
     }
     setHighlightAlienId(petId);
-    // Reset the loop
-    setEggProgress(0);
-    setIncubationStatus('idle');
+    // Move to completed state instead of idle
+    setIncubationStatus('completed');
     setIncubationStartTime(null);
     setCurrentView(targetView);
   };

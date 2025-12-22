@@ -38,6 +38,7 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
     : 0;
 
   const isIncubating = incubationStatus === 'incubating' || incubationStatus === 'ready';
+  const isCompleted = incubationStatus === 'completed';
 
   return (
     <div className="relative w-full h-[360px] overflow-hidden rounded-b-[3rem] shadow-sm z-0">
@@ -65,7 +66,28 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
           {/* XP Bar or Incubation Path */}
           <div className="flex-1 ml-2 mb-0 flex items-end gap-1">
 
-            {!isIncubating ? (
+            {isCompleted ? (
+              /* MODE C: Completed - Achievement Success */
+              <div className="flex-1 flex flex-col gap-0 items-center mb-1">
+                <span className="text-[14px] text-white font-black [text-shadow:0_2px_4px_rgba(0,0,0,0.5)] mb-1">
+                  太棒了！今日星願已達成 ✨
+                </span>
+                <div className="relative h-7 flex items-center w-full">
+                   {/* Golden Progress Bar */}
+                   <div className="w-[90%] h-5 bg-white/20 rounded-full relative overflow-hidden backdrop-blur-sm border-2 border-white shadow-lg">
+                      <div 
+                        className="absolute left-0 top-0 bottom-0 w-full bg-gradient-to-r from-[#FFD700] via-[#FFF3B0] to-[#FFD700] rounded-full shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),0_0_10px_rgba(255,215,0,0.4)] animate-shimmer" 
+                      />
+                   </div>
+                   {/* Golden Trophy Icon */}
+                   <div className="absolute right-[-2px] top-1/2 -translate-y-1/2 z-30 drop-shadow-lg">
+                      <div className="w-10 h-10 bg-[#FFD700] rounded-full flex items-center justify-center border-2 border-white shadow-xl">
+                          <span className="text-xl">🏆</span>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            ) : !isIncubating ? (
               /* MODE A: Idle - Progress Bar */
               <>
                 {/* Flame + Glow */}
@@ -181,6 +203,16 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
           </div>
         </div>
       </div>
+      <style jsx global>{`
+                @keyframes shimmer {
+                    0% { background-position: -200% 0; }
+                    100% { background-position: 200% 0; }
+                }
+                .animate-shimmer {
+                    background-size: 200% 100%;
+                    animation: shimmer 3s infinite linear;
+                }
+            `}</style>
     </div>
   );
 };
