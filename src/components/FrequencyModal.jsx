@@ -15,6 +15,7 @@ const WheelPicker = ({ options, value, onChange }) => {
   const ITEM_HEIGHT = 40; // Fixed height in pixels
   const scrollRef = useRef(null);
   const isScrolling = useRef(false);
+  const lastWheelTime = useRef(0);
 
   // 1. Initial Scroll to Position
   useEffect(() => {
@@ -26,7 +27,7 @@ const WheelPicker = ({ options, value, onChange }) => {
     }
   }, [value, options]);
 
-  // 2. Handle Scroll Logic
+  // 2. Handle Scroll Logic (for touch/drag)
   const handleScroll = (e) => {
     isScrolling.current = true;
     const scrollTop = e.target.scrollTop;
@@ -47,6 +48,40 @@ const WheelPicker = ({ options, value, onChange }) => {
     }, 150);
   };
 
+  // 3. Handle Mouse Wheel - One item at a time with throttling
+  const handleWheel = (e) => {
+    e.preventDefault();
+    
+    const now = Date.now();
+    // Throttle: only allow wheel actions every 250ms (slower for precise control)
+    if (now - lastWheelTime.current < 1200) {
+      return;
+    }
+    lastWheelTime.current = now;
+    
+    const currentIndex = options.indexOf(value);
+    let newIndex = currentIndex;
+    
+    // deltaY > 0 = scroll down = next item
+    // deltaY < 0 = scroll up = previous item
+    if (e.deltaY > 0) {
+      newIndex = Math.min(currentIndex + 1, options.length - 1);
+    } else if (e.deltaY < 0) {
+      newIndex = Math.max(currentIndex - 1, 0);
+    }
+    
+    if (newIndex !== currentIndex) {
+      onChange(options[newIndex]);
+      // Also update scroll position smoothly
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({
+          top: newIndex * ITEM_HEIGHT,
+          behavior: 'smooth'
+        });
+      }
+    }
+  };
+
   return (
     <div className="relative h-[120px] w-full overflow-hidden bg-white/50 rounded-xl">
       {/* Center Highlight Bar (Fixed Visual) */}
@@ -56,6 +91,7 @@ const WheelPicker = ({ options, value, onChange }) => {
       <div 
         ref={scrollRef}
         onScroll={handleScroll}
+        onWheel={handleWheel}
         className="h-full overflow-y-auto snap-y snap-mandatory no-scrollbar relative z-10"
       > 
         {/* Top Spacer: Pushes the first item to the center */}
@@ -79,6 +115,7 @@ const WheelPicker = ({ options, value, onChange }) => {
     </div>
   );
 };
+
 
 const FrequencyModal = ({ isOpen, onClose, onSave }) => {
   if (!isOpen) return null;

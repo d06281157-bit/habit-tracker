@@ -126,19 +126,31 @@ const HabitCard = ({ habit, activeSwipeId, onSwipe, onToggle, onEdit, onDelete, 
                 </span>
             </div>
 
-            {/* Checkbox Toggle */}
+            {/* Checkbox Toggle - Larger touch target */}
             <div 
                 onClick={(e) => {
                     e.stopPropagation(); // Prevent opening detail modal
+                    e.preventDefault();
                     onToggle(habit.id);
                 }}
-                className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all cursor-pointer ${
+                onPointerDown={(e) => {
+                    e.stopPropagation(); // Prevent swipe detection
+                }}
+                onTouchStart={(e) => {
+                    e.stopPropagation(); // Prevent swipe detection on mobile
+                }}
+                onMouseDown={(e) => {
+                    e.stopPropagation(); // Prevent swipe detection on desktop
+                }}
+                className="w-12 h-12 flex items-center justify-center cursor-pointer -mr-2"
+            >
+                <div className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all ${
                     habit.completed 
                     ? 'bg-[#6B4EFF] border-[#6B4EFF]' 
                     : 'bg-transparent border-[#8F9BB3] hover:border-[#6B4EFF]'
-                }`}
-            >
-                {habit.completed && <Check size={20} className="text-white" strokeWidth={3} />}
+                }`}>
+                    {habit.completed && <Check size={20} className="text-white" strokeWidth={3} />}
+                </div>
             </div>
 
         </div>

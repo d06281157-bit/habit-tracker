@@ -162,9 +162,15 @@ function App() {
         h.id === habitId ? { ...h, completed: !h.completed } : h
     ));
     
-    // Add egg progress only if in idle mode and completing (not uncompleting)
-    if (incubationStatus === 'idle' && !wasCompleted) {
-        setEggProgress(prev => Math.min(prev + 5, 20)); // Cap at 20
+    // Update egg progress only if in idle mode
+    if (incubationStatus === 'idle') {
+        if (!wasCompleted) {
+            // Completing a habit: add 5 points (cap at 20)
+            setEggProgress(prev => Math.min(prev + 5, 20));
+        } else {
+            // Uncompleting a habit: subtract 5 points (floor at 0)
+            setEggProgress(prev => Math.max(prev - 5, 0));
+        }
     }
   };
 
