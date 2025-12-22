@@ -23,7 +23,21 @@ const PlanetMap = ({ onBack }) => {
     const [viewMode, setViewMode] = useState('map'); 
     const [selectedPlanet, setSelectedPlanet] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [demoUnlockAll, setDemoUnlockAll] = useState(false);
     const mapContainerRef = useRef(null);
+
+    // Presentation Mode Shortcut (Shift + S)
+    React.useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.shiftKey && e.key.toUpperCase() === 'S') {
+                e.preventDefault();
+                setDemoUnlockAll(prev => !prev);
+                console.log('Demo mode toggled:', !demoUnlockAll);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [demoUnlockAll]);
 
     // Track scroll for header effect
     const handleScroll = (e) => {
@@ -126,7 +140,7 @@ const PlanetMap = ({ onBack }) => {
                                 
                                 {planetsWithCoords.slice(0, -1).map((_, i) => {
                                     const nextPlanet = planetsWithCoords[i+1];
-                                    const pathUnlocked = nextPlanet.isUnlocked;
+                                    const pathUnlocked = demoUnlockAll || nextPlanet.isUnlocked;
                                     
                                     return (
                                         <g key={`path-segment-${i}`}>
@@ -179,12 +193,12 @@ const PlanetMap = ({ onBack }) => {
                                                 src={planet.image} 
                                                 alt={planet.name}
                                                 className={`w-full h-full object-contain transition-all duration-700 ${
-                                                    !planet.isUnlocked 
+                                                    !(demoUnlockAll || planet.isUnlocked) 
                                                     ? 'grayscale brightness-[0.35]' 
                                                     : 'animate-float drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] group-hover:drop-shadow-[0_0_40px_rgba(255,184,224,0.6)]'
                                                 }`}
                                             />
-                                            {!planet.isUnlocked && (
+                                            {!(demoUnlockAll || planet.isUnlocked) && (
                                                 <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
                                                     <img 
                                                         src="/images/icon-gold-lock.png" 
@@ -202,20 +216,20 @@ const PlanetMap = ({ onBack }) => {
                                         `}>
                                             <div className={`
                                                 px-5 py-1.5 rounded-full border-2 transition-all duration-300 shadow-xl whitespace-nowrap
-                                                ${!planet.isUnlocked 
+                                                ${!(demoUnlockAll || planet.isUnlocked) 
                                                     ? 'bg-white/10 border-white/5 opacity-40' 
                                                     : 'bg-[#FFF9E5] border-[#E6D5B8]'
                                                 }
                                             `}>
                                                 <span className={`text-[15px] font-bold transition-colors duration-300 ${
-                                                    !planet.isUnlocked ? 'text-white/40' : 'text-[#5D4037]'
+                                                    !(demoUnlockAll || planet.isUnlocked) ? 'text-white/40' : 'text-[#5D4037]'
                                                 }`}>
                                                     {planet.name}
                                                 </span>
                                             </div>
                                             
                                             {/* Small English Subtitle */}
-                                            {planet.isUnlocked && (
+                                            {(demoUnlockAll || planet.isUnlocked) && (
                                                 <span className={`text-[10px] font-bold text-white/60 tracking-widest uppercase mt-1 drop-shadow-md px-2 ${
                                                     planet.x > 50 ? 'text-right' : 'text-left'
                                                 }`}>
@@ -270,12 +284,12 @@ const PlanetMap = ({ onBack }) => {
                                 src={selectedPlanet?.image} 
                                 alt={selectedPlanet?.name}
                                 className={`relative z-30 w-full h-full object-contain drop-shadow-[0_0_50px_rgba(78,86,166,0.3)] transition-all duration-1000 ${
-                                    !selectedPlanet?.isUnlocked ? 'grayscale brightness-50 contrast-125' : 'animate-float-high'
+                                    !(demoUnlockAll || selectedPlanet?.isUnlocked) ? 'grayscale brightness-50 contrast-125' : 'animate-float-high'
                                 }`}
                             />
 
                             {/* Floating Unlock Condition Container */}
-                            {!selectedPlanet?.isUnlocked && (
+                            {!(demoUnlockAll || selectedPlanet?.isUnlocked) && (
                                 <div className="absolute inset-0 z-40 flex items-center justify-center p-4">
                                     <div className="bg-black/40 backdrop-blur-xl border border-white/20 rounded-3xl p-5 text-center shadow-2xl max-w-[90%] scale-90 animate-pulse-subtle">
                                         <span className="text-[10px] text-amber-200/80 font-black uppercase tracking-[0.2em] mb-2 block">解鎖條件</span>
@@ -303,11 +317,11 @@ const PlanetMap = ({ onBack }) => {
                                 </div>
 
                                 <button className={`w-full py-5 rounded-[2rem] font-black tracking-[0.1em] text-xl transition-all active:scale-95 ${
-                                    !selectedPlanet?.isUnlocked 
+                                    !(demoUnlockAll || selectedPlanet?.isUnlocked) 
                                     ? 'bg-amber-100 text-[#5D4037] shadow-[0_2px_4px_rgba(0,0,0,0.1)]'
                                     : 'bg-[#FFF4D6] text-[#5D4037] shadow-[0_2px_4px_rgba(0,0,0,0.25),inset_0_-2px_4px_rgba(255,163,18,0.25),inset_0_4px_4px_rgba(255,255,255,0.25)] hover:brightness-105'
                                 }`}>
-                                    {!selectedPlanet?.isUnlocked ? `支付 ${selectedPlanet?.price} 金幣解鎖` : '開始探索'}
+                                    {!(demoUnlockAll || selectedPlanet?.isUnlocked) ? `支付 ${selectedPlanet?.price} 金幣解鎖` : '開始探索'}
                                 </button>
                             </div>
                         </div>
