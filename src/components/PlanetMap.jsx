@@ -327,7 +327,7 @@ const PlanetMap = ({ onBack, onSetBackground }) => {
                                             if (planetImage.includes('planet-water')) bg = 'water-background.jpg';
                                             else if (planetImage.includes('planet-lava')) bg = 'lava-background.jpg';
                                             else if (planetImage.includes('planet-ice')) bg = 'ice-background.jpeg';
-                                            else if (planetImage.includes('planet-Sandroot')) bg = 'Sandroot-background.jpg';
+                                            else if (planetImage.includes('planet-Sandroot')) bg = 'Sandroot-background-2.jpg';
                                             else if (planetImage.includes('planet-Patchring')) bg = 'Patchring-background.jpeg';
                                             else if (planetImage.includes('planet-grass')) bg = 'grass-background.jpg';
                                             
