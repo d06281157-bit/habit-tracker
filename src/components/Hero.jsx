@@ -41,7 +41,7 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
   const isCompleted = incubationStatus === 'completed';
 
   return (
-    <div className="relative w-full h-[360px] overflow-hidden rounded-b-[3rem] shadow-sm z-0">
+    <div className="relative w-full h-[380px] overflow-hidden rounded-b-[3rem] shadow-sm z-0">
       {/* 1. Underlying Blurred Layer (For perfect color matching and vibrancy) */}
       <div 
         className="absolute inset-0 bg-no-repeat bg-center bg-cover scale-150 blur-3xl opacity-90 transition-all duration-1000"
@@ -50,16 +50,18 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
         }}
       />
 
-      {/* 2. Main Background Image - Using bg-contain to see side objects (No Crop) */}
+      {/* 2. Main Background Image - Using bg-contain or bg-cover depending on image */}
       <div
-        className="absolute inset-0 bg-no-repeat bg-bottom bg-contain transition-all duration-700 z-[1]"
+        className={`absolute inset-0 bg-no-repeat bg-bottom transition-all duration-700 z-[1] ${
+          backgroundImage.includes('grass-background') ? 'bg-cover' : 'bg-contain'
+        }`}
         style={{
           backgroundImage: `url(/images/${backgroundImage})`,
         }}
       />
 
       {/* Main Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-end pb-4 z-20">
+      <div className="absolute inset-0 flex flex-col items-center justify-end pb-7 z-20">
         <div className="w-full px-6 flex items-end justify-between">
           
           {/* Frog */}

@@ -167,9 +167,11 @@ const IncubatePage = ({ incubationStatus, incubationStartTime, onStatusChange, o
                         ) : (
                             <div className="flex flex-col items-center animate-[fadeIn_0.5s_ease-out]">
                                 <h2 className="text-white/90 text-[14px] font-bold mb-12 tracking-widest opacity-70">[去完成更多星願，解鎖下一顆星蛋]</h2>
-                                <div onClick={() => onNavigateHome('home')} className="relative mb-12 w-full h-40 flex justify-center cursor-pointer items-center">
+                                <div onClick={() => onNavigateHome('home')} className="relative mb-12 w-full h-40 flex justify-center cursor-pointer items-center group">
                                     <img src="/images/cloud-platform.png" className="absolute bottom-[-45px] translate-y-6 z-0 w-48 object-contain opacity-90" />
-                                    <button className="relative z-10 mb-6 w-20 h-20 flex items-center justify-center"><Plus size={80} strokeWidth={3} className="text-white/70" /></button>
+                                    {/* Hover Glow Effect */}
+                                    <div className="absolute z-0 w-24 h-24 bg-white/0 group-hover:bg-white/40 blur-[30px] rounded-full transition-all duration-300 pointer-events-none" />
+                                    <button className="relative z-10 mb-6 w-20 h-20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300"><Plus size={80} strokeWidth={3} className="text-white/70 group-hover:text-white transition-colors duration-300" /></button>
                                 </div>
                             </div>
                         )}
