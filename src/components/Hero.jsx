@@ -42,16 +42,24 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
 
   return (
     <div className="relative w-full h-[360px] overflow-hidden rounded-b-[3rem] shadow-sm z-0">
-      {/* Dynamic Background */}
+      {/* 1. Underlying Blurred Layer (For perfect color matching and vibrancy) */}
+      <div 
+        className="absolute inset-0 bg-no-repeat bg-center bg-cover scale-150 blur-3xl opacity-90 transition-all duration-1000"
+        style={{
+          backgroundImage: `url(/images/${backgroundImage})`,
+        }}
+      />
+
+      {/* 2. Main Background Image - Using bg-contain to see side objects (No Crop) */}
       <div
-        className="absolute inset-0 bg-no-repeat bg-bottom bg-cover transition-all duration-700"
+        className="absolute inset-0 bg-no-repeat bg-bottom bg-contain transition-all duration-700 z-[1]"
         style={{
           backgroundImage: `url(/images/${backgroundImage})`,
         }}
       />
 
       {/* Main Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-end pb-4 z-[2]">
+      <div className="absolute inset-0 flex flex-col items-center justify-end pb-4 z-20">
         <div className="w-full px-6 flex items-end justify-between">
           
           {/* Frog */}
@@ -64,7 +72,7 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
           </div>
 
           {/* XP Bar or Incubation Path */}
-          <div className="flex-1 ml-2 mb-0 flex items-end gap-1">
+          <div className="flex-1 ml-2 mb-6 flex items-end gap-1">
 
             {isCompleted ? (
               /* MODE C: Completed - Achievement Success */
