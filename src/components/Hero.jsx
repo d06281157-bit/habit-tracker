@@ -129,14 +129,22 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
                 {/* Path Container */}
                 <div className="relative h-10 flex items-center w-full">
                   
-                  {/* Dotted Line Path */}
+                  {/* 1. Subtle Background Path (No Border, very faint) */}
+                  <div className="absolute left-4 right-8 h-1 bg-white/10 rounded-full top-1/2 -translate-y-1/2" />
+
+                  {/* 2. Capsule Fill (Passed Progress) - ONLY this part has the white border */}
                   <div 
-                    className="absolute left-4 right-8 top-1/2 -translate-y-1/2" 
+                    className="absolute left-4 top-1/2 -translate-y-1/2 h-5 bg-gradient-to-r from-[#E38240] to-[#FFB74D] rounded-full transition-all duration-1000 ease-linear shadow-[0_0_15px_rgba(227,130,64,0.6)] border-2 border-white z-10"
+                    style={{ width: `calc(${Math.min(fireProgress, 85)}% + 8px)` }}
+                  />
+
+                  {/* 3. Remaining Dotted Path - Clean, no border around it */}
+                  <div 
+                    className="absolute right-8 top-1/2 -translate-y-1/2 h-[2px] transition-all duration-1000 ease-linear z-0" 
                     style={{
-                      height: '4px',
-                      backgroundImage: 'repeating-linear-gradient(to right, #FFFFFF 0px, #FFFFFF 8px, transparent 8px, transparent 16px)',
-                      filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
-                      opacity: 0.9
+                      left: `calc(${Math.min(fireProgress, 85)}% + 40px)`,
+                      backgroundImage: 'repeating-linear-gradient(to right, #FFFFFF 0px, #FFFFFF 6px, transparent 6px, transparent 12px)',
+                      opacity: 0.8
                     }}
                   />
 

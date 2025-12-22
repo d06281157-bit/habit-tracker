@@ -61,12 +61,13 @@ const ShopPage = ({ score = 3085 }) => {
 
                 {/* Hero Section (Character and Banner) */}
                 <div className="relative z-10 flex items-end justify-between px-4 mt-2">
-                    {/* Left: Empty space for character */}
+                    {/* Left: Shop Owl Character */}
                     <div className="w-44 h-44 relative group">
-                        <div className="absolute inset-4 border-2 border-dashed border-[#F2B36A]/30 rounded-full flex flex-col items-center justify-center text-[#F2B36A]/60 text-[10px] text-center px-2 bg-white/40 backdrop-blur-[1px]">
-                            <span className="text-2xl mb-1 opacity-60">👤</span>
-                            人物預留位置
-                        </div>
+                        <img 
+                            src="/images/shop-owl.png" 
+                            alt="Shop Owl" 
+                            className="w-full h-full object-contain drop-shadow-lg"
+                        />
                     </div>
 
                     {/* Right: Premium Banner */}

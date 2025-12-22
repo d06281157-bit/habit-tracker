@@ -26,7 +26,7 @@ const MorePage = () => {
             <div className="relative z-10 flex flex-col items-center pt-16 pb-8">
                 <div className="relative">
                     <img 
-                        src="/images/astronaut-moon.png" 
+                        src="/images/Hero-astronaut.png" 
                         alt="Astronaut on Moon" 
                         className="w-48 h-48 object-contain"
                     />

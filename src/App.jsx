@@ -324,12 +324,20 @@ function App() {
                         clickStartPos.current = { x: e.clientX, y: e.clientY };
                     }}
                     onClick={(e) => {
-                        const moveX = Math.abs(e.clientX - clickStartPos.current.x);
-                        const moveY = Math.abs(e.clientY - clickStartPos.current.y);
-                        if (moveX > 5 || moveY > 5) {
-                            e.stopPropagation();
+                        const moveX = Math.abs(e.clientX - clickStartPos.current.x || 0);
+                        const moveY = Math.abs(e.clientY - clickStartPos.current.y || 0);
+                        
+                        // 1. If currently swiping (activeSwipeId is set), don't open detail
+                        if (activeSwipeId !== null) {
+                            setActiveSwipeId(null);
                             return;
                         }
+
+                        // 2. If moved more than 10px, it's a swipe/drag, not a click
+                        if (moveX > 10 || moveY > 10) {
+                            return;
+                        }
+
                         handleOpenDetail(habit);
                     }}
                     className="touch-manipulation h-24"
