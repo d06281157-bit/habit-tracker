@@ -64,5 +64,27 @@ export const planetsData = [
         unlockCondition: "累積完成 10 次每日任務，並支付 7,500 金幣解鎖",
         isUnlocked: false,
         price: 7500
+    },
+    {
+        id: 7,
+        name: "流沙荒原",
+        englishName: "Sandroot",
+        attribute: "沙系",
+        image: "/images/planet-Sandroot.png",
+        description: "覆蓋著流動沙丘與仙人掌的荒原星球，看似貧瘠，卻孕育著極度耐性的生命。",
+        unlockCondition: "完成「漂沙之旅」主線任務，並支付 5,000 金幣解鎖",
+        isUnlocked: false,
+        price: 5000
+    },
+    {
+        id: 8,
+        name: "縫環行星",
+        englishName: "Patchring",
+        attribute: "土系",
+        image: "/images/planet-Patchring.png",
+        description: "由多層地殼與環狀結構拼接而成的奇異星球，傳說是被修補過的世界。",
+        unlockCondition: "擁有任意 2 顆沙系或土系星球後解鎖，並支付 6,500 金幣",
+        isUnlocked: false,
+        price: 6500
     }
 ];

@@ -11,7 +11,9 @@ const planetsWithCoords = planetsData.map((planet, index) => {
         { x: 22, y: 760 },
         { x: 78, y: 990 },
         { x: 28, y: 1220 },
-        { x: 70, y: 1450 }
+        { x: 70, y: 1450 },
+        { x: 25, y: 1680 },
+        { x: 72, y: 1910 }
     ];
     return { 
         ...planet, 
@@ -196,7 +198,7 @@ const PlanetMap = ({ onBack, onSetBackground }) => {
                                                     !(demoUnlockAll || planet.isUnlocked) 
                                                     ? 'grayscale brightness-[0.35]' 
                                                     : 'animate-float drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] group-hover:drop-shadow-[0_0_40px_rgba(255,184,224,0.6)]'
-                                                }`}
+                                                } ${planet.image.includes('planet-Patchring') ? 'rotate-[35deg]' : ''}`}
                                             />
                                             {!(demoUnlockAll || planet.isUnlocked) && (
                                                 <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
@@ -325,6 +327,8 @@ const PlanetMap = ({ onBack, onSetBackground }) => {
                                             if (planetImage.includes('planet-water')) bg = 'water-background.jpg';
                                             else if (planetImage.includes('planet-lava')) bg = 'lava-background.jpg';
                                             else if (planetImage.includes('planet-ice')) bg = 'ice-background.jpeg';
+                                            else if (planetImage.includes('planet-Sandroot')) bg = 'Sandroot-background.png';
+                                            else if (planetImage.includes('planet-Patchring')) bg = 'Patchring-background.png';
                                             
                                             if (onSetBackground) onSetBackground(bg);
                                             onBack();
