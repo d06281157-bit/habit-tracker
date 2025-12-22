@@ -13,27 +13,34 @@ const HabitCard = ({ habit, activeSwipeId, onSwipe, onToggle, onEdit, onDelete, 
   const isSwiped = activeSwipeId === habit.id;
 
   // Swipe Handlers (Unified)
-  const handleSwipeStart = (clientX) => {
+  const handleSwipeStart = (clientX, e) => {
+    // Prevent text selection during drag
+    if (e) e.preventDefault();
     setTouchEnd(null);
     setTouchStart(clientX);
     setIsDragging(true);
-    // Notify parent to set this as the active swipe potential
-    // We don't set it yet, we wait for swipe-left gesture
   };
   
   const handleSwipeMove = (clientX) => {
-    if (isDragging || touchStart) { 
+    if (isDragging && touchStart !== null) { 
         setTouchEnd(clientX);
     }
   };
 
   const handleSwipeEnd = () => {
+    if (!isDragging) return;
     setIsDragging(false);
-    if (!touchStart || !touchEnd) return;
+    
+    if (touchStart === null || touchEnd === null) {
+      setTouchStart(null);
+      setTouchEnd(null);
+      return;
+    }
     
     const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
+    // Lower threshold for easier swiping (30px instead of 50px)
+    const isLeftSwipe = distance > 30;
+    const isRightSwipe = distance < -30;
     
     if (isLeftSwipe) {
         onSwipe(habit.id); // Open this one (closes others)
@@ -87,15 +94,25 @@ const HabitCard = ({ habit, activeSwipeId, onSwipe, onToggle, onEdit, onDelete, 
         onClick={onClick}
         
         // Touch Config
-        onTouchStart={(e) => handleSwipeStart(e.targetTouches[0].clientX)}
+        onTouchStart={(e) => handleSwipeStart(e.targetTouches[0].clientX, e)}
         onTouchMove={(e) => handleSwipeMove(e.targetTouches[0].clientX)}
         onTouchEnd={handleSwipeEnd}
 
         // Mouse Config
-        onMouseDown={(e) => handleSwipeStart(e.clientX)}
-        onMouseMove={(e) => isDragging && handleSwipeMove(e.clientX)}
+        onMouseDown={(e) => {
+          e.preventDefault(); // Prevent text selection
+          handleSwipeStart(e.clientX, e);
+        }}
+        onMouseMove={(e) => {
+          if (isDragging) {
+            e.preventDefault();
+            handleSwipeMove(e.clientX);
+          }
+        }}
         onMouseUp={handleSwipeEnd}
-        onMouseLeave={handleSwipeEnd}
+        onMouseLeave={() => {
+          if (isDragging) handleSwipeEnd();
+        }}
       >
         
         {/* Left: Icon & Info */}

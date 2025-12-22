@@ -298,7 +298,15 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFFF0] pb-32 w-full max-w-md mx-auto relative overflow-x-hidden shadow-2xl">
+    <div 
+      className="min-h-screen bg-[#FFFFF0] pb-32 w-full max-w-md mx-auto relative overflow-x-hidden shadow-2xl"
+      onClick={(e) => {
+        // Close any swiped card when clicking on empty space
+        if (activeSwipeId !== null) {
+          setActiveSwipeId(null);
+        }
+      }}
+    >
       <div className="absolute inset-x-0 bg-[#FFFFF0] z-0 h-[50vh] transition-all" />
       <div className="absolute inset-0 top-[50vh] bg-[#FFFFF0] z-0" />
 
