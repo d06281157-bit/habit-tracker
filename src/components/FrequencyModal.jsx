@@ -140,6 +140,8 @@ const FrequencyModal = ({ isOpen, onClose, onSave }) => {
   // Common Settings
   const [dailyCount, setDailyCount] = useState(1);
   const [endDuration, setEndDuration] = useState("30天");
+  const [customDays, setCustomDays] = useState(7); // Custom duration in days
+  const [isCustomMode, setIsCustomMode] = useState(false);
   
   // Timer Ref for Long Press
   const timerRef = useRef(null);
@@ -356,15 +358,61 @@ const FrequencyModal = ({ isOpen, onClose, onSave }) => {
                     <div className="w-full h-px bg-gray-200" />
 
                     {/* End Duration */}
-                    {/* End Duration */}
-                    <div className="flex justify-between items-center w-full mt-4 px-2">
-                       <span className="text-[#2B2D5C] font-bold text-lg">結束時間</span>
-                       <div className="w-40"> 
-                          <WheelPicker 
-                            options={DURATION_OPTIONS}
-                            value={endDuration}
-                            onChange={setEndDuration}
-                          />
+                    <div className="flex justify-between items-start w-full mt-4 px-2">
+                       {/* Left: Label + Tabs */}
+                       <div className="flex flex-col gap-2">
+                         <span className="text-[#2B2D5C] font-bold text-lg">結束時間</span>
+                         {/* Toggle Tabs - Vertical */}
+                         <div className="flex flex-col bg-gray-100 rounded-xl p-0.5 gap-0.5">
+                           <button
+                             onClick={() => setIsCustomMode(false)}
+                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                               !isCustomMode 
+                                 ? 'bg-gray-600 text-white' 
+                                 : 'text-gray-400 hover:text-gray-600'
+                             }`}
+                           >
+                             預設
+                           </button>
+                           <button
+                             onClick={() => setIsCustomMode(true)}
+                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                               isCustomMode 
+                                 ? 'bg-gray-600 text-white' 
+                                 : 'text-gray-400 hover:text-gray-600'
+                             }`}
+                           >
+                             自訂
+                           </button>
+                         </div>
+                       </div>
+                       
+                       {/* Right: Content based on mode */}
+                       <div className="w-40">
+                         {isCustomMode ? (
+                           // Custom Input Mode
+                           <div className="flex items-center justify-center gap-2 h-[120px]">
+                             <input
+                               type="number"
+                               min="1"
+                               max="365"
+                               value={customDays}
+                               onChange={(e) => {
+                                 const val = parseInt(e.target.value) || 1;
+                                 setCustomDays(Math.min(365, Math.max(1, val)));
+                               }}
+                              className="w-20 h-12 text-center text-2xl font-bold text-[#6B4EFF] bg-[#6B4EFF]/10 border-2 border-[#6B4EFF]/30 rounded-xl focus:outline-none focus:border-[#6B4EFF] no-spinner"
+                             />
+                             <span className="text-gray-600 font-bold text-lg">天</span>
+                           </div>
+                         ) : (
+                           // WheelPicker Mode
+                           <WheelPicker 
+                             options={DURATION_OPTIONS}
+                             value={endDuration}
+                             onChange={setEndDuration}
+                           />
+                         )}
                        </div>
                     </div>
 
@@ -385,6 +433,15 @@ const FrequencyModal = ({ isOpen, onClose, onSave }) => {
             .no-scrollbar {
                 -ms-overflow-style: none;  /* IE and Edge */
                 scrollbar-width: none;  /* Firefox */
+            }
+            /* Hide number input spin buttons */
+            .no-spinner::-webkit-outer-spin-button,
+            .no-spinner::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            .no-spinner {
+                -moz-appearance: textfield;
             }
         `}</style>
     </div>
