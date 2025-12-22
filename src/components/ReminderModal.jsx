@@ -9,6 +9,7 @@ const WheelPicker = ({ options, value, onChange }) => {
 
   const scrollRef = useRef(null);
   const isScrolling = useRef(false);
+  const lastWheelTime = useRef(0);
 
   // 1. Initial Scroll to Position
   useEffect(() => {
@@ -20,7 +21,52 @@ const WheelPicker = ({ options, value, onChange }) => {
     }
   }, [value, options]);
 
-  // 2. Scroll Handler
+  // 2. Handle Mouse Wheel - Must use addEventListener with passive: false
+  useEffect(() => {
+    const element = scrollRef.current;
+    if (!element) return;
+
+    const handleWheel = (e) => {
+      e.preventDefault(); // This only works with passive: false
+      e.stopPropagation();
+      
+      const now = Date.now();
+      // Throttle: only allow wheel actions every 200ms
+      if (now - lastWheelTime.current < 200) {
+        return;
+      }
+      lastWheelTime.current = now;
+      
+      const currentIndex = options.indexOf(value);
+      let newIndex = currentIndex;
+      
+      // deltaY > 0 = scroll down = next item
+      // deltaY < 0 = scroll up = previous item
+      if (e.deltaY > 0) {
+        newIndex = Math.min(currentIndex + 1, options.length - 1);
+      } else if (e.deltaY < 0) {
+        newIndex = Math.max(currentIndex - 1, 0);
+      }
+      
+      if (newIndex !== currentIndex) {
+        onChange(options[newIndex]);
+        // Update scroll position smoothly
+        element.scrollTo({
+          top: newIndex * ITEM_HEIGHT,
+          behavior: 'smooth'
+        });
+      }
+    };
+
+    // Add wheel listener with passive: false to allow preventDefault
+    element.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      element.removeEventListener('wheel', handleWheel);
+    };
+  }, [options, value, onChange]);
+
+  // 3. Touch/Drag Scroll Handler
   const handleScroll = (e) => {
     isScrolling.current = true;
     const scrollTop = e.target.scrollTop;
@@ -37,7 +83,6 @@ const WheelPicker = ({ options, value, onChange }) => {
     clearTimeout(scrollRef.current.scrollTimeout);
     scrollRef.current.scrollTimeout = setTimeout(() => {
         isScrolling.current = false;
-        // Optional: Snap effect correction could go here
     }, 150);
   };
 

@@ -27,7 +27,52 @@ const WheelPicker = ({ options, value, onChange }) => {
     }
   }, [value, options]);
 
-  // 2. Handle Scroll Logic (for touch/drag)
+  // 2. Handle Mouse Wheel - Must use addEventListener with passive: false
+  useEffect(() => {
+    const element = scrollRef.current;
+    if (!element) return;
+
+    const handleWheel = (e) => {
+      e.preventDefault(); // This only works with passive: false
+      e.stopPropagation();
+      
+      const now = Date.now();
+      // Throttle: only allow wheel actions every 200ms
+      if (now - lastWheelTime.current < 200) {
+        return;
+      }
+      lastWheelTime.current = now;
+      
+      const currentIndex = options.indexOf(value);
+      let newIndex = currentIndex;
+      
+      // deltaY > 0 = scroll down = next item
+      // deltaY < 0 = scroll up = previous item
+      if (e.deltaY > 0) {
+        newIndex = Math.min(currentIndex + 1, options.length - 1);
+      } else if (e.deltaY < 0) {
+        newIndex = Math.max(currentIndex - 1, 0);
+      }
+      
+      if (newIndex !== currentIndex) {
+        onChange(options[newIndex]);
+        // Update scroll position smoothly
+        element.scrollTo({
+          top: newIndex * ITEM_HEIGHT,
+          behavior: 'smooth'
+        });
+      }
+    };
+
+    // Add wheel listener with passive: false to allow preventDefault
+    element.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      element.removeEventListener('wheel', handleWheel);
+    };
+  }, [options, value, onChange]);
+
+  // 3. Handle Touch/Drag Scroll
   const handleScroll = (e) => {
     isScrolling.current = true;
     const scrollTop = e.target.scrollTop;
@@ -48,40 +93,6 @@ const WheelPicker = ({ options, value, onChange }) => {
     }, 150);
   };
 
-  // 3. Handle Mouse Wheel - One item at a time with throttling
-  const handleWheel = (e) => {
-    e.preventDefault();
-    
-    const now = Date.now();
-    // Throttle: only allow wheel actions every 250ms (slower for precise control)
-    if (now - lastWheelTime.current < 1200) {
-      return;
-    }
-    lastWheelTime.current = now;
-    
-    const currentIndex = options.indexOf(value);
-    let newIndex = currentIndex;
-    
-    // deltaY > 0 = scroll down = next item
-    // deltaY < 0 = scroll up = previous item
-    if (e.deltaY > 0) {
-      newIndex = Math.min(currentIndex + 1, options.length - 1);
-    } else if (e.deltaY < 0) {
-      newIndex = Math.max(currentIndex - 1, 0);
-    }
-    
-    if (newIndex !== currentIndex) {
-      onChange(options[newIndex]);
-      // Also update scroll position smoothly
-      if (scrollRef.current) {
-        scrollRef.current.scrollTo({
-          top: newIndex * ITEM_HEIGHT,
-          behavior: 'smooth'
-        });
-      }
-    }
-  };
-
   return (
     <div className="relative h-[120px] w-full overflow-hidden bg-white/50 rounded-xl">
       {/* Center Highlight Bar (Fixed Visual) */}
@@ -91,7 +102,6 @@ const WheelPicker = ({ options, value, onChange }) => {
       <div 
         ref={scrollRef}
         onScroll={handleScroll}
-        onWheel={handleWheel}
         className="h-full overflow-y-auto snap-y snap-mandatory no-scrollbar relative z-10"
       > 
         {/* Top Spacer: Pushes the first item to the center */}
@@ -249,7 +259,7 @@ const FrequencyModal = ({ isOpen, onClose, onSave }) => {
                     {/* Daily */}
                     {activeTab === 'daily' && (
                         <div className="flex items-center justify-center gap-6 py-4">
-                            <span className="text-gray-700 font-bold text-lg pt-2">每個</span>
+                            <span className="text-gray-700 font-bold text-lg pt-2">每隔</span>
                             <div className="w-24">
                                 <WheelPicker 
                                     options={Array.from({ length: 31 }, (_, i) => i + 1)} 
