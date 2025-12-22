@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationStatus = 'idle', incubationStartTime = null, onEggClick }) => {
+const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationStatus = 'idle', incubationStartTime = null, onEggClick, backgroundImage = 'desert-background.jpeg' }) => {
   const TOTAL_INCUBATION_TIME = 7200; // 2 hours in seconds
   const [timeLeft, setTimeLeft] = useState(TOTAL_INCUBATION_TIME);
 
@@ -42,11 +42,11 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
 
   return (
     <div className="relative w-full h-[360px] overflow-hidden rounded-b-[3rem] shadow-sm z-0">
-      {/* Desert Background */}
+      {/* Dynamic Background */}
       <div
-        className="absolute inset-0 bg-no-repeat bg-bottom bg-contain"
+        className="absolute inset-0 bg-no-repeat bg-bottom bg-cover transition-all duration-700"
         style={{
-          backgroundImage: `url(/images/desert-background.jpeg)`,
+          backgroundImage: `url(/images/${backgroundImage})`,
         }}
       />
 

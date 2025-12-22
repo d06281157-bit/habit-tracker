@@ -19,7 +19,7 @@ const planetsWithCoords = planetsData.map((planet, index) => {
     };
 });
 
-const PlanetMap = ({ onBack }) => {
+const PlanetMap = ({ onBack, onSetBackground }) => {
     const [viewMode, setViewMode] = useState('map'); 
     const [selectedPlanet, setSelectedPlanet] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -316,7 +316,21 @@ const PlanetMap = ({ onBack }) => {
                                     </div>
                                 </div>
 
-                                <button className={`w-full py-5 rounded-[2rem] font-black tracking-[0.1em] text-xl transition-all active:scale-95 ${
+                                <button 
+                                    onClick={() => {
+                                        if (demoUnlockAll || selectedPlanet?.isUnlocked) {
+                                            // Map planet image to background
+                                            const planetImage = selectedPlanet?.image || '';
+                                            let bg = 'desert-background.jpeg';
+                                            if (planetImage.includes('planet-water')) bg = 'water-background.jpg';
+                                            else if (planetImage.includes('planet-lava')) bg = 'lava-background.jpg';
+                                            else if (planetImage.includes('planet-ice')) bg = 'ice-background.jpeg';
+                                            
+                                            if (onSetBackground) onSetBackground(bg);
+                                            onBack();
+                                        }
+                                    }}
+                                    className={`w-full py-5 rounded-[2rem] font-black tracking-[0.1em] text-xl transition-all active:scale-95 ${
                                     !(demoUnlockAll || selectedPlanet?.isUnlocked) 
                                     ? 'bg-amber-100 text-[#5D4037] shadow-[0_2px_4px_rgba(0,0,0,0.1)]'
                                     : 'bg-[#FFF4D6] text-[#5D4037] shadow-[0_2px_4px_rgba(0,0,0,0.25),inset_0_-2px_4px_rgba(255,163,18,0.25),inset_0_4px_4px_rgba(255,255,255,0.25)] hover:brightness-105'

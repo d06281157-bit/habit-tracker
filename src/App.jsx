@@ -69,6 +69,11 @@ function App() {
   });
   const [highlightAlienId, setHighlightAlienId] = useState(null);
 
+  // Hero Background State (Persisted)
+  const [heroBackground, setHeroBackground] = useState(() => {
+    return localStorage.getItem('hero_background') || 'desert-background.jpeg';
+  });
+
   // Data Persistence
   const [habits, setHabits] = useState(() => {
     const saved = localStorage.getItem('my_habits_data');
@@ -312,6 +317,7 @@ function App() {
                    incubationStatus={incubationStatus}
                    incubationStartTime={incubationStartTime}
                    onEggClick={handleEggClick}
+                   backgroundImage={heroBackground}
                 />
             </div>
             
@@ -380,7 +386,13 @@ function App() {
             onNavVisibilityChange={setShowNav}
           />
         ) : currentView === 'planet' ? (
-            <PlanetMap onBack={() => setCurrentView('home')} />
+            <PlanetMap 
+              onBack={() => setCurrentView('home')} 
+              onSetBackground={(bg) => {
+                setHeroBackground(bg);
+                localStorage.setItem('hero_background', bg);
+              }}
+            />
         ) : currentView === 'ufo' ? (
             <ShopPage score={totalScore} />
         ) : currentView === 'astronaut' ? (
