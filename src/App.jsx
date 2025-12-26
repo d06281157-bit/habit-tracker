@@ -307,10 +307,7 @@ function App() {
           <div className={`flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar relative transition-colors duration-300 ${currentView === 'alien' ? 'bg-[#9B9FDE]' : 'bg-[#FFFFF0]'}`}
                onClick={() => activeSwipeId !== null && setActiveSwipeId(null)}>
             {currentView === 'home' && (
-              <>
-                <div className="absolute inset-x-0 bg-[#FFFFF0] z-0 h-[50vh] transition-all" />
-                <div className="absolute inset-0 top-[50vh] bg-[#FFFFF0] z-0" />
-              </>
+              <div className="absolute inset-0 bg-[#FFFFF0] z-0 pointer-events-none" />
             )}
 
             <div className="relative z-10 font-sans min-h-screen flex flex-col">
@@ -482,7 +479,7 @@ function App() {
           )}
 
           {/* Bottom Navigation - Fixed within iphone-screen */}
-          {(currentView !== 'planet' && ((currentView !== 'incubate' && currentView !== 'alien') || showNav)) && (
+          {((currentView !== 'incubate' && currentView !== 'alien') || showNav) && (
             <BottomNav 
               activeTab={isTaskModalOpen ? 'rocket' : currentView} 
               onNavigate={(view) => {
