@@ -6,14 +6,14 @@ import { planetsData } from '../data/planetsData';
 const planetsWithCoords = planetsData.map((planet, index) => {
     // Map existing coordinates to the data
     const coords = [
-        { x: 35, y: 300 },
-        { x: 75, y: 530 },
-        { x: 22, y: 760 },
-        { x: 78, y: 990 },
-        { x: 28, y: 1220 },
-        { x: 70, y: 1450 },
-        { x: 25, y: 1680 },
-        { x: 72, y: 1910 }
+        { x: 35, y: 160 },
+        { x: 75, y: 390 },
+        { x: 22, y: 620 },
+        { x: 78, y: 850 },
+        { x: 28, y: 1080 },
+        { x: 70, y: 1310 },
+        { x: 25, y: 1540 },
+        { x: 72, y: 1770 }
     ];
     return { 
         ...planet, 
@@ -103,8 +103,8 @@ const PlanetMap = ({ onBack, onSetBackground }) => {
                 {/* 1. Map View */}
                 <div className={`absolute inset-0 z-10 flex flex-col transition-all duration-700 ease-in-out ${viewMode === 'map' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                     
-                    {/* Soft Header */}
-                    <div className={`absolute top-0 left-0 right-0 z-40 px-6 pt-12 pb-6 flex items-center justify-between transition-all duration-300 ${
+                    {/* Soft Header - Now Relative to stay fixed at top of flex container */}
+                    <div className={`relative top-0 left-0 right-0 z-40 px-6 pt-16 pb-6 flex items-center justify-between transition-all duration-300 ${
                         isScrolled ? 'bg-white/5 backdrop-blur-lg border-b border-white/5' : ''
                     }`}>
                         <button onClick={onBack} className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-lg flex items-center justify-center border border-white/20 shadow-lg active:scale-95 transition-all">
@@ -123,7 +123,7 @@ const PlanetMap = ({ onBack, onSetBackground }) => {
                         ref={mapContainerRef}
                         onScroll={handleScroll}
                     >
-                        <div className="relative w-full pt-28 pb-60 px-4" style={{ height: '1800px' }}>
+                        <div className="relative w-full pt-4 pb-60 px-4" style={{ height: '1800px' }}>
                             {/* Inner Trajectory and Planets */}
 
                             {/* Organic Trajectory SVG - Segmented for locking states */}
@@ -261,7 +261,7 @@ const PlanetMap = ({ onBack, onSetBackground }) => {
                         <div className="absolute inset-0 bg-gradient-to-b from-[#1A1135] via-transparent to-[#1A1135]" />
                     </div>
 
-                    <div className="relative z-10 px-6 py-12 flex items-center justify-between">
+                    <div className="relative z-10 px-6 pt-16 pb-12 flex items-center justify-between">
                         <button onClick={handleBackToMap} className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 active:scale-90">
                             <ChevronLeft className="w-8 h-8 text-white" />
                         </button>
