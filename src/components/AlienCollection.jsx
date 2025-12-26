@@ -80,7 +80,7 @@ const AlienCollection = ({ unlockedIds = [], highlightId = null, onClearHighligh
             <div className="absolute inset-0 z-0 opacity-100" style={{ backgroundImage: 'url(/images/collection-background-3.png)', backgroundSize: 'cover', backgroundPosition: 'top' }} />
             <div className="absolute inset-0 bg-gradient-to-b from-[#8C91D3]/10 via-[#8C91D3]/50 to-[#9B9FDE] pointer-events-none z-[1]" />
 
-            <div className="relative z-10 p-6 flex-1 flex flex-col items-center">
+            <div className="relative z-10 pt-16 pb-6 px-6 flex-1 flex flex-col items-center">
                 <h1 className="text-white text-2xl font-bold text-center mb-6 drop-shadow-md">角色圖鑑卡</h1>
 
                 {/* Header Card */}

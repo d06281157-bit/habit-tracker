@@ -395,8 +395,12 @@ const AchievementModal = ({
                 {/* Reset Button (Bottom Left) */}
                 {onReset && (
                     <button 
-                        onClick={onReset}
-                        className="absolute bottom-6 left-6 z-[100] bg-white/40 hover:bg-white/60 text-[#001D6E] text-xs font-black px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md transition-all active:scale-95"
+                        onClick={() => {
+                            if (window.confirm("確定要重置所有成就進度嗎？此操作不可恢復。")) {
+                                onReset();
+                            }
+                        }}
+                        className="absolute bottom-32 left-6 z-[100] bg-white/50 hover:bg-white/70 text-[#001D6E] text-sm font-black px-6 py-3 rounded-full shadow-lg backdrop-blur-md transition-all active:scale-90 border border-white/30"
                     >
                         重置進度
                     </button>

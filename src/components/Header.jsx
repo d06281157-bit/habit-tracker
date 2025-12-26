@@ -112,7 +112,7 @@ const Header = ({ onOpenTask, onOpenPlanet, selectedDate, onSelectDate, checkCom
           }
         `}
                 >
-                  <span className="text-[20px] font-bold">{day.date}</span>
+                  <span className="text-[16px] font-bold">{day.date}</span>
                 </div>
               )}
             </div>

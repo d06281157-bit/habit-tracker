@@ -152,8 +152,8 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
               <div className="flex-1 flex flex-col gap-1">
                 {/* Status Text + Timer */}
                 <div className="flex items-center justify-center gap-4 mb-1">
-                  <span className="text-[20px] text-white font-black [text-shadow:0_2px_6px_rgba(0,0,0,0.8)]">準備破蛋</span>
-                  <span className="text-[24px] text-white font-black tracking-widest tabular-nums [text-shadow:0_2px_6px_rgba(0,0,0,0.8)]">
+                  <span className="text-[15px] text-white font-black [text-shadow:0_2px_6px_rgba(0,0,0,0.8)]">準備破蛋</span>
+                  <span className="text-[17px] text-white font-black tracking-widest tabular-nums [text-shadow:0_2px_6px_rgba(0,0,0,0.8)]">
                     {formatTime(timeLeft)}
                   </span>
                 </div>
