@@ -145,11 +145,11 @@ const IncubatePage = ({ incubationStatus, incubationStartTime, onStatusChange, o
                                             />
                                         )}
                                         {isHatching && (
-                                            <video autoPlay muted playsInline className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-full object-cover z-[99999]">
+                                            <video autoPlay muted playsInline className="absolute top-0 left-0 w-full h-full object-cover z-[99999]">
                                                 <source src="/images/mystery-egg-hatch-1.mp4" type="video/mp4" />
                                             </video>
                                         )}
-                                        {showFlash && <div className="fixed inset-0 bg-white z-[100] animate-[fadeIn_0.5s_ease-in]" />}
+                                        {showFlash && <div className="absolute inset-0 bg-white z-[100] animate-[fadeIn_0.5s_ease-in]" />}
                                     </div>
                                 </div>
 

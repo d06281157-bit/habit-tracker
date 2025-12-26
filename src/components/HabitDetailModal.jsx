@@ -5,7 +5,7 @@ const HabitDetailModal = ({ habit, onClose, onEdit }) => {
     if (!habit) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]" onClick={onClose}>
+        <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]" onClick={onClose}>
             <div 
                 className="bg-[#FFFFF0] w-full max-w-[320px] rounded-[32px] p-6 relative shadow-2xl scale-100 animate-[popIn_0.3s_cubic-bezier(0.175,0.885,0.32,1.275)]"
                 onClick={(e) => e.stopPropagation()}

@@ -151,7 +151,7 @@ const ReminderModal = ({ isOpen, onClose, onSave, initialTime = "每日 上午 0
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100000] flex items-end justify-center">
+    <div className="absolute inset-0 z-[120] flex items-end justify-center">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
       

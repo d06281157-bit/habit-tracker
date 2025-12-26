@@ -284,7 +284,7 @@ const AlienCollection = ({ unlockedIds = [], highlightId = null, onClearHighligh
 {/* Alien Card Modal */}
             {selectedAlien && (
                 <div
-                    className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-6 animate-[fadeIn_0.2s_ease-out]"
+                    className="absolute inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-6 animate-[fadeIn_0.2s_ease-out]"
                     onClick={() => setSelectedAlien(null)}
                 >
                     <div

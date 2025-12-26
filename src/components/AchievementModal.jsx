@@ -182,7 +182,7 @@ const AchievementModal = ({
 
     return (
         <div
-            className={`fixed inset-0 z-[1000] flex items-center justify-center pt-10 transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`absolute inset-0 z-[100] flex items-center justify-center pt-10 transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         >
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 

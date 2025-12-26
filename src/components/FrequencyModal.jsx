@@ -212,7 +212,7 @@ const FrequencyModal = ({ isOpen, onClose, onSave }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100000] flex items-end justify-center animate-[fadeIn_0.2s_ease-out]">
+    <div className="absolute inset-0 z-[120] flex items-end justify-center animate-[fadeIn_0.2s_ease-out]">
         {/* Backdrop (Separate click handler) */}
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 

@@ -20,6 +20,7 @@ const Header = ({ onOpenTask, onOpenPlanet, selectedDate, onSelectDate, checkCom
       {/* Top Bar */}
       <div className="w-full flex justify-between items-center mb-3 mt-3">
         {/* Rocket Button */}
+        {/*
         <div
           className="w-11 h-11 flex items-center justify-center rounded-xl border border-white/60 bg-white/20 backdrop-blur-[20px] shadow-[0_4px_14px_rgba(0,0,0,0.16)] cursor-pointer transition-all duration-200 hover:scale-110 hover:shadow-[0_0_20px_rgba(255,180,100,0.5)]"
           onClick={onOpenTask}
@@ -30,12 +31,15 @@ const Header = ({ onOpenTask, onOpenPlanet, selectedDate, onSelectDate, checkCom
             className="w-9 h-9 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.35)]"
           />
         </div>
+        */}
+        
         {/* Date Text only */}
-        <h1 className="text-2xl font-extrabold text-[#707070] tracking-wide">
+        <h1 className="text-2xl font-extrabold text-[#707070] tracking-wide mx-auto">
           11月, 2025
         </h1>
 
         {/* Planet Button */}
+        {/*
         <div 
           className="w-11 h-11 flex items-center justify-center rounded-xl border border-white/60 bg-white/20 backdrop-blur-[20px] shadow-[0_4px_14px_rgba(0,0,0,0.16)] cursor-pointer transition-all duration-200 hover:scale-110 hover:shadow-[0_0_20px_rgba(100,200,255,0.5)]"
           onClick={onOpenPlanet}
@@ -46,6 +50,7 @@ const Header = ({ onOpenTask, onOpenPlanet, selectedDate, onSelectDate, checkCom
             className="w-9 h-9 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.35)]"
           />
         </div>
+        */}
       </div>
 
       {/* Week Row */}

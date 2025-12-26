@@ -298,173 +298,170 @@ function App() {
   };
 
   return (
-    <div 
-      className="min-h-screen bg-[#FFFFF0] pb-32 w-full max-w-md mx-auto relative overflow-x-hidden shadow-2xl"
-      onClick={(e) => {
-        // Close any swiped card when clicking on empty space
-        if (activeSwipeId !== null) {
-          setActiveSwipeId(null);
-        }
-      }}
-    >
-      <div className="absolute inset-x-0 bg-[#FFFFF0] z-0 h-[50vh] transition-all" />
-      <div className="absolute inset-0 top-[50vh] bg-[#FFFFF0] z-0" />
+    <div className="mockup-container">
+      <div className="iphone-wrapper">
+        <div className="iphone-notch" />
+        <div className="iphone-screen">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar relative bg-[#FFFFF0]"
+               onClick={() => activeSwipeId !== null && setActiveSwipeId(null)}>
+            <div className="absolute inset-x-0 bg-[#FFFFF0] z-0 h-[50vh] transition-all" />
+            <div className="absolute inset-0 top-[50vh] bg-[#FFFFF0] z-0" />
 
-      <div className="relative z-10 font-sans min-h-screen flex flex-col">
-        {currentView === 'home' ? (
-          <>
-            <div className="sticky top-0 left-0 w-full z-30">
-                <Header 
-                    onOpenTask={() => setIsTaskModalOpen(true)} 
-                    onOpenPlanet={() => setCurrentView('planet')}
-                    selectedDate={selectedDate}
-                    onSelectDate={setSelectedDate}
-                    checkCompleted={isDateCompleted}
-                />
-            </div>
-            <div className="-mt-[204px]">
-                <Hero 
-                   completed={selectedDate === '今天' ? completedHabits : 0} 
-                   total={filteredHabits.length} 
-                   progress={selectedDate === '今天' ? progressPercentage : 0}
-                   score={selectedDate === '今天' ? eggProgress : 0}
-                   incubationStatus={incubationStatus}
-                   incubationStartTime={incubationStartTime}
-                   onEggClick={handleEggClick}
-                   backgroundImage={heroBackground}
-                />
-            </div>
-            
-            <div className="mt-6 px-6 space-y-4 pb-24">
-              {filteredHabits.map(habit => (
-                <div 
-                    key={habit.id}
-                    onPointerDown={(e) => {
-                        clickStartPos.current = { x: e.clientX, y: e.clientY };
-                    }}
-                    onClick={(e) => {
-                        const moveX = Math.abs(e.clientX - clickStartPos.current.x || 0);
-                        const moveY = Math.abs(e.clientY - clickStartPos.current.y || 0);
-                        
-                        // 1. If currently swiping (activeSwipeId is set), don't open detail
-                        if (activeSwipeId !== null) {
-                            setActiveSwipeId(null);
-                            return;
-                        }
-
-                        // 2. If moved more than 10px, it's a swipe/drag, not a click
-                        if (moveX > 10 || moveY > 10) {
-                            return;
-                        }
-
-                        handleOpenDetail(habit);
-                    }}
-                    className="touch-manipulation h-24"
-                >
-                    <HabitCard 
-                      habit={habit}
-                      activeSwipeId={activeSwipeId}
-                      onSwipe={setActiveSwipeId}
-                      onToggle={handleToggleHabit} 
-                      onEdit={handleStartEdit}
-                      onDelete={handleDeleteHabit}
-                    />
-                </div>
-              ))}
-              {habits.length === 0 && (
-                  <div className="text-center text-gray-400 py-10 opacity-60">
-                    目前沒有星願<br/>點擊下方 + 開始建立
+            <div className="relative z-10 font-sans min-h-screen flex flex-col pb-32">
+              {currentView === 'home' ? (
+                <>
+                  <div className="sticky top-0 left-0 w-full z-30">
+                      <Header 
+                          onOpenTask={() => setIsTaskModalOpen(true)} 
+                          onOpenPlanet={() => setCurrentView('planet')}
+                          selectedDate={selectedDate}
+                          onSelectDate={setSelectedDate}
+                          checkCompleted={isDateCompleted}
+                      />
                   </div>
-              )}
+                  <div className="-mt-[204px]">
+                      <Hero 
+                         completed={selectedDate === '今天' ? completedHabits : 0} 
+                         total={filteredHabits.length} 
+                         progress={selectedDate === '今天' ? progressPercentage : 0}
+                         score={selectedDate === '今天' ? eggProgress : 0}
+                         incubationStatus={incubationStatus}
+                         incubationStartTime={incubationStartTime}
+                         onEggClick={handleEggClick}
+                         backgroundImage={heroBackground}
+                      />
+                  </div>
+                  
+                  <div className="mt-6 px-6 space-y-4">
+                    {filteredHabits.map(habit => (
+                      <div 
+                          key={habit.id}
+                          onPointerDown={(e) => {
+                              clickStartPos.current = { x: e.clientX, y: e.clientY };
+                          }}
+                          onClick={(e) => {
+                              const moveX = Math.abs(e.clientX - clickStartPos.current.x || 0);
+                              const moveY = Math.abs(e.clientY - clickStartPos.current.y || 0);
+                              
+                              if (activeSwipeId !== null) {
+                                  setActiveSwipeId(null);
+                                  return;
+                              }
+                              if (moveX > 10 || moveY > 10) {
+                                  return;
+                              }
+                              handleOpenDetail(habit);
+                          }}
+                          className="touch-manipulation h-24"
+                      >
+                          <HabitCard 
+                            habit={habit}
+                            activeSwipeId={activeSwipeId}
+                            onSwipe={setActiveSwipeId}
+                            onToggle={handleToggleHabit} 
+                            onEdit={handleStartEdit}
+                            onDelete={handleDeleteHabit}
+                          />
+                      </div>
+                    ))}
+                    {habits.length === 0 && (
+                        <div className="text-center text-gray-400 py-10 opacity-60">
+                          目前沒有星願<br/>點擊下方 + 開始建立
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : currentView === 'alien' ? (
+                <AlienCollection 
+                  unlockedIds={unlockedAlienIds} 
+                  highlightId={highlightAlienId}
+                  onClearHighlight={() => setHighlightAlienId(null)}
+                  onNavVisibilityChange={setShowNav}
+                />
+              ) : currentView === 'incubate' ? (
+                <IncubatePage 
+                  incubationStatus={incubationStatus}
+                  incubationStartTime={incubationStartTime}
+                  onStatusChange={setIncubationStatus}
+                  onNavigateHome={(target = 'home') => {
+                      if (target === 'alien') {
+                          handleTakePetHome(target);
+                      } else {
+                          setCurrentView(target);
+                      }
+                  }}
+                  onNavVisibilityChange={setShowNav}
+                />
+              ) : currentView === 'planet' ? (
+                  <PlanetMap 
+                    onBack={() => setCurrentView('home')} 
+                    onSetBackground={(bg) => {
+                      setHeroBackground(bg);
+                      localStorage.setItem('hero_background', bg);
+                    }}
+                  />
+              ) : currentView === 'ufo' ? (
+                  <ShopPage score={totalScore} />
+              ) : currentView === 'astronaut' ? (
+                  <MorePage />
+              ) : null}
             </div>
-          </>
-        ) : currentView === 'alien' ? (
-          <AlienCollection 
-            unlockedIds={unlockedAlienIds} 
-            highlightId={highlightAlienId}
-            onClearHighlight={() => setHighlightAlienId(null)}
-            onNavVisibilityChange={setShowNav}
-          />
-        ) : currentView === 'incubate' ? (
-          <IncubatePage 
-            incubationStatus={incubationStatus}
-            incubationStartTime={incubationStartTime}
-            onStatusChange={setIncubationStatus}
-            onNavigateHome={(target = 'home') => {
-                if (target === 'alien') {
-                    handleTakePetHome(target);
-                } else {
-                    setCurrentView(target);
-                }
-            }}
-            onNavVisibilityChange={setShowNav}
-          />
-        ) : currentView === 'planet' ? (
-            <PlanetMap 
-              onBack={() => setCurrentView('home')} 
-              onSetBackground={(bg) => {
-                setHeroBackground(bg);
-                localStorage.setItem('hero_background', bg);
+          </div>
+
+          {/* Modals - Outside scrolling but inside iphone-screen */}
+          <AchievementModal 
+              isOpen={isTaskModalOpen} 
+              onClose={() => setIsTaskModalOpen(false)} 
+              score={bonusScore}
+              goldScore={goldScore}
+              completedHabitsCount={completedHabits}
+              claimedMilestones={claimedMilestones}
+              onClaimMilestone={(mScore, reward) => {
+                 setClaimedMilestones(prev => [...prev, mScore]);
+                 setGoldScore(prev => prev + reward);
               }}
+              claimedTaskIds={claimedTaskIds}
+              onClaimTask={(id, points) => {
+                 setClaimedTaskIds(prev => [...prev, id]);
+                 setBonusScore(prev => prev + points);
+              }}
+              onReset={handleResetDebug}
+          />
+
+          <HabitDetailModal 
+              isOpen={isDetailModalOpen}
+              habit={selectedHabit}
+              onClose={() => {
+                  setIsDetailModalOpen(false);
+                  setSelectedHabit(null);
+              }}
+              onEdit={handleStartEdit}
+          />
+
+          <AddHabitModal 
+              isOpen={isAddModalOpen} 
+              onClose={() => {
+                  setIsAddModalOpen(false);
+                  setEditingHabit(null);
+              }}
+              onSave={handleSaveHabit}
+              initialData={editingHabit}
+          />
+
+          {/* Bottom Navigation - Fixed within iphone-screen */}
+          {currentView !== 'planet' && ((currentView !== 'incubate' && currentView !== 'alien') || showNav) && (
+            <BottomNav 
+              activeTab={currentView} 
+              onNavigate={setCurrentView} 
+              onOpenAdd={() => {
+                  setEditingHabit(null);
+                  setIsAddModalOpen(true);
+              }} 
+              onOpenTask={() => setIsTaskModalOpen(true)}
             />
-        ) : currentView === 'ufo' ? (
-            <ShopPage score={totalScore} />
-        ) : currentView === 'astronaut' ? (
-            <MorePage />
-        ) : null}
+          )}
+        </div>
       </div>
-
-       {/* Modals */}
-       <AchievementModal 
-          isOpen={isTaskModalOpen} 
-          onClose={() => setIsTaskModalOpen(false)} 
-          score={bonusScore}
-          goldScore={goldScore}
-          completedHabitsCount={completedHabits}
-          claimedMilestones={claimedMilestones}
-          onClaimMilestone={(mScore, reward) => {
-             setClaimedMilestones(prev => [...prev, mScore]);
-             setGoldScore(prev => prev + reward);
-          }}
-          claimedTaskIds={claimedTaskIds}
-          onClaimTask={(id, points) => {
-             setClaimedTaskIds(prev => [...prev, id]);
-             setBonusScore(prev => prev + points);
-          }}
-          onReset={handleResetDebug}
-       />
-
-       <HabitDetailModal 
-          isOpen={isDetailModalOpen}
-          habit={selectedHabit}
-          onClose={() => {
-              setIsDetailModalOpen(false);
-              setSelectedHabit(null);
-          }}
-          onEdit={handleStartEdit}
-       />
-
-       <AddHabitModal 
-          isOpen={isAddModalOpen} 
-          onClose={() => {
-              setIsAddModalOpen(false);
-              setEditingHabit(null);
-          }}
-          onSave={handleSaveHabit}
-          initialData={editingHabit}
-       />
-
-
-      {currentView !== 'planet' && ((currentView !== 'incubate' && currentView !== 'alien') || showNav) && (
-        <BottomNav 
-          activeTab={currentView} 
-          onNavigate={setCurrentView} 
-          onOpenAdd={() => {
-              setEditingHabit(null);
-              setIsAddModalOpen(true);
-          }} 
-        />
-      )}
     </div>
   );
 }

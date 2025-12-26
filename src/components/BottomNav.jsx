@@ -1,14 +1,20 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
 
-const BottomNav = ({ activeTab = 'home', onNavigate, onOpenAdd }) => { // 1. Accept Prop
+const BottomNav = ({ activeTab = 'home', onNavigate, onOpenAdd, onOpenTask }) => { // 1. Accept Prop
 
-    const NavItem = ({ name, icon, label }) => {
+    const NavItem = ({ name, icon, label, onClickOverride }) => {
         const isActive = activeTab === name;
         return (
             <button
                 className="relative"
-                onClick={() => onNavigate && onNavigate(name)}
+                onClick={() => {
+                    if (onClickOverride) {
+                        onClickOverride();
+                    } else if (onNavigate) {
+                        onNavigate(name);
+                    }
+                }}
             >
                 {isActive && <div className="absolute inset-0 bg-[#FFF8D6] rounded-xl -m-2 z-0" />}
                 <div className={`relative z-10 flex flex-col items-center gap-1 transition-transform active:scale-95 ${isActive ? '' : 'opacity-50 hover:opacity-100'}`}>
@@ -19,14 +25,27 @@ const BottomNav = ({ activeTab = 'home', onNavigate, onOpenAdd }) => { // 1. Acc
     };
 
     return (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 pb-8 pt-4 px-6 flex justify-between items-center rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.05)] text-gray-400 z-50">
+        <div className="absolute bottom-0 left-0 w-full bg-white border-t border-gray-100 pb-8 pt-4 px-6 flex justify-between items-center rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.05)] text-gray-400 z-50">
 
             {/* Navigation Items */}
             <NavItem name="home" icon="/images/nav-task.png" label="Task List" />
             <NavItem name="incubate" icon="/images/nav-egg.png" label="Incubate" />
             <NavItem name="alien" icon="/images/nav-alien.png" label="Alien" />
-            <NavItem name="ufo" icon="/images/nav-ufo.png" label="UFO" />
-            <NavItem name="astronaut" icon="/images/nav-astronaut.png" label="Astronaut" />
+            {/* <NavItem name="ufo" icon="/images/nav-ufo.png" label="UFO" /> */}
+            {/* <NavItem name="astronaut" icon="/images/nav-astronaut.png" label="Astronaut" /> */}
+
+            <NavItem 
+                name="task" 
+                icon="/images/icon-rocket.png" 
+                label="Rocket" 
+                onClickOverride={onOpenTask} 
+                isActive={false} 
+            />
+            <NavItem 
+                name="planet" 
+                icon="/images/icon-planet.png" 
+                label="Planet" 
+            />
 
             {/* Floating Action Button - Only show on Home Screen */}
             {activeTab === 'home' && (
