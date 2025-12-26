@@ -11,6 +11,7 @@ import IncubatePage from './components/IncubatePage';
 import PlanetMap from './components/PlanetMap';
 import ShopPage from './components/ShopPage';
 import MorePage from './components/MorePage';
+import AlienCard from './components/AlienCard';
 
 // Default Data (Fallback if storage is empty)
 const DEFAULT_HABITS = [
@@ -31,6 +32,8 @@ function App() {
   const [selectedHabit, setSelectedHabit] = useState(null);
   const [editingHabit, setEditingHabit] = useState(null);
   const [activeSwipeId, setActiveSwipeId] = useState(null);
+  const [selectedDate, setSelectedDate] = useState('今天');
+  const [selectedAlienCard, setSelectedAlienCard] = useState(null);
   const [showNav, setShowNav] = useState(true);
 
   // Incubation State Management (Persisted)
@@ -269,7 +272,6 @@ function App() {
   }, []); // Empty array is fine now because we use ref
 
   // Calculated Stats
-  const [selectedDate, setSelectedDate] = useState('今天');
   const totalHabits = habits.length;
   const completedHabits = habits.filter(h => h.completed).length;
   const progressPercentage = totalHabits === 0 ? 0 : (completedHabits / totalHabits) * 100;
@@ -302,12 +304,16 @@ function App() {
       <div className="iphone-wrapper">
         <div className="iphone-notch" />
         <div className="iphone-screen">
-          <div className="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar relative bg-[#FFFFF0]"
+          <div className={`flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar relative transition-colors duration-300 ${currentView === 'alien' ? 'bg-[#9B9FDE]' : 'bg-[#FFFFF0]'}`}
                onClick={() => activeSwipeId !== null && setActiveSwipeId(null)}>
-            <div className="absolute inset-x-0 bg-[#FFFFF0] z-0 h-[50vh] transition-all" />
-            <div className="absolute inset-0 top-[50vh] bg-[#FFFFF0] z-0" />
+            {currentView === 'home' && (
+              <>
+                <div className="absolute inset-x-0 bg-[#FFFFF0] z-0 h-[50vh] transition-all" />
+                <div className="absolute inset-0 top-[50vh] bg-[#FFFFF0] z-0" />
+              </>
+            )}
 
-            <div className="relative z-10 font-sans min-h-screen flex flex-col pb-32">
+            <div className="relative z-10 font-sans min-h-screen flex flex-col">
               {currentView === 'home' ? (
                 <>
                   <div className="sticky top-0 left-0 w-full z-30">
@@ -377,6 +383,7 @@ function App() {
                   highlightId={highlightAlienId}
                   onClearHighlight={() => setHighlightAlienId(null)}
                   onNavVisibilityChange={setShowNav}
+                  onSelectAlien={setSelectedAlienCard}
                 />
               ) : currentView === 'incubate' ? (
                 <IncubatePage 
@@ -448,12 +455,42 @@ function App() {
               initialData={editingHabit}
           />
 
+          {/* Alien Card Modal - Centered and Fixed within iphone-screen */}
+          {selectedAlienCard && (
+              <div
+                  className="absolute inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]"
+                  onClick={() => setSelectedAlienCard(null)}
+              >
+                  <div
+                      className="relative w-[280px] aspect-[3/4.5]"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ animation: 'flipIn 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                  >
+                      {/* Note: In a real app we'd need to pass the full alien data or have a data fetcher here. 
+                          For now we'll assume the component can handle it or we pass it from AlienCollection. */}
+                      <AlienCard 
+                          data={selectedAlienCard} 
+                          isExpanded={true}
+                          onUnlock={(id, price) => {
+                              // We could wire this up to handleUnlock if needed, 
+                              // but for the visual fix this is enough.
+                              setSelectedAlienCard(null);
+                          }}
+                      />
+                  </div>
+              </div>
+          )}
+
           {/* Bottom Navigation - Fixed within iphone-screen */}
-          {currentView !== 'planet' && ((currentView !== 'incubate' && currentView !== 'alien') || showNav) && (
+          {(currentView !== 'planet' && ((currentView !== 'incubate' && currentView !== 'alien') || showNav)) && (
             <BottomNav 
-              activeTab={currentView} 
-              onNavigate={setCurrentView} 
+              activeTab={isTaskModalOpen ? 'rocket' : currentView} 
+              onNavigate={(view) => {
+                  setIsTaskModalOpen(false);
+                  setCurrentView(view);
+              }} 
               onOpenAdd={() => {
+                  setIsTaskModalOpen(false);
                   setEditingHabit(null);
                   setIsAddModalOpen(true);
               }} 

@@ -57,7 +57,7 @@ const AddHabitModal = ({ isOpen, onClose, onSave, initialData }) => {
         <>
         <div className="absolute inset-0 z-[110] flex items-end justify-center bg-black/50 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
             <div 
-                className="bg-[#BCC6CC] w-full max-w-md h-[90vh] rounded-t-[2rem] rounded-b-none flex flex-col shadow-2xl overflow-hidden relative animate-[slideUp_0.3s_ease-out]"
+                className="bg-[#BCC6CC] w-full h-[calc(100%-40px)] rounded-t-[2rem] rounded-b-none flex flex-col shadow-2xl overflow-hidden relative animate-[slideUp_0.3s_ease-out]"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}

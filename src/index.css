@@ -276,12 +276,14 @@ body {
 }
 
 .mockup-container {
+  position: fixed;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   background: #e8e8e8;
   padding: 20px;
+  overflow: hidden;
 }
 
 

@@ -182,13 +182,11 @@ const AchievementModal = ({
 
     return (
         <div
-            className={`absolute inset-0 z-[100] flex items-center justify-center pt-10 transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`absolute inset-x-0 top-0 bottom-24 z-[50] transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         >
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-
-            {/* 2. Modal Body */}
+            {/* Full-Screen Page Body */}
             <div
-                className={`relative w-[90%] max-w-md min-h-[720px] h-auto max-h-[90vh] rounded-[2rem] shadow-2xl transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) flex flex-col overflow-hidden ${isOpen ? 'translate-y-0 scale-100' : 'translate-y-[20%] scale-95'}`}
+                className="relative w-full h-full flex flex-col overflow-hidden"
             >
                 {/* Background */}
                 <div className="absolute inset-0 bg-white" />
@@ -232,13 +230,8 @@ const AchievementModal = ({
                             </div>
                         </div>
 
-                        {/* Close Button */}
-                        <button
-                            onClick={onClose}
-                            className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90"
-                        >
-                            <X className="w-5 h-5 text-[#001D6E]" strokeWidth={3} />
-                        </button>
+                        {/* Spacer for alignment */}
+                        <div className="w-8" />
                     </div>
 
                     {/* Header Title */}
