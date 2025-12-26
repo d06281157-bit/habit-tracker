@@ -220,19 +220,17 @@ function App() {
 
   const handleResetDebug = () => {
     console.log('[DEBUG] handleResetDebug initiated');
-    setTimeout(() => {
-      const confirmed = window.confirm('確定要重置所有積分與任務嗎？\n(注意：此操作將清除所有進度並刷新頁面)');
-      if (confirmed) {
-          setBonusScore(0);
-          setGoldScore(0);
-          setClaimedMilestones([]);
-          setClaimedTaskIds([]);
-          setHabits(prev => prev.map(h => ({ ...h, completed: false })));
-          localStorage.clear(); 
-          alert('已完成重置，頁面即將刷新。');
-          window.location.reload(); 
-      }
-    }, 10);
+    const confirmed = window.confirm('確定要重置所有積分與任務嗎？\n(注意：此操作將清除所有進度並刷新頁面)');
+    if (confirmed) {
+        setBonusScore(0);
+        setGoldScore(0);
+        setClaimedMilestones([]);
+        setClaimedTaskIds([]);
+        setHabits(prev => prev.map(h => ({ ...h, completed: false })));
+        localStorage.clear(); 
+        alert('已完成重置，頁面即將刷新。');
+        window.location.reload(); 
+    }
   };
 
   useEffect(() => {
