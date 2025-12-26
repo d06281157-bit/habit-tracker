@@ -182,7 +182,7 @@ const AchievementModal = ({
 
     return (
         <div
-            className={`absolute inset-x-0 top-0 bottom-24 z-[50] transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`absolute inset-x-0 top-0 bottom-0 z-[50] transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         >
             {/* Full-Screen Page Body */}
             <div
@@ -343,7 +343,7 @@ const AchievementModal = ({
                 </div>
 
                 {/* Task List */}
-                <div className="flex-1 bg-[#C5C3E3] px-6 py-8 space-y-4 overflow-y-auto no-scrollbar relative z-10 pb-20">
+                <div className="flex-1 bg-[#C5C3E3] px-6 py-8 space-y-4 overflow-y-auto no-scrollbar relative z-10 pb-32">
                     {currentTasks && currentTasks
                         .slice()
                         .sort((a, b) => {

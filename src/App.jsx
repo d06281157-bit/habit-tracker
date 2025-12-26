@@ -325,7 +325,7 @@ function App() {
                           checkCompleted={isDateCompleted}
                       />
                   </div>
-                  <div className="-mt-[204px]">
+                  <div className="-mt-[246px]">
                       <Hero 
                          completed={selectedDate === '今天' ? completedHabits : 0} 
                          total={filteredHabits.length} 

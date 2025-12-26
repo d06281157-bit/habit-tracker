@@ -65,7 +65,7 @@ const Hero = ({ completed = 0, total = 0, progress = 0, score = 0, incubationSta
         <div className="w-full px-6 flex items-end justify-between">
           
           {/* Frog */}
-          <div className="w-40 h-40 relative -mb-6 -ml-6">
+          <div className="w-32 h-32 relative -mb-4 -ml-4">
             <img
               src="/images/char-Melofroggy.png"
               alt="Frog"

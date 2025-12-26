@@ -12,13 +12,13 @@ const Header = ({ onOpenTask, onOpenPlanet, selectedDate, onSelectDate, checkCom
   return (
     <div
       className="
-                pt-8 px-6 pb-6
+                pt-12 px-6 pb-1
                 bg-white/30 backdrop-blur-[10px] 
                 relative z-20 flex flex-col items-center
             "
     >
       {/* Top Bar */}
-      <div className="w-full flex justify-between items-center mb-3 mt-3">
+      <div className="w-full flex justify-between items-center mb-1 mt-1">
         {/* Rocket Button */}
         {/*
         <div
@@ -65,7 +65,7 @@ const Header = ({ onOpenTask, onOpenPlanet, selectedDate, onSelectDate, checkCom
               onClick={() => onSelectDate && onSelectDate(day.date)}
               className={`
       flex flex-col items-center justify-center cursor-pointer outline-none
-      w-[52px] h-[78px] py-2 transition-all duration-300 ease-in-out
+      w-[52px] h-[70px] py-1.5 transition-all duration-300 ease-in-out
       ${
         isActive
           ? `bg-white shadow-[0_8px_20px_rgba(0,0,0,0.1)] z-30 relative`
@@ -95,8 +95,8 @@ const Header = ({ onOpenTask, onOpenPlanet, selectedDate, onSelectDate, checkCom
 
               {/* DAY / 今天 */}
               {day.date === '今天' ? (
-                <div className="mt-3 h-8 flex items-center justify-center">
-                    <span className={`text-[21px] font-black leading-none ${isActive ? 'text-[#585575]' : 'text-gray-400 opacity-60'}`}>
+                <div className="mt-2 h-8 flex items-center justify-center">
+                    <span className={`text-[16px] font-bold leading-none ${isActive ? 'text-[#585575]' : 'text-gray-400 opacity-60'}`}>
                       今天
                     </span>
                 </div>
