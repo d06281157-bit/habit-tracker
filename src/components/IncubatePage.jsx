@@ -124,7 +124,8 @@ const IncubatePage = ({ incubationStatus, incubationStartTime, onStatusChange, o
                                     <div className="relative z-10 group" onClick={() => {
                                         if (timeLeft <= 0 && !isHatching) {
                                             setIsHatching(true);
-                                            setTimeout(() => setShowFlash(true), 4000);
+                                            // Video is 5s, start flash at 4.5s
+                                            setTimeout(() => setShowFlash(true), 4500);
                                             setTimeout(() => {
                                                 setIsHatching(false);
                                                 setShowFlash(false);
@@ -145,9 +146,16 @@ const IncubatePage = ({ incubationStatus, incubationStartTime, onStatusChange, o
                                             />
                                         )}
                                         {isHatching && (
-                                            <video autoPlay muted playsInline className="absolute top-0 left-0 w-full h-full object-cover z-[99999]">
-                                                <source src="/images/mystery-egg-hatch-1.mp4" type="video/mp4" />
-                                            </video>
+                                            <div className="absolute inset-0 z-[99999] flex items-center justify-center bg-black/10">
+                                                <video 
+                                                    autoPlay 
+                                                    muted 
+                                                    playsInline 
+                                                    className="w-[180%] h-[180%] max-w-none object-contain"
+                                                >
+                                                    <source src="/images/mystery-egg-hatch-1.mp4" type="video/mp4" />
+                                                </video>
+                                            </div>
                                         )}
                                         {showFlash && <div className="absolute inset-0 bg-white z-[100] animate-[fadeIn_0.5s_ease-in]" />}
                                     </div>

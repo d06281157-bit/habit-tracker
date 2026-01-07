@@ -182,11 +182,11 @@ const AchievementModal = ({
 
     return (
         <div
-            className={`absolute inset-0 z-[100] transition-opacity duration-500 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+            className={`absolute inset-0 z-[40] transition-opacity duration-500 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         >
             {/* Full-Screen Page Body */}
             <div
-                className="relative w-full h-full flex flex-col overflow-hidden"
+                className="relative w-full h-full flex flex-col overflow-hidden pb-32"
             >
                 {/* Background */}
                 <div className="absolute inset-0 bg-white" />
@@ -392,11 +392,11 @@ const AchievementModal = ({
                     ))}
                 </div>
 
-                {/* Reset Button (Bottom Left) */}
+                {/* Reset Button (Bottom Left) - Positioned above BottomNav */}
                 {onReset && (
                     <button 
                         onClick={onReset}
-                        className="absolute bottom-32 left-6 z-[110] bg-white/50 hover:bg-white/70 text-[#001D6E] text-sm font-black px-6 py-3 rounded-full shadow-lg backdrop-blur-md transition-all active:scale-90 border border-white/30 cursor-pointer pointer-events-auto"
+                        className="absolute bottom-36 left-6 z-[110] bg-white/50 hover:bg-white/70 text-[#001D6E] text-sm font-black px-6 py-3 rounded-full shadow-lg backdrop-blur-md transition-all active:scale-90 border border-white/30 cursor-pointer pointer-events-auto"
                     >
                         重置進度
                     </button>
