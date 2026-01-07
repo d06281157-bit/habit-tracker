@@ -190,13 +190,13 @@ const AchievementModal = ({
             >
                 {/* 1. Header Section */}
                 <div 
-                    className="relative z-10 pt-20 pb-8 px-6 flex flex-col items-center bg-cover bg-top overflow-visible"
+                    className="relative z-10 pt-24 pb-8 px-6 flex flex-col items-center bg-cover bg-top overflow-visible"
                     style={{ backgroundImage: "url('/images/Starlight-background-4.png')" }}
                 >
                     <div className="absolute inset-0 bg-[#001D6E]/10" /> 
                     
                     {/* Top Row: Score Badges (Left) and Close Button (Right) */}
-                    <div className="absolute top-4 left-0 right-0 px-6 flex flex-row justify-between items-start z-[200]">
+                    <div className="absolute top-8 left-0 right-0 px-6 flex flex-row justify-between items-start z-[200]">
                         <div className="flex flex-col gap-2 -translate-x-2">
                             {/* Star Score Badge */}
                             <div 
@@ -232,7 +232,7 @@ const AchievementModal = ({
                     </div>
 
                     {/* Header Title */}
-                    <div className="w-full flex justify-center items-center mb-16 relative -mt-8">
+                    <div className="w-full flex justify-center items-center mb-16 relative">
                         <h2 className="text-3xl font-black text-white tracking-[0.2em] drop-shadow-lg">成就任務</h2>
                     </div>
 
