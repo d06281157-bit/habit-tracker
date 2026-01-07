@@ -186,11 +186,8 @@ const AchievementModal = ({
         >
             {/* Full-Screen Page Body */}
             <div
-                className="relative w-full h-full flex flex-col overflow-hidden pb-32"
+                className="relative w-full h-full flex flex-col overflow-hidden pb-32 bg-[#C5C3E3]"
             >
-                {/* Background */}
-                <div className="absolute inset-0 bg-white" />
-                
                 {/* 1. Header Section */}
                 <div 
                     className="relative z-10 pt-20 pb-8 px-6 flex flex-col items-center bg-cover bg-top overflow-visible"

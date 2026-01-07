@@ -92,3 +92,28 @@ Habit Tracker 專案進度報告
    音效系統：加入打勾、按鈕點擊與破蛋時的音效反饋。
    最後更新時間：2025-12-22
    當前狀態：核心循環（習慣 -> 孵化 -> 探索）已串接完成，UI 進入高級精緻化階段。
+
+專案進度摘要 (2026-01-07)
+✅ 已完成項目
+功能 狀態
+iPhone 16 Pro Max 佈局 採用 440x956 居中容器，移除所有擬真框架
+破蛋動畫 mystery-egg-hatch-1.mp4 定位與時間流程修正
+成就頁面 BottomNav 導航欄置頂可操作
+成就頁面背景 填充淡紫色，消除底部空隙
+📁 關鍵變更檔案
+App.jsx
+
+- 手機容器結構
+  index.css
+- 居中樣式
+  BottomNav.jsx
+- 定位調整
+  AchievementModal.jsx
+- z-index + 背景修正
+  IncubatePage.jsx
+- 動畫修正
+  ⚠️ 已知問題
+  星球地圖 (PlanetMap): 點擊後會出現空白頁，需進一步調查
+  📌 版本控制
+  目前在 fix/remove-mockup-v8 分支
+  尚未合併回 main
