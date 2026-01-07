@@ -55,9 +55,9 @@ const AddHabitModal = ({ isOpen, onClose, onSave, initialData }) => {
     };
     return (
         <>
-        <div className="absolute inset-0 z-[110] flex items-end justify-center bg-black/50 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+        <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/50 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]" style={{ left: '50%', transform: 'translateX(-50%)', width: '440px', maxWidth: '100vw' }}>
             <div 
-                className="bg-[#BCC6CC] w-full h-[calc(100%-40px)] rounded-t-[2rem] rounded-b-none flex flex-col shadow-2xl overflow-hidden relative animate-[slideUp_0.3s_ease-out]"
+                className="bg-[#BCC6CC] w-full h-auto max-h-[90%] pb-12 rounded-t-[2rem] rounded-b-none flex flex-col shadow-2xl overflow-hidden relative animate-[slideUp_0.3s_ease-out]"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
@@ -112,7 +112,6 @@ const AddHabitModal = ({ isOpen, onClose, onSave, initialData }) => {
                             onChange={(e) => setHabitName(e.target.value)}
                             placeholder="輸入你想實現或培養的習慣"
                             className="w-full bg-transparent border-b-2 border-white/50 py-2 text-center text-gray-900 text-lg placeholder:text-gray-500 focus:outline-none focus:border-white transition-colors"
-                            autoFocus
                         />
                     </div>
 
@@ -153,6 +152,10 @@ const AddHabitModal = ({ isOpen, onClose, onSave, initialData }) => {
                 @keyframes slideUp {
                     0% { transform: translateY(100%); }
                     100% { transform: translateY(0); }
+                }
+                @keyframes fadeIn {
+                    0% { opacity: 0; }
+                    100% { opacity: 1; }
                 }
             `}</style>
         </div>
