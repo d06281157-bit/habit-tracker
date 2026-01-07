@@ -12,7 +12,7 @@ const Header = ({ onOpenTask, onOpenPlanet, selectedDate, onSelectDate, checkCom
   return (
     <div
       className="
-                pt-12 px-6 pb-1
+                pt-16 px-6 pb-4
                 bg-white/30 backdrop-blur-[10px] 
                 relative z-20 flex flex-col items-center
             "
@@ -65,7 +65,7 @@ const Header = ({ onOpenTask, onOpenPlanet, selectedDate, onSelectDate, checkCom
               onClick={() => onSelectDate && onSelectDate(day.date)}
               className={`
       flex flex-col items-center justify-center cursor-pointer outline-none
-      w-[52px] h-[70px] py-1.5 transition-all duration-300 ease-in-out
+      w-[52px] h-[85px] py-2 transition-all duration-300 ease-in-out
       ${
         isActive
           ? `bg-white shadow-[0_8px_20px_rgba(0,0,0,0.1)] z-30 relative`
