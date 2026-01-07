@@ -8,9 +8,6 @@ import HabitDetailModal from './components/HabitDetailModal';
 import AlienCollection from './components/AlienCollection';
 import AchievementModal from './components/AchievementModal';
 import IncubatePage from './components/IncubatePage';
-import PlanetMap from './components/PlanetMap';
-import ShopPage from './components/ShopPage';
-import MorePage from './components/MorePage';
 import AlienCard from './components/AlienCard';
 
 // Default Data (Fallback if storage is empty)
@@ -298,12 +295,9 @@ function App() {
   };
 
   return (
-    <div className="mockup-container">
-      <div className="iphone-wrapper">
-        <div className="iphone-notch" />
-        <div className="iphone-screen">
-          <div className={`flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar relative transition-colors duration-300 ${currentView === 'alien' ? 'bg-[#9B9FDE]' : 'bg-[#FFFFF0]'}`}
-               onClick={() => activeSwipeId !== null && setActiveSwipeId(null)}>
+    <div className="min-h-screen bg-[#FFFFF0] flex flex-col">
+      <div className={`flex-1 flex flex-col overflow-y-auto overflow-x-hidden hide-scrollbar relative transition-colors duration-300 ${currentView === 'alien' ? 'bg-[#9B9FDE]' : 'bg-[#FFFFF0]'}`}
+           onClick={() => activeSwipeId !== null && setActiveSwipeId(null)}>
             {currentView === 'home' && (
               <div className="absolute inset-0 bg-[#FFFFF0] z-0 pointer-events-none" />
             )}
@@ -402,98 +396,85 @@ function App() {
                       localStorage.setItem('hero_background', bg);
                     }}
                   />
-              ) : currentView === 'ufo' ? (
-                  <ShopPage score={totalScore} />
-              ) : currentView === 'astronaut' ? (
-                  <MorePage />
               ) : null}
             </div>
           </div>
 
-          {/* Modals - Outside scrolling but inside iphone-screen */}
-          <AchievementModal 
-              isOpen={isTaskModalOpen} 
-              onClose={() => setIsTaskModalOpen(false)} 
-              score={bonusScore}
-              goldScore={goldScore}
-              completedHabitsCount={completedHabits}
-              claimedMilestones={claimedMilestones}
-              onClaimMilestone={(mScore, reward) => {
-                 setClaimedMilestones(prev => [...prev, mScore]);
-                 setGoldScore(prev => prev + reward);
-              }}
-              claimedTaskIds={claimedTaskIds}
-              onClaimTask={(id, points) => {
-                 setClaimedTaskIds(prev => [...prev, id]);
-                 setBonusScore(prev => prev + points);
-              }}
-              onReset={handleResetDebug}
-          />
+      <AchievementModal 
+          isOpen={isTaskModalOpen} 
+          onClose={() => setIsTaskModalOpen(false)} 
+          score={bonusScore}
+          goldScore={goldScore}
+          completedHabitsCount={completedHabits}
+          claimedMilestones={claimedMilestones}
+          onClaimMilestone={(mScore, reward) => {
+             setClaimedMilestones(prev => [...prev, mScore]);
+             setGoldScore(prev => prev + reward);
+          }}
+          claimedTaskIds={claimedTaskIds}
+          onClaimTask={(id, points) => {
+             setClaimedTaskIds(prev => [...prev, id]);
+             setBonusScore(prev => prev + points);
+          }}
+          onReset={handleResetDebug}
+      />
 
-          <HabitDetailModal 
-              isOpen={isDetailModalOpen}
-              habit={selectedHabit}
-              onClose={() => {
-                  setIsDetailModalOpen(false);
-                  setSelectedHabit(null);
-              }}
-              onEdit={handleStartEdit}
-          />
+      <HabitDetailModal 
+          isOpen={isDetailModalOpen}
+          habit={selectedHabit}
+          onClose={() => {
+              setIsDetailModalOpen(false);
+              setSelectedHabit(null);
+          }}
+          onEdit={handleStartEdit}
+      />
 
-          <AddHabitModal 
-              isOpen={isAddModalOpen} 
-              onClose={() => {
-                  setIsAddModalOpen(false);
-                  setEditingHabit(null);
-              }}
-              onSave={handleSaveHabit}
-              initialData={editingHabit}
-          />
+      <AddHabitModal 
+          isOpen={isAddModalOpen} 
+          onClose={() => {
+              setIsAddModalOpen(false);
+              setEditingHabit(null);
+          }}
+          onSave={handleSaveHabit}
+          initialData={editingHabit}
+      />
 
-          {/* Alien Card Modal - Centered and Fixed within iphone-screen */}
-          {selectedAlienCard && (
+      {selectedAlienCard && (
+          <div
+              className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]"
+              onClick={() => setSelectedAlienCard(null)}
+          >
               <div
-                  className="absolute inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]"
-                  onClick={() => setSelectedAlienCard(null)}
+                  className="relative w-[280px] aspect-[3/4.5]"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ animation: 'flipIn 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}
               >
-                  <div
-                      className="relative w-[280px] aspect-[3/4.5]"
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ animation: 'flipIn 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}
-                  >
-                      {/* Note: In a real app we'd need to pass the full alien data or have a data fetcher here. 
-                          For now we'll assume the component can handle it or we pass it from AlienCollection. */}
-                      <AlienCard 
-                          data={selectedAlienCard} 
-                          isExpanded={true}
-                          onUnlock={(id, price) => {
-                              // We could wire this up to handleUnlock if needed, 
-                              // but for the visual fix this is enough.
-                              setSelectedAlienCard(null);
-                          }}
-                      />
-                  </div>
+                  <AlienCard 
+                      data={selectedAlienCard} 
+                      isExpanded={true}
+                      onUnlock={(id, price) => {
+                          setSelectedAlienCard(null);
+                      }}
+                  />
               </div>
-          )}
+          </div>
+      )}
 
-          {/* Bottom Navigation - Fixed within iphone-screen */}
-          {((currentView !== 'incubate' && currentView !== 'alien') || showNav) && (
-            <BottomNav 
-              activeTab={isTaskModalOpen ? 'rocket' : currentView} 
-              onNavigate={(view) => {
-                  setIsTaskModalOpen(false);
-                  setCurrentView(view);
-              }} 
-              onOpenAdd={() => {
-                  setIsTaskModalOpen(false);
-                  setEditingHabit(null);
-                  setIsAddModalOpen(true);
-              }} 
-              onOpenTask={() => setIsTaskModalOpen(true)}
-            />
-          )}
-        </div>
-      </div>
+      {((currentView !== 'incubate' && currentView !== 'alien') || showNav) && (
+        <BottomNav 
+          activeTab={isTaskModalOpen ? 'rocket' : currentView} 
+          onNavigate={(view) => {
+              setIsTaskModalOpen(false);
+              setCurrentView(view);
+          }} 
+          onOpenAdd={() => {
+              setIsTaskModalOpen(false);
+              setEditingHabit(null);
+              setIsAddModalOpen(true);
+          }} 
+          onOpenTask={() => setIsTaskModalOpen(true)}
+        />
+      )}
     </div>
   );
 }
