@@ -35,11 +35,10 @@ const BottomNav = ({ activeTab = 'home', onNavigate, onOpenAdd, onOpenTask }) =>
             {/* <NavItem name="astronaut" icon="/images/nav-astronaut.png" label="Astronaut" /> */}
 
             <NavItem 
-                name="task" 
+                name="rocket" 
                 icon="/images/icon-rocket.png" 
                 label="Rocket" 
                 onClickOverride={onOpenTask} 
-                isActive={false} 
             />
             <NavItem 
                 name="planet" 

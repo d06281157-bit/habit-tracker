@@ -146,12 +146,12 @@ const IncubatePage = ({ incubationStatus, incubationStartTime, onStatusChange, o
                                             />
                                         )}
                                         {isHatching && (
-                                            <div className="absolute inset-0 z-[99999] flex items-center justify-center bg-black/10">
+                                            <div className="absolute inset-0 z-[99999] flex items-center justify-center bg-[#231E3D]" style={{ position: 'fixed', left: '50%', transform: 'translateX(-50%)', width: '440px', maxWidth: '100vw', height: '100%' }}>
                                                 <video 
                                                     autoPlay 
                                                     muted 
                                                     playsInline 
-                                                    className="w-[180%] h-[180%] max-w-none object-contain"
+                                                    className="w-full h-full object-cover"
                                                 >
                                                     <source src="/images/mystery-egg-hatch-1.mp4" type="video/mp4" />
                                                 </video>

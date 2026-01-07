@@ -9,6 +9,7 @@ import AlienCollection from './components/AlienCollection';
 import AchievementModal from './components/AchievementModal';
 import IncubatePage from './components/IncubatePage';
 import AlienCard from './components/AlienCard';
+import PlanetMap from './components/PlanetMap';
 
 // Default Data (Fallback if storage is empty)
 const DEFAULT_HABITS = [
