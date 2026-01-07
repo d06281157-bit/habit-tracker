@@ -83,7 +83,7 @@ const PlanetMap = ({ onBack, onSetBackground }) => {
     };
 
     return (
-        <div className="absolute inset-0 z-10 bg-[#1A1135] text-white font-sans overflow-hidden select-none flex justify-center">
+        <div className="absolute inset-0 z-[100] bg-[#1A1135] text-white font-sans overflow-hidden select-none flex justify-center">
             <div className="relative w-full max-w-md h-full bg-[#1A1135] shadow-2xl overflow-hidden flex flex-col">
                 
                 {/* Fixed Universe Backdrop */}

@@ -229,9 +229,33 @@ body {
 
 
 
-/* Main App Container - Standard Web Layout */
-.min-h-screen {
+/* Main App Container - Web App Mobile-Sized Layout */
+.app-shell {
   min-height: 100vh;
+  background-color: #f3f4f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mobile-container {
+  width: 100%;
+  max-width: 440px;
+  height: 100vh;
+  max-height: 956px;
+  background-color: #fff;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 440px) {
+  .mobile-container {
+    max-height: none;
+    box-shadow: none;
+  }
 }
 
 .hide-scrollbar::-webkit-scrollbar {

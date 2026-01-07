@@ -295,9 +295,10 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFFF0] flex flex-col">
-      <div className={`flex-1 flex flex-col overflow-y-auto overflow-x-hidden hide-scrollbar relative transition-colors duration-300 ${currentView === 'alien' ? 'bg-[#9B9FDE]' : 'bg-[#FFFFF0]'}`}
-           onClick={() => activeSwipeId !== null && setActiveSwipeId(null)}>
+    <div className="app-shell">
+      <div className="mobile-container">
+        <div className={`flex-1 flex flex-col overflow-y-auto overflow-x-hidden hide-scrollbar relative transition-colors duration-300 ${currentView === 'alien' ? 'bg-[#9B9FDE]' : 'bg-[#FFFFF0]'}`}
+             onClick={() => activeSwipeId !== null && setActiveSwipeId(null)}>
             {currentView === 'home' && (
               <div className="absolute inset-0 bg-[#FFFFF0] z-0 pointer-events-none" />
             )}
@@ -475,6 +476,7 @@ function App() {
           onOpenTask={() => setIsTaskModalOpen(true)}
         />
       )}
+      </div>
     </div>
   );
 }

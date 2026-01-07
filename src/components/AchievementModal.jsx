@@ -182,7 +182,7 @@ const AchievementModal = ({
 
     return (
         <div
-            className={`fixed inset-0 z-[100] transition-opacity duration-500 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+            className={`absolute inset-0 z-[100] transition-opacity duration-500 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         >
             {/* Full-Screen Page Body */}
             <div
@@ -396,7 +396,7 @@ const AchievementModal = ({
                 {onReset && (
                     <button 
                         onClick={onReset}
-                        className="fixed bottom-40 left-6 z-[110] bg-white/50 hover:bg-white/70 text-[#001D6E] text-sm font-black px-6 py-3 rounded-full shadow-lg backdrop-blur-md transition-all active:scale-90 border border-white/30 cursor-pointer pointer-events-auto"
+                        className="absolute bottom-32 left-6 z-[110] bg-white/50 hover:bg-white/70 text-[#001D6E] text-sm font-black px-6 py-3 rounded-full shadow-lg backdrop-blur-md transition-all active:scale-90 border border-white/30 cursor-pointer pointer-events-auto"
                     >
                         重置進度
                     </button>
