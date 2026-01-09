@@ -182,24 +182,21 @@ const AchievementModal = ({
 
     return (
         <div
-            className={`absolute inset-x-0 top-0 bottom-0 z-[50] transition-opacity duration-500 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+            className={`absolute inset-0 z-[40] transition-opacity duration-500 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         >
             {/* Full-Screen Page Body */}
             <div
-                className="relative w-full h-full flex flex-col overflow-hidden"
+                className="relative w-full h-full flex flex-col overflow-hidden pb-32 bg-[#C5C3E3]"
             >
-                {/* Background */}
-                <div className="absolute inset-0 bg-white" />
-                
                 {/* 1. Header Section */}
                 <div 
-                    className="relative z-10 pt-20 pb-8 px-6 flex flex-col items-center bg-cover bg-top overflow-visible"
+                    className="relative z-10 pt-24 pb-8 px-6 flex flex-col items-center bg-cover bg-top overflow-visible"
                     style={{ backgroundImage: "url('/images/Starlight-background-4.png')" }}
                 >
                     <div className="absolute inset-0 bg-[#001D6E]/10" /> 
                     
                     {/* Top Row: Score Badges (Left) and Close Button (Right) */}
-                    <div className="absolute top-4 left-0 right-0 px-6 flex flex-row justify-between items-start z-[200]">
+                    <div className="absolute top-8 left-0 right-0 px-6 flex flex-row justify-between items-start z-[200]">
                         <div className="flex flex-col gap-2 -translate-x-2">
                             {/* Star Score Badge */}
                             <div 
@@ -235,7 +232,7 @@ const AchievementModal = ({
                     </div>
 
                     {/* Header Title */}
-                    <div className="w-full flex justify-center items-center mb-16 relative -mt-8">
+                    <div className="w-full flex justify-center items-center mb-16 relative">
                         <h2 className="text-3xl font-black text-white tracking-[0.2em] drop-shadow-lg">成就任務</h2>
                     </div>
 
@@ -392,11 +389,11 @@ const AchievementModal = ({
                     ))}
                 </div>
 
-                {/* Reset Button (Bottom Left) */}
+                {/* Reset Button (Bottom Left) - Positioned above BottomNav */}
                 {onReset && (
                     <button 
                         onClick={onReset}
-                        className="absolute bottom-32 left-6 z-[110] bg-white/50 hover:bg-white/70 text-[#001D6E] text-sm font-black px-6 py-3 rounded-full shadow-lg backdrop-blur-md transition-all active:scale-90 border border-white/30 cursor-pointer pointer-events-auto"
+                        className="absolute bottom-36 left-6 z-[110] bg-white/50 hover:bg-white/70 text-[#001D6E] text-sm font-black px-6 py-3 rounded-full shadow-lg backdrop-blur-md transition-all active:scale-90 border border-white/30 cursor-pointer pointer-events-auto"
                     >
                         重置進度
                     </button>
