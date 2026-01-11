@@ -54,7 +54,7 @@ function App() {
     return parseInt(localStorage.getItem('achievement_bonus_score') || '0');
   });
   const [goldScore, setGoldScore] = useState(() => {
-    return parseInt(localStorage.getItem('achievement_gold_score') || '0');
+    return parseInt(localStorage.getItem('achievement_gold_score') || '6000');
   });
   const [claimedMilestones, setClaimedMilestones] = useState(() => {
     const saved = localStorage.getItem('claimed_milestones');
@@ -218,7 +218,7 @@ function App() {
 
   const handleResetDebug = () => {
     console.log('[DEBUG] handleResetDebug initiated');
-    const confirmed = window.confirm('確定要重置所有積分與任務嗎？\n(注意：此操作將清除所有進度並刷新頁面)');
+    const confirmed = window.confirm('確定要裝置所有積分與任務嗎？\n(注意：此操作將清除所有進度並刷新頁面)');
     if (confirmed) {
         setBonusScore(0);
         setGoldScore(0);
@@ -228,6 +228,17 @@ function App() {
         localStorage.clear(); 
         alert('已完成重置，頁面即將刷新。');
         window.location.reload(); 
+    }
+  };
+
+  const handleUnlockAlien = (id, price) => {
+    if (goldScore >= price) {
+        setGoldScore(prev => prev - price);
+        setUnlockedAlienIds(prev => [...prev, id]);
+        // Update selectedAlienCard if it's the one being unlocked to reflect changes in UI
+        setSelectedAlienCard(prev => prev && prev.id === id ? { ...prev, isLocked: false } : prev);
+    } else {
+        alert(`金幣不足！還差 ${price - goldScore} 金幣`);
     }
   };
 
@@ -375,6 +386,8 @@ function App() {
                   onClearHighlight={() => setHighlightAlienId(null)}
                   onNavVisibilityChange={setShowNav}
                   onSelectAlien={setSelectedAlienCard}
+                  coins={goldScore}
+                  onUnlockAlien={handleUnlockAlien}
                 />
               ) : currentView === 'incubate' ? (
                 <IncubatePage 
@@ -454,9 +467,7 @@ function App() {
                   <AlienCard 
                       data={selectedAlienCard} 
                       isExpanded={true}
-                      onUnlock={(id, price) => {
-                          setSelectedAlienCard(null);
-                      }}
+                      onUnlock={handleUnlockAlien}
                   />
               </div>
           </div>
