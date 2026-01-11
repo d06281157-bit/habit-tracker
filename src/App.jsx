@@ -221,7 +221,7 @@ function App() {
     const confirmed = window.confirm('確定要裝置所有積分與任務嗎？\n(注意：此操作將清除所有進度並刷新頁面)');
     if (confirmed) {
         setBonusScore(0);
-        setGoldScore(0);
+        setGoldScore(6000);
         setClaimedMilestones([]);
         setClaimedTaskIds([]);
         setHabits(prev => prev.map(h => ({ ...h, completed: false })));
