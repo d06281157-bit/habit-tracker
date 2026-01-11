@@ -13,7 +13,7 @@ const attributesList = [
 ];
 
 // --- 3. 主頁面組件 ---
-const AlienCollection = ({ unlockedIds = [], highlightId = null, onClearHighlight, onNavVisibilityChange, onSelectAlien }) => {
+const AlienCollection = ({ unlockedIds = [], highlightId = null, coins = 0, onUnlockAlien, onClearHighlight, onNavVisibilityChange, onSelectAlien }) => {
     // === 狀態管理 ===
     const [aliens, setAliens] = useState(() => {
         // Initialize with locked state from data, then apply unlockedIds
@@ -22,7 +22,6 @@ const AlienCollection = ({ unlockedIds = [], highlightId = null, onClearHighligh
             isLocked: !unlockedIds.includes(alien.id)
         }));
     });
-    const [coins, setCoins] = useState(6000); 
     const [filter, setFilter] = useState('all'); 
 
     // Sync unlocked status from parent
@@ -48,15 +47,10 @@ const AlienCollection = ({ unlockedIds = [], highlightId = null, onClearHighligh
     const unlockedCount = aliens.filter(alien => !alien.isLocked).length;
     const progressPercentage = (unlockedCount / totalAliens) * 100;
 
-    // === 解鎖功能 ===
+    // === 解鎖功能 (透過 Props 調用父組件邏輯) ===
     const handleUnlock = (id, price) => {
-        if (coins >= price) {
-            setCoins(prevCoins => prevCoins - price);
-            setAliens(prevAliens => prevAliens.map(alien =>
-                alien.id === id ? { ...alien, isLocked: false } : alien
-            ));
-        } else {
-            alert(`金幣不足！還差 ${price - coins} 金幣`);
+        if (onUnlockAlien) {
+            onUnlockAlien(id, price);
         }
     };
 
@@ -76,9 +70,11 @@ const AlienCollection = ({ unlockedIds = [], highlightId = null, onClearHighligh
         });
 
     return (
-        <div className="flex flex-col min-h-full pb-32 bg-[#9B9FDE] relative">
-            <div className="absolute inset-0 z-0 opacity-100" style={{ backgroundImage: 'url(/images/collection-background-3.png)', backgroundSize: 'cover', backgroundPosition: 'top' }} />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#8C91D3]/10 via-[#8C91D3]/50 to-[#9B9FDE] pointer-events-none z-[1]" />
+        <div className="flex flex-col min-h-screen pb-60 bg-[#9B9FDE] relative overflow-x-hidden hide-scrollbar">
+            {/* Background image - positioned at top, extended height */}
+            <div className="absolute inset-x-0 top-0 h-[150%] z-0" style={{ backgroundImage: 'url(/images/collection-background-3.png)', backgroundSize: 'cover', backgroundPosition: 'top center', backgroundRepeat: 'no-repeat' }} />
+            {/* Gradient overlay to seamlessly blend into solid color at bottom */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#9B9FDE]/30 to-[#9B9FDE] pointer-events-none z-[1]" />
 
             <div className="relative z-10 pt-16 pb-6 px-6 flex-1 flex flex-col items-center">
                 <h1 className="text-white text-2xl font-bold text-center mb-6 drop-shadow-md">角色圖鑑卡</h1>
