@@ -37,11 +37,11 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
     };
 
     const containerClass = isExpanded
-        ? "w-[280px] aspect-[3/4.5] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden relative"
+        ? "w-[280px] aspect-[3/5] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden relative"
         : `h-full flex flex-col bg-white rounded-xl shadow-sm overflow-hidden relative ${isInteractive ? 'cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_20px_rgba(255,255,255,0.4)]' : ''} ${isHighlighted ? 'animate-card-flip animate-highlight-glow ring-4 ring-[#FFF8D6] z-20' : ''}`;
 
     const topSectionHeight = isExpanded ? "h-[60%]" : "h-[50%]";
-    const topSectionHeightUnlocked = isExpanded ? "h-[66%]" : "h-[70%]";
+    const topSectionHeightUnlocked = isExpanded ? "h-[60%]" : "h-[70%]";
 
     const imageSize = isExpanded ? "w-56 h-56" : "w-16 h-16";
     const silhouetteSize = isExpanded ? "w-48 h-48" : "w-14 h-14";
@@ -54,7 +54,7 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
     const heartSize = isExpanded ? "w-5 h-5" : "w-2.5 h-2.5";
     const lockSize = isExpanded ? "w-16 h-16" : "w-6 h-6";
 
-    const contentPadding = isExpanded ? "px-6 py-4 gap-2" : "px-2 pb-1.5 pt-1 gap-0.5";
+    const contentPadding = isExpanded ? "px-5 pt-3 pb-4 gap-1" : "px-2 pb-1.5 pt-1 gap-0.5";
     const lockPadding = isExpanded ? "pb-4" : "pb-1";
 
     // === 樣樣 A: 未解鎖 (Locked) ===
@@ -93,7 +93,7 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
     // === 樣樣 B: 已解鎖 (Unlocked) ===
     return (
         <div className={containerClass} onClick={onClick}>
-            <div className={`${topSectionHeightUnlocked} m-1 mb-0 rounded-t-[10px] rounded-b-none bg-gradient-to-b ${getAttrBg(data.attribute)} p-1 pb-4 flex flex-col justify-end items-center relative`}>
+            <div className={`${topSectionHeightUnlocked} m-1 mb-0 rounded-t-[10px] rounded-b-none bg-gradient-to-b ${getAttrBg(data.attribute)} p-1 pt-10 pb-0 flex flex-col justify-end items-center relative`}>
                 <div className="absolute top-2 left-2">
                     <img src={attributeIcon} alt="Attr" className={`${iconSize} object-contain`} />
                 </div>
@@ -104,20 +104,24 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
                 </div>
             </div>
             <div className="w-full px-1 my-0"><div className="w-full border-t border-solid border-[#E9EBE0]"></div></div>
-            <div className={`flex-1 bg-white flex flex-col justify-center ${contentPadding}`}>
-                <div className="flex flex-col gap-0.5">
-                    <div className="flex justify-between items-center whitespace-nowrap">
+            <div className={`flex-1 bg-white flex flex-col ${isExpanded ? 'justify-start' : 'justify-center'} ${contentPadding}`}>
+                <div className="flex flex-col gap-0">
+                    {isExpanded ? (
                         <h3 className={`${titleSize} font-bold text-gray-800 leading-tight truncate`}>{data.name}</h3>
-                        <div className="flex items-center justify-start shrink-0">
-                            {[...Array(data.rarity || 1)].map((_, i) => (
-                                <img key={i} src="/images/icon-star-yellow.png" alt="star" className={`${starSize} object-contain block`} />
-                            ))}
+                    ) : (
+                        <div className="flex justify-between items-center whitespace-nowrap">
+                            <h3 className={`${titleSize} font-bold text-gray-800 leading-tight truncate`}>{data.name}</h3>
+                            <div className="flex items-center justify-start shrink-0">
+                                {[...Array(data.rarity || 1)].map((_, i) => (
+                                    <img key={i} src="/images/icon-star-yellow.png" alt="star" className={`${starSize} object-contain block`} />
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                    {isExpanded && <p className={`${quoteSize === 'hidden' ? '' : quoteSize} text-gray-400 leading-tight italic`}>{data.quote || '...'}</p>}
+                    )}
+                    {isExpanded && <p className={`${quoteSize === 'hidden' ? '' : quoteSize} text-gray-400 leading-snug italic`}>{data.quote || '...'}</p>}
                 </div>
                 
-                <div className={`flex flex-col ${isExpanded ? 'gap-1.5 mt-2' : 'gap-0 mt-0.5'}`}>
+                <div className={`flex flex-col ${isExpanded ? 'gap-2 mt-1' : 'gap-0 mt-0.5'}`}>
                     {/* Hide habitat in grid view, only show in expanded */}
                     {isExpanded && (
                         <div className="flex items-center justify-between">
@@ -135,6 +139,17 @@ const AlienCard = ({ data, onClick, onUnlock, isInteractive = true, isExpanded =
                             ))}
                         </div>
                     </div>
+
+                    {isExpanded && (
+                        <div className="flex items-center gap-1 whitespace-nowrap">
+                            <span className={`${labelSize} text-gray-600 font-bold leading-none`}>稀有度 :</span>
+                            <div className="flex gap-0.5">
+                                {[...Array(data.rarity || 1)].map((_, i) => (
+                                    <img key={i} src="/images/icon-star-yellow.png" alt="star" className={`${starSize} object-contain block`} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
             {isHighlighted && (
